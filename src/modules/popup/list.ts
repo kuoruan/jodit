@@ -106,6 +106,7 @@ export class PopupList extends Popup {
 		this.toolbar.checkActiveButtons();
 	}
 
+	// @ts-ignore
 	public toolbar: IToolbarCollection;
 
 	firstInFocus() {

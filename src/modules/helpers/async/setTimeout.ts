@@ -26,6 +26,7 @@ export const setTimeout = <T1, T2, T3>(
     if (!timeout) {
         callback.call(null, a1, a2, a3);
     } else {
+        // @ts-ignore
         return window.setTimeout.call(window, callback, timeout, a1, a2, a3);
     }
 

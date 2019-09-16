@@ -17,6 +17,7 @@ import { Attributes, Children, ICreate } from '../types/create';
 
 export class Create implements ICreate {
 	private doc: Document;
+	// @ts-ignore
 	public inside: Create;
 
 	constructor(ownerDocument: Document, editorDocument?: Document | null) {

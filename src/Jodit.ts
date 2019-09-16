@@ -1106,6 +1106,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 				return;
 			}
 
+			// @ts-ignore
 			const opt = this.options;
 
 			if (
@@ -1113,6 +1114,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 				opt.uploader &&
 				(opt.uploader.url || opt.uploader.insertImageAsBase64URI)
 			) {
+				// @ts-ignore
 				this.uploader.bind(this.editor);
 			}
 

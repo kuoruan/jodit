@@ -81,11 +81,13 @@ export class Dialog extends View {
 	/**
 	 * @property {HTMLDivElement} resizer
 	 */
+	// @ts-ignore
 	private resizer: HTMLDivElement;
+	// @ts-ignore
 	public toolbar: ToolbarCollection;
 
-	private offsetX: number;
-	private offsetY: number;
+	private offsetX: number = 0;
+	private offsetY: number = 0;
 
 	private destination: HTMLElement = document.body;
 	private destroyAfterClose: boolean = false;
@@ -276,16 +278,22 @@ export class Dialog extends View {
 		}
 	}
 
+	// @ts-ignore
 	public options: IDialogOptions;
 
 	/**
 	 * @property {HTMLDivElement} dialog
 	 */
+	// @ts-ignore
 	public dialog: HTMLDivElement;
 
+	// @ts-ignore
 	public dialogbox_header: HTMLHeadingElement;
+	// @ts-ignore
 	public dialogbox_content: HTMLDivElement;
+	// @ts-ignore
 	public dialogbox_footer: HTMLDivElement;
+	// @ts-ignore
 	public dialogbox_toolbar: HTMLDivElement;
 
 	public document: Document = document;

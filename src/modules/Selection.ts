@@ -1196,7 +1196,7 @@ export class Select {
 
 			$$('*[data-font-size]', this.area).forEach((elm: HTMLElement) => {
 				if (elm.style && elm.getAttribute('data-font-size')) {
-					elm.style.fontSize = elm.getAttribute('data-font-size');
+					elm.style.fontSize = elm.getAttribute('data-font-size') || "";
 					elm.removeAttribute('data-font-size');
 				}
 			});

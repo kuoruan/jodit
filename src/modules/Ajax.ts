@@ -101,6 +101,7 @@ Config.prototype.defaultAjaxOptions = {
 } as AjaxOptions;
 
 export class Ajax {
+	// @ts-ignore
 	private readonly xhr: XMLHttpRequest;
 
 	private success_response_codes = [200, 201, 202];
@@ -142,8 +143,8 @@ export class Ajax {
 
 		return str.join('&');
 	}
-	public status: number;
-	public response: string;
+	public status: number = 0;
+	public response: string = "";
 
 	public options: AjaxOptions;
 	public jodit: IViewBased;

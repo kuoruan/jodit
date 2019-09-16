@@ -87,9 +87,10 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 		onlyImages: false
 	});
 
+	// @ts-ignore
 	dataProvider: IFileBrowserDataProvider;
 
-	private statusTimer: number;
+	private statusTimer: number = 0;
 
 	async loadItems(
 		path: string = this.dataProvider.currentPath,
@@ -280,16 +281,20 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 		}
 	};
 
+	// @ts-ignore
 	options: IFileBrowserOptions;
 
+	// @ts-ignore
 	dialog: Dialog;
 
 	/**
 	 * Container for set/get value
 	 * @type {Storage}
 	 */
+	// @ts-ignore
 	storage: Storage;
 
+	// @ts-ignore
 	uploader: IUploader;
 
 	/**
@@ -1079,6 +1084,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 		) as IFileBrowserOptions;
 
 		self.storage = new Storage(
+			// @ts-ignore
 			this.options.filebrowser.saveStateInStorage ? new LocalStorageProvider() : new MemoryStorageProvider()
 		);
 
@@ -1126,8 +1132,10 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 
 		self.stateToView();
 
+		// @ts-ignore
 		const view = this.storage.get(F_CLASS + '_view');
 
+		// @ts-ignore
 		if (view && this.options.view === null) {
 			self.state.view = view === 'list' ? 'list' : 'tiles';
 		} else {

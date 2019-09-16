@@ -13,6 +13,7 @@ import { isJoditObject } from './helpers/checker/isJoditObject';
 
 export abstract class Component<T extends IViewBased = IViewBased>
 	implements IComponent<T> {
+	// @ts-ignore
 	public jodit: T;
 
 	private __isDestructed = false;

@@ -46,6 +46,7 @@ export class Config implements IViewOptions {
 	 */
 	iframe: boolean = false;
 
+	// @ts-ignore
 	commandToHotkeys: IDictionary<string | string[]>;
 
 	license: string = '';
@@ -769,6 +770,7 @@ export class Config implements IViewOptions {
 	/**
 	 * Behavior for buttons
 	 */
+	// @ts-ignore
 	controls: Controls;
 
 	events: IDictionary<(...args: any[]) => any> = {};

@@ -56,6 +56,7 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 
 	private __actived: boolean = false;
 
+	// @ts-ignore
 	private tooltip: ToolbarTooltip;
 
 	readonly control: IControlTypeStrong;

@@ -40,7 +40,9 @@ Config.prototype.observer = {
  * @params {Jodit} parent Jodit main object
  */
 export class Observer extends Component<IJodit> {
+	// @ts-ignore
 	private __startValue: SnapshotType;
+	// @ts-ignore
 	private __newValue: SnapshotType;
 
 	private onChangeStack = () => {

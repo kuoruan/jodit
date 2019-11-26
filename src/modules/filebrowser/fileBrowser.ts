@@ -29,7 +29,6 @@ import {
 import { IDictionary, ImageEditorActionBox } from '../../types/types';
 import { IUploader, IUploaderOptions } from '../../types/uploader';
 import { ImageEditor } from '../ImageEditor';
-import { LocalStorageProvider } from '../storage/localStorageProvider';
 import { Storage } from '../storage/storage';
 import { each } from '../helpers/each';
 import { normalizePath } from '../helpers/normalize/';
@@ -38,7 +37,7 @@ import { ctrlKey } from '../helpers/ctrlKey';
 import { extend } from '../helpers/extend';
 import { setTimeout } from '../helpers/async/setTimeout';
 import { ViewWithToolbar } from '../view/viewWithToolbar';
-import { IJodit } from '../../types';
+import { IJodit, IStorage } from '../../types';
 import './config';
 import { Dom } from '../Dom';
 import { debounce } from '../helpers/async';
@@ -47,13 +46,8 @@ import DataProvider from './dataProvider';
 import contextMenu from './builders/contextMenu';
 import { ObserveObject } from '../events/observeObject';
 import { FileBrowserItem } from './builders/item';
-import { MemoryStorageProvider } from '../storage/memoryStorageProvider';
 import { isValidName } from '../helpers/checker/isValidName';
-
-export const F_CLASS = 'jodit_filebrowser';
-
-export const ITEM_CLASS = F_CLASS + '_files_item';
-export const ICON_LOADER = '<i class="jodit_icon-loader"></i>';
+import { F_CLASS, ICON_LOADER, ITEM_CLASS } from './consts';
 
 const
 	DEFAULT_SOURCE_NAME = 'default',
@@ -130,7 +124,10 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 	async loadTree(): Promise<any> {
 		const
 			path: string = this.dataProvider.currentPath,
-			source: string = this.dataProvider.currentSource;
+			source: string = this.dataProvider.currentSource,
+			error = (e: string | Error) => {
+				throw (e instanceof Error ? e : new Error(e));
+			};
 
 		if (this.uploader) {
 			this.uploader.setPath(path);
@@ -159,15 +156,18 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 						this.generateFolderTree(respData.data.sources);
 					}
 				})
-				.catch(() => {
+				.catch((e) => {
 					this.errorHandler(
 						new Error(this.jodit.i18n('Error on load folders'))
 					);
+
+					error(e);
 				});
 
 			const items = this.loadItems(path, source);
 
-			return Promise.all([tree, items]);
+			return Promise.all([tree, items]).catch(error);
+
 		} else {
 			this.tree.classList.remove('active');
 		}
@@ -289,10 +289,9 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 
 	/**
 	 * Container for set/get value
-	 * @type {Storage}
 	 */
 	// @ts-ignore
-	storage: Storage;
+	storage: IStorage;
 
 	// @ts-ignore
 	uploader: IUploader;
@@ -373,7 +372,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 	): Promise<void> => {
 		this.state.onlyImages = onlyImages;
 
-		return new Promise(resolve => {
+		return new Promise((resolve, reject) => {
 			if (!this.options.items || !this.options.items.url) {
 				throw new Error('Need set options.filebrowser.ajax.url');
 			}
@@ -412,7 +411,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 
 			this.events.fire('sort.filebrowser', this.state.sortBy);
 
-			this.loadTree().then(resolve);
+			this.loadTree().then(resolve, reject);
 		});
 	};
 
@@ -719,8 +718,8 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 					Promt(
 						self.i18n('Enter new name'),
 						self.i18n('Rename'),
-						(newname: string) => {
-							if (!isValidName(newname)) {
+						(newName: string): false | void => {
+							if (!isValidName(newName)) {
 								self.status(self.i18n('Enter new name'));
 								return false;
 							}
@@ -729,7 +728,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 								.fileRename(
 									path,
 									name,
-									newname,
+									newName,
 									source
 								)
 								.then(resp => {
@@ -841,8 +840,8 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 					Promt(
 						self.i18n('Enter new name'),
 						self.i18n('Rename'),
-						(newname: string) => {
-							if (!isValidName(newname)) {
+						(newName: string): false | void => {
+							if (!isValidName(newName)) {
 								self.status(self.i18n('Enter new name'));
 								return false;
 							}
@@ -851,7 +850,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 								.folderRename(
 									path,
 									a.getAttribute('data-name') || '',
-									newname,
+									newName,
 									a.getAttribute('data-source') || ''
 								)
 								.then(resp => {
@@ -995,7 +994,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 			.on(
 				self.files,
 				'click',
-				function(this: HTMLElement, e: MouseEvent) {
+				function(this: HTMLElement, e: MouseEvent): false | void {
 					const
 						item = self.elementToItem(this);
 
@@ -1040,11 +1039,9 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 				{},
 				Config.defaultOptions.uploader,
 				self.options.uploader,
-				editor && editor.options && editor.options.uploader !== null
-					? {
-						...(editor.options.uploader as IUploaderOptions<IUploader>)
-					}
-					: {}
+				{
+					...(editor?.options?.uploader as IUploaderOptions<IUploader>)
+				}
 			) as IUploaderOptions<IUploader>;
 
 		const uploadHandler = () => {
@@ -1079,14 +1076,11 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 				self.options,
 				Config.defaultOptions.filebrowser,
 				options,
-				editor ? editor.options.filebrowser : void 0
+				editor ? editor.options.filebrowser : undefined
 			)
 		) as IFileBrowserOptions;
 
-		self.storage = new Storage(
-			// @ts-ignore
-			this.options.filebrowser.saveStateInStorage ? new LocalStorageProvider() : new MemoryStorageProvider()
-		);
+		self.storage = Storage.makeStorage(this.options.filebrowser.saveStateInStorage);
 
 		self.dataProvider = new DataProvider(self.options, self.jodit || self);
 		self.dialog = new Dialog(editor || self, {
@@ -1143,11 +1137,12 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 		}
 
 
-		const sortBy = self.storage.get(F_CLASS + '_sortby');
+		const sortBy = self.storage.get<string>(F_CLASS + '_sortby');
 
 		if (sortBy) {
 			const parts = sortBy.split('-');
 			self.state.sortBy = ['changed', 'name', 'size'].includes(parts[0]) ? sortBy : 'changed-desc';
+
 		} else {
 			self.state.sortBy = self.options.sortBy || 'changed-desc';
 		}

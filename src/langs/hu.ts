@@ -231,4 +231,8 @@ export default {
 	'Enter new name': 'Adja meg az új nevet',
 	preview: 'előnézet',
 	download: 'Letöltés',
+	'Paste from clipboard': 'Illessze be a vágólap',
+	'Your browser doesn\'t support direct access to the clipboard.': 'A böngésző nem támogatja a közvetlen hozzáférést biztosít a vágólapra.',
+	'Copy selection': 'Másolás kiválasztása',
+	'copy': 'másolás',
 } as IDictionary<string>;

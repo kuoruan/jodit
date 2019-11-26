@@ -81,8 +81,10 @@ export namespace Widget {
 						')';
 				}
 			},
+
 			eachColor = (colors: string[] | IDictionary<string[]>) => {
 				const stack: string[] = [];
+
 				if (isPlainObject(colors)) {
 					Object.keys(colors).forEach(key => {
 						stack.push(
@@ -93,6 +95,7 @@ export namespace Widget {
 						stack.push(eachColor((colors as any)[key]));
 						stack.push('</div>');
 					});
+
 				} else if (Array.isArray(colors)) {
 					colors.forEach(color => {
 						stack.push(
@@ -250,16 +253,14 @@ export namespace Widget {
 				tab: HTMLElement;
 			}> = {};
 
-		let
-			firstTab: string = '',
+		let firstTab: string = '',
 			tabcount: number = 0;
 
 		box.appendChild(buttons);
 		box.appendChild(tabBox);
 
 		each<(() => void) | HTMLElement>(tabs, (name: string, tabOptions) => {
-			const
-				tab = editor.create.div('jodit_tab'),
+			const tab = editor.create.div('jodit_tab'),
 				button = editor.create.element('a', {
 					href: 'javascript:void(0);'
 				});
@@ -268,7 +269,9 @@ export namespace Widget {
 				firstTab = name.toString();
 			}
 
-			button.innerHTML = /<svg/.test(name.toString()) ? name : editor.i18n(name.toString());
+			button.innerHTML = /<svg/.test(name.toString())
+				? name
+				: editor.i18n(name.toString());
 			buttons.appendChild(button);
 
 			if (typeof tabOptions !== 'function') {
@@ -398,23 +401,22 @@ export namespace Widget {
 		) {
 			const dragbox: HTMLElement = editor.create.fromHTML(
 				'<div class="jodit_draganddrop_file_box">' +
-					'<strong>' +
-					editor.i18n(isImage ? 'Drop image' : 'Drop file') +
-					'</strong>' +
-					'<span><br> ' +
-					editor.i18n('or click') +
-					'</span>' +
-					'<input type="file" accept="' +
-					(isImage ? 'image/*' : '*') +
-					'image/*" tabindex="-1" dir="auto" multiple=""/>' +
+					`<strong>${editor.i18n(
+						isImage ? 'Drop image' : 'Drop file'
+					)}</strong>` +
+					`<span><br>${editor.i18n('or click')}</span>` +
+					`<input type="file" accept="${
+						isImage ? 'image/*' : '*'
+					}" tabindex="-1" dir="auto" multiple=""/>` +
 					'</div>'
 			);
 
 			editor.getInstance<IUploader>('Uploader').bind(
 				dragbox,
 				(resp: IUploaderData) => {
-					if (typeof callbacks.upload === 'function') {
-						callbacks.upload.call(editor, {
+					let handler = editor.options.uploader.defaultHandlerSuccess || callbacks.upload
+					if (typeof handler === 'function') {
+						handler.call(editor, {
 							baseurl: resp.baseurl,
 							files: resp.files
 						} as IFileBrowserCallBackData);
@@ -480,7 +482,7 @@ export namespace Widget {
 				currentImage = elm.tagName === 'IMG' ? elm : $$('img', elm)[0];
 				val(form, 'input[name=url]', currentImage.getAttribute('src'));
 				val(form, 'input[name=text]', currentImage.getAttribute('alt'));
-				button.innerText = editor.i18n('Update');
+				button.textContent = editor.i18n('Update');
 			}
 
 			if (
@@ -490,7 +492,7 @@ export namespace Widget {
 			) {
 				val(form, 'input[name=url]', elm.getAttribute('href') || '');
 				val(form, 'input[name=text]', elm.getAttribute('title') || '');
-				button.innerText = editor.i18n('Update');
+				button.textContent = editor.i18n('Update');
 			}
 
 			form.addEventListener(

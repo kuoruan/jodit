@@ -229,4 +229,8 @@ export default {
 	preview: 'náhled',
 	download: 'Stažení',
 
+	'Paste from clipboard': 'Vložit ze schránky',
+	'Your browser doesn\'t support direct access to the clipboard.': 'Váš prohlížeč nepodporuje přímý přístup do schránky.',
+	'Copy selection': 'Kopírovat výběr',
+	'copy': 'kopírování',
 } as IDictionary<string>;

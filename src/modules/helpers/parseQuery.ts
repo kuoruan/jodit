@@ -11,17 +11,16 @@ import { IDictionary } from '../../types';
 
 /**
  * Parse query string
- *
  */
 export const parseQuery = (queryString: string): IDictionary<string> => {
 	const query: IDictionary<string> = {},
-		a: string[] = queryString.substr(1).split('&');
-	let keyvalue: string[];
+		a = queryString.substr(1).split('&');
+
 
 	for (let i = 0; i < a.length; i += 1) {
-		keyvalue = a[i].split('=');
-		query[decodeURIComponent(keyvalue[0])] = decodeURIComponent(
-			keyvalue[1] || ''
+		const keyValue = a[i].split('=');
+		query[decodeURIComponent(keyValue[0])] = decodeURIComponent(
+			keyValue[1] || ''
 		);
 	}
 

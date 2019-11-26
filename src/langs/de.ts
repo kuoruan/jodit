@@ -230,4 +230,8 @@ export default {
 	'Enter new name': 'Geben Sie einen neuen Namen ein',
 	preview: 'Vorschau',
 	download: 'Herunterladen',
+	'Paste from clipboard': 'Aus der Zwischenablage einfügen',
+	'Your browser doesn\'t support direct access to the clipboard.': 'Ihr browser unterstützt kein direkter Zugriff auf die Zwischenablage.',
+	'Copy selection': 'Auswahl kopieren',
+	'copy': 'kopieren',
 } as IDictionary<string>;

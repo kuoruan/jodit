@@ -65,12 +65,18 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 	textBox: HTMLSpanElement;
 	anchor: HTMLAnchorElement;
 
+	/**
+	 * Button cannot be pressed
+	 */
 	isDisable(): boolean {
 		return Boolean(
 			this.parentToolbar && this.parentToolbar.buttonIsDisabled(this)
 		);
 	}
 
+	/**
+	 * Button is in active state (pressed)
+	 */
 	isActive(): boolean {
 		return Boolean(
 			this.parentToolbar && this.parentToolbar.buttonIsActive(this)
@@ -103,6 +109,7 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 			);
 
 			list.open(control);
+
 			this.jodit.events.fire('closeAllPopups', list.container);
 
 			this.anchor.setAttribute('aria-expanded', 'true');
@@ -135,7 +142,7 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 
 			if (
 				this.jodit.events.fire(
-					camelCase('before-' + control.name + '-OpenPopup'),
+					camelCase(`before-${control.name}-OpenPopup`),
 					getTarget(),
 					control,
 					popup
@@ -153,17 +160,19 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 					popup.open(popupElm);
 				}
 			}
+
 			/**
 			 * Fired after popup was opened for some control button
 			 * @event after{CONTROLNAME}OpenPopup
 			 */
+
 			/**
 			 * Close all opened popups
 			 *
 			 * @event closeAllPopups
 			 */
 			this.jodit.events.fire(
-				camelCase('after-' + control.name + '-OpenPopup') +
+				camelCase(`after-${control.name}-OpenPopup`) +
 				' closeAllPopups',
 				popup.container
 			);
@@ -175,6 +184,7 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 						(control.args && control.args[0]) || false,
 						(control.args && control.args[1]) || null
 					);
+
 				} else {
 					this.jodit.ownerDocument.execCommand(
 						control.command || control.name,
@@ -188,6 +198,9 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 		}
 	};
 
+	/**
+	 * Title text
+	 */
 	get tooltipText(): string {
 		if (!this.control.tooltip) {
 			return '';
@@ -197,6 +210,9 @@ export class ToolbarButton extends ToolbarElement implements IToolbarButton {
 			(this.control.hotkeys ? '<br>' + asArray(this.control.hotkeys).join(' ') : '');
 	}
 
+	/**
+	 * Focus on the button
+	 */
 	focus() {
 		this.anchor.focus();
 	}

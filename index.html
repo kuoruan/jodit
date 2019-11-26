@@ -67,16 +67,21 @@ cena quidem posse videamur?
 		</dl>
 	</div>
 </div>
-<a href="#section1">Click Me</a>
 <script src="./build/jodit.min.js"></script>
 <script>
 	const editor = new Jodit('#editor', {
 		// iframe: true,
 		// theme: 'dark',
+	  // "buttons": "bold,image,|,brush,paragraph,|,align,,undo,redo,|,eraser,test,dots",
+	  // "extraButtons": [{
+	  // 		name: 'test',
+		// 		icon: 'bold',
+		// 		exec: () => alert(111)
+		// }],
 		toolbarButtonSize: 'large',
 		height: 100,
 		tabIndex: 0,
-		language: 'ru',
+		// language: 'ru',
 		// textIcons: true,
 		uploader: {
 			url: 'https://xdsoft.net/jodit/connector/index.php?action=fileUpload'
@@ -118,6 +123,5 @@ cena quidem posse videamur?
 		position: relative;
 	}
 </style>
-	<button id="destruct" type="button">destruct</button>
 </body>
 </html>

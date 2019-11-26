@@ -7,11 +7,11 @@
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 
-import { KEY_DOWN, KEY_ENTER, KEY_UP, SPACE_REG_EXP } from '../constants';
-import { Dialog } from '../modules/dialog/dialog';
-import { Plugin } from '../modules/Plugin';
-import { Dom } from '../modules/Dom';
-import { setTimeout } from '../modules/helpers/async/setTimeout';
+import { KEY_DOWN, KEY_ENTER, KEY_UP, SPACE_REG_EXP } from '../../constants';
+import { Dialog } from '../../modules/dialog/dialog';
+import { Plugin } from '../../modules/Plugin';
+import { Dom } from '../../modules/Dom';
+import { setTimeout } from '../../modules/helpers/async/setTimeout';
 
 /**
  * Show dialog choose content to paste
@@ -26,12 +26,14 @@ export class pasteStorage extends Plugin {
 	private previewBox: HTMLElement | null = null;
 
 	private dialog: Dialog | null = null;
+
 	private paste = () => {
 		this.jodit.selection.focus();
 		this.jodit.selection.insertHTML(this.list[this.currentIndex]);
 
 		if (this.currentIndex !== 0) {
-			const buffer: string = this.list[0];
+			const buffer = this.list[0];
+
 			this.list[0] = this.list[this.currentIndex];
 			this.list[this.currentIndex] = buffer;
 		}
@@ -90,6 +92,7 @@ export class pasteStorage extends Plugin {
 
 		this.currentIndex = index;
 	};
+
 	private showDialog = () => {
 		if (this.list.length < 2) {
 			return;
@@ -107,7 +110,7 @@ export class pasteStorage extends Plugin {
 
 		this.list.forEach((html: string, index: number) => {
 			const a: HTMLElement = this.jodit.ownerDocument.createElement('a');
-			a.innerText = index + 1 + '. ' + html.replace(SPACE_REG_EXP, '');
+			a.textContent = index + 1 + '. ' + html.replace(SPACE_REG_EXP, '');
 
 			a.addEventListener('keydown', this.onKeyDown);
 
@@ -124,6 +127,7 @@ export class pasteStorage extends Plugin {
 			this.selectIndex(0);
 		}, 100);
 	};
+
 	private createDialog() {
 		this.dialog = new Dialog(this.jodit);
 

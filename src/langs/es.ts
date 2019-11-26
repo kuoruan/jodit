@@ -229,4 +229,8 @@ export default {
 	'Enter new name': 'Ingresa un nuevo nombre',
 	preview: 'avance',
 	download: 'Descargar',
+	'Paste from clipboard': 'Pegar desde el portapapeles',
+	'Your browser doesn\'t support direct access to the clipboard.': 'Su navegador no soporta el acceso directo en el portapapeles.',
+	'Copy selection': 'Selección de copia',
+	'copy': 'copia',
 } as IDictionary<string>;

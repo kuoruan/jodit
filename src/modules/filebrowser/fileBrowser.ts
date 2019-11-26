@@ -1080,6 +1080,7 @@ export class FileBrowser extends ViewWithToolbar implements IFileBrowser {
 			)
 		) as IFileBrowserOptions;
 
+		// @ts-ignore
 		self.storage = Storage.makeStorage(this.options.filebrowser.saveStateInStorage);
 
 		self.dataProvider = new DataProvider(self.options, self.jodit || self);

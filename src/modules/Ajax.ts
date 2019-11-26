@@ -71,6 +71,7 @@ Config.prototype.defaultAjaxOptions = {
 export class Ajax implements IAjax {
 	static log: IRequest[] = [];
 
+	// @ts-ignore
 	private readonly xhr: XMLHttpRequest;
 
 	private success_response_codes = [200, 201, 202];
@@ -97,8 +98,10 @@ export class Ajax implements IAjax {
 		return buildQuery(obj);
 	}
 
+	// @ts-ignore
 	status: number;
 
+	// @ts-ignore
 	response: string;
 
 	options: AjaxOptions;

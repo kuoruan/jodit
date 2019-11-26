@@ -14137,6 +14137,7 @@ var FileBrowser = /** @class */ (function (_super) {
             _this.id = editor.id;
         }
         self.options = new Config_1.OptionsDefault(extend_1.extend(true, {}, self.options, Config_1.Config.defaultOptions.filebrowser, options, editor ? editor.options.filebrowser : undefined));
+        // @ts-ignore
         self.storage = storage_1.Storage.makeStorage(_this.options.filebrowser.saveStateInStorage);
         self.dataProvider = new dataProvider_1.default(self.options, self.jodit || self);
         self.dialog = new dialog_1.Dialog(editor || self, {

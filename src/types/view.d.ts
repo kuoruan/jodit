@@ -8,12 +8,32 @@
  */
 
 import { Buttons, Controls, IToolbarCollection } from './toolbar';
-import { IComponent } from './types';
+import { IComponent, IDictionary } from './types';
 import { ICreate } from './create';
 import { IEventsNative } from './events';
 import { IStorage } from './storage';
 
-interface IViewOptions {
+interface ILanguageOptions {
+	language?: string;
+	debugLanguage?: boolean;
+	i18n?: IDictionary<IDictionary<string>> | false;
+}
+
+interface IToolbarOptions {
+	toolbarButtonSize?: 'small' | 'middle' | 'large'
+	textIcons?: boolean;
+
+	removeButtons: string[];
+	buttons: Buttons;
+
+	showTooltip?: boolean;
+	showTooltipDelay?: number;
+	useNativeTooltip?: boolean;
+
+	direction?: string;
+}
+
+interface IViewOptions extends ILanguageOptions, IToolbarOptions {
 	disabled?: boolean;
 	readonly?: boolean;
 	iframe?: boolean;
@@ -22,16 +42,10 @@ interface IViewOptions {
 
 	allowTabNavigation?: boolean;
 
-	removeButtons: string[];
-	buttons: Buttons;
 	zIndex?: number;
 	fullsize?: boolean;
 	globalFullsize?: boolean;
-	showTooltip?: boolean;
-	showTooltipDelay?: number;
-	useNativeTooltip?: boolean;
-	textIcons?: boolean;
-	direction?: string;
+
 	controls?: Controls;
 }
 

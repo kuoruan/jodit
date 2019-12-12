@@ -15,11 +15,9 @@ import {
 	asArray,
 	css,
 	debounce,
-	defaultLanguage,
 	inArray,
 	normalizeKeyAliases,
-	splitArray,
-	sprintf
+	splitArray
 } from './modules/helpers/';
 import { JoditArray } from './modules/helpers/JoditArray';
 import { JoditObject } from './modules/helpers/JoditObject';
@@ -38,9 +36,7 @@ import {
 } from './types';
 
 import { ViewWithToolbar } from './modules/view/viewWithToolbar';
-import { IJodit } from './types/jodit';
-import { IFileBrowser, IUploader } from './types';
-import { ucfirst } from './modules/helpers/string/ucfirst';
+import { IJodit, IFileBrowser, IUploader } from './types/';
 
 const SAFE_COUNT_CHANGE_CALL = 10;
 
@@ -75,21 +71,50 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			: Jodit.defaultOptions.observer.timeout;
 	}
 
+	/**
+	 * Method wrap usual Array in Object helper for prevent deep array merging in options
+	 *
+	 * @param array
+	 * @constructor
+	 */
 	static Array(array: any[]): JoditArray {
 		return new JoditArray(array);
 	}
 
+	/**
+	 * Method wrap usual Has Object in Object helper for prevent deep object merging in options*
+	 *
+	 * @param object
+	 * @constructor
+	 */
 	static Object(object: any): JoditObject {
 		return new JoditObject(object);
 	}
 
+	/**
+	 * Emits events in all instances
+	 *
+	 * @param events
+	 * @param args
+	 */
 	static fireEach(events: string, ...args: any[]) {
-		Object.keys(Jodit.instances).forEach((key: string) => {
+		Object.keys(Jodit.instances).forEach((key) => {
 			const editor: Jodit = Jodit.instances[key];
+
 			if (!editor.isDestructed && editor.events) {
 				editor.events.fire(events, ...args);
 			}
 		});
+	}
+
+	/**
+	 * Fabric for creating Jodit instance
+	 *
+	 * @param element
+	 * @param options
+	 */
+	static make(element: HTMLInputElement | string, options?: object): Jodit {
+		return new Jodit(element, options);
 	}
 
 	static defaultOptions: Config;
@@ -122,6 +147,11 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	 * @type {Storage}
 	 */
 	storage = Storage.makeStorage(true, this.id);
+
+	/**
+	 * Editor has focus in this time
+	 */
+	editorIsActive: boolean = false;
 
 	/**
 	 * workplace It contains source and wysiwyg editors
@@ -746,100 +776,6 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	}
 
 	/**
-	 * Internationalization method. Uses Jodit.lang object
-	 *
-	 * @param {string} key Some text
-	 * @param {string[]} params Some text
-	 * @return {string}
-	 * @example
-	 * ```javascript
-	 * var editor = new Jodit("#redactor", {
-	 *      langusage: 'ru'
-	 * });
-	 * console.log(editor.i18n('Cancel')) //Отмена;
-	 *
-	 * Jodit.defaultOptions.language = 'ru';
-	 * console.log(Jodit.prototype.i18n('Cancel')) //Отмена
-	 *
-	 * Jodit.lang.cs = {
-	 *    Cancel: 'Zrušit'
-	 * };
-	 * Jodit.defaultOptions.language = 'cs';
-	 * console.log(Jodit.prototype.i18n('Cancel')) //Zrušit
-	 *
-	 * Jodit.lang.cs = {
-	 *    'Hello world': 'Hello \s Good \s'
-	 * };
-	 * Jodit.defaultOptions.language = 'cs';
-	 * console.log(Jodit.prototype.i18n('Hello world', 'mr.Perkins', 'day')) //Hello mr.Perkins Good day
-	 * ```
-	 */
-	i18n(key: string, ...params: Array<string | number>): string {
-		const debug: boolean =
-			this.options !== undefined && this.options.debugLanguage;
-
-		let store: IDictionary;
-
-		const parse = (value: string): string =>
-				params.length
-					? sprintf.apply(this, [value].concat(params as string[]))
-					: value,
-			default_language: string =
-				Config.defaultOptions.language === 'auto'
-					? defaultLanguage(Config.defaultOptions.language)
-					: Config.defaultOptions.language,
-			language: string = defaultLanguage(
-				this.options ? this.options.language : default_language
-			);
-
-		if (this.options !== undefined && Jodit.lang[language] !== undefined) {
-			store = Jodit.lang[language];
-		} else {
-			if (Jodit.lang[default_language] !== undefined) {
-				store = Jodit.lang[default_language];
-			} else {
-				store = Jodit.lang.en;
-			}
-		}
-
-		if (
-			this.options !== undefined &&
-			(this.options.i18n as any)[language] !== undefined &&
-			(this.options.i18n as any)[language][key]
-		) {
-			return parse((this.options.i18n as any)[language][key]);
-		}
-
-		if (typeof store[key] === 'string' && store[key]) {
-			return parse(store[key]);
-		}
-
-		const lckey = key.toLowerCase();
-		if (typeof store[lckey] === 'string' && store[lckey]) {
-			return parse(store[lckey]);
-		}
-
-		const ucfkey = ucfirst(key);
-		if (typeof store[ucfkey] === 'string' && store[ucfkey]) {
-			return parse(store[ucfkey]);
-		}
-
-		if (debug) {
-			return '{' + key + '}';
-		}
-
-		if (typeof Jodit.lang.en[key] === 'string' && Jodit.lang.en[key]) {
-			return parse(Jodit.lang.en[key]);
-		}
-
-		if (process.env.NODE_ENV !== 'production' && language !== 'en') {
-			throw new Error(`i18n need "${key}" in "${language}"`);
-		}
-
-		return parse(key);
-	}
-
-	/**
 	 * Switch on/off the editor into the disabled state.
 	 * When in disabled, the user is not able to change the editor content
 	 * This function firing the `disabled` event.
@@ -915,6 +851,42 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	}
 
 	/**
+	 * Try to find element by selector
+	 * @param element
+	 */
+	private resolveElement(element: string | HTMLElement): HTMLElement {
+		let resolved = element;
+
+		if (typeof element === 'string') {
+			try {
+				resolved = this.ownerDocument.querySelector(
+					element
+				) as HTMLInputElement;
+			} catch {
+				throw new Error(
+					'String "' + element + '" should be valid HTML selector'
+				);
+			}
+		}
+
+		// Duck checking
+		if (
+			!resolved ||
+			typeof resolved !== 'object' ||
+			resolved.nodeType !== Node.ELEMENT_NODE ||
+			!resolved.cloneNode
+		) {
+			throw new Error(
+				'Element "' +
+				element +
+				'" should be string or HTMLElement instance'
+			);
+		}
+
+		return resolved;
+	}
+
+	/**
 	 * Create instance of Jodit
 	 * @constructor
 	 *
@@ -933,33 +905,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 		this.ownerDocument = this.options.ownerDocument;
 		this.ownerWindow = this.options.ownerWindow;
 
-		if (typeof element === 'string') {
-			try {
-				this.element = this.ownerDocument.querySelector(
-					element
-				) as HTMLInputElement;
-			} catch {
-				throw new Error(
-					'String "' + element + '" should be valid HTML selector'
-				);
-			}
-		} else {
-			this.element = element;
-		}
-
-		// Duck checking
-		if (
-			!this.element ||
-			typeof this.element !== 'object' ||
-			this.element.nodeType !== Node.ELEMENT_NODE ||
-			!this.element.cloneNode
-		) {
-			throw new Error(
-				'Element "' +
-					element +
-					'" should be string or HTMLElement instance'
-			);
-		}
+		this.element = this.resolveElement(element);
 
 		if (this.element.attributes) {
 			Array.from(this.element.attributes).forEach((attr: Attr) => {
@@ -1033,37 +979,13 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			this.element.style.display = 'none';
 		}
 
-		this.container.classList.add(
-			'jodit_' + (this.options.theme || 'default') + '_theme'
-		);
-
-		if (this.options.zIndex) {
-			this.container.style.zIndex = parseInt(
-				this.options.zIndex.toString(),
-				10
-			).toString();
-		}
+		this.applyOptionsToToolbarContainer(this.container);
 
 		this.workplace = this.create.div('jodit_workplace', {
 			contenteditable: false
 		});
 
-		if (this.options.toolbar) {
-			this.toolbar.build(
-				splitArray(this.options.buttons).concat(
-					this.options.extraButtons
-				),
-				this.container
-			);
-		}
-
-		const bs = this.options.toolbarButtonSize.toLowerCase();
-		this.container.classList.add(
-			'jodit_toolbar_size-' +
-				(['middle', 'large', 'small'].indexOf(bs) !== -1
-					? bs
-					: 'middle')
-		);
+		this.makeToolbar();
 
 		if (this.options.textIcons) {
 			this.container.classList.add('jodit_text_icons');
@@ -1135,6 +1057,49 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 
 			await this.afterInitHook();
 		})();
+	}
+
+	private makeToolbar() {
+		if (!this.options.toolbar) {
+			return;
+		}
+
+		let toolbarContainer: HTMLElement = this.create.div('jodit_toolbar_container');
+		this.container.appendChild(toolbarContainer);
+
+		if (this.options.toolbar instanceof HTMLElement || typeof this.options.toolbar === 'string') {
+			toolbarContainer = this.resolveElement(this.options.toolbar);
+		}
+
+		this.applyOptionsToToolbarContainer(toolbarContainer);
+
+		this.toolbar.build(
+			splitArray(this.options.buttons).concat(
+				this.options.extraButtons
+			),
+			toolbarContainer
+		);
+
+		const bs = this.options.toolbarButtonSize.toLowerCase();
+		toolbarContainer.classList.add(
+			'jodit_toolbar_size-' +
+			(['middle', 'large', 'small'].indexOf(bs) !== -1
+				? bs
+				: 'middle')
+		);
+	}
+
+	private applyOptionsToToolbarContainer(element: HTMLElement) {
+		element.classList.add(
+			'jodit_' + (this.options.theme || 'default') + '_theme'
+		);
+
+		if (this.options.zIndex) {
+			element.style.zIndex = parseInt(
+				this.options.zIndex.toString(),
+				10
+			).toString();
+		}
 	}
 
 	isInited: boolean = false;
@@ -1251,6 +1216,8 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			.on('synchro', () => {
 				this.setEditorValue();
 			})
+			.on('focus', () => this.editorIsActive = true)
+			.on('blur', () => this.editorIsActive = false)
 			.on(
 				this.editor,
 				'selectionchange selectionstart keydown keyup keypress mousedown mouseup mousepress ' +

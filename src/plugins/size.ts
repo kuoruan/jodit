@@ -63,10 +63,12 @@ export function size(editor: IJodit) {
 		editor.events
 			.on(handle, 'mousedown touchstart', (e: MouseEvent) => {
 				isResized = true;
+
 				start.x = e.clientX;
 				start.y = e.clientY;
 				start.w = editor.container.offsetWidth;
 				start.h = editor.container.offsetHeight;
+
 				editor.lock();
 				e.preventDefault();
 			})
@@ -105,7 +107,7 @@ export function size(editor: IJodit) {
 
 	const getNotWorkHeight = (): number =>
 		(editor.options.toolbar ? editor.toolbar.container.offsetHeight : 0) +
-		(editor.statusbar ? editor.statusbar.container.offsetHeight : 0);
+		(editor.statusbar ? editor.statusbar.getHeight() : 0);
 
 	const calcMinHeightWorkspace = () => {
 		if (!editor.container || !editor.container.parentNode) {

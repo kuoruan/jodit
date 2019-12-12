@@ -288,7 +288,7 @@ interface IToolbarCollection extends IComponent {
 
 	clear(): void;
 
-	immedateCheckActiveButtons: () => void;
+	immediateCheckActiveButtons: () => void;
 
 	buttonIsActive(button: IToolbarButton): boolean | void;
 
@@ -307,4 +307,13 @@ interface IToolbarCollection extends IComponent {
 	setDirection(direction: 'rtl' | 'ltr'): void;
 
 	destruct(): void;
+
+	getParentContainer(): HTMLElement;
+}
+
+export interface IStatusBar {
+	show(): void;
+	hide(): void;
+	getHeight(): number;
+	append(el: HTMLElement, inTheRight?: boolean): void;
 }

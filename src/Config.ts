@@ -350,7 +350,7 @@ export class Config implements IViewOptions {
 	 * console.log(editor.i18n('Type something')) //Начните что-либо вводить
 	 * ```
 	 */
-	i18n: IDictionary | string = 'en';
+	i18n: false = false;
 
 	/**
 	 * The tabindex global attribute is an integer indicating if the element can take
@@ -360,9 +360,10 @@ export class Config implements IViewOptions {
 	tabIndex: number = -1;
 
 	/**
-	 * Show toolbar
+	 * Boolean, whether the toolbar should be shown.
+	 * Alternatively, a valid css-selector-string to use an element as toolbar container.
 	 */
-	toolbar: boolean = true;
+	toolbar: boolean | string | HTMLElement = true;
 
 	/**
 	 * Show tooltip after mouse enter on the button
@@ -964,21 +965,10 @@ Config.prototype.controls = {
 								);
 							}
 						}
-						close();
-					},
-					upload: async (data: IFileBrowserCallBackData) => {
-						if (data.files && data.files.length) {
-							for (let i = 0; i < data.files.length; i += 1) {
-								await editor.selection.insertImage(
-									data.baseurl + data.files[i],
-									null,
-									editor.options.imageDefaultWidth
-								);
-							}
-						}
 
 						close();
 					},
+					upload: true,
 					url: async (url: string, text: string) => {
 						const image: HTMLImageElement =
 							sourceImage || editor.create.inside.element('img');
@@ -1055,15 +1045,7 @@ Config.prototype.controls = {
 						}
 						close();
 					},
-					upload: (data: IFileBrowserCallBackData) => {
-						let i;
-						if (data.files && data.files.length) {
-							for (i = 0; i < data.files.length; i += 1) {
-								insert(data.baseurl + data.files[i]);
-							}
-						}
-						close();
-					},
+					upload: true,
 					url: (url: string, text: string) => {
 						if (sourceAnchor) {
 							sourceAnchor.setAttribute('href', url);
@@ -1084,19 +1066,22 @@ Config.prototype.controls = {
 	} as IControlType,
 	video: {
 		popup: (editor: IJodit, current, control, close) => {
-			const bylink: HTMLFormElement = editor.create.fromHTML(
+			const bylink = editor.create.fromHTML(
+	`<form class="jodit_form">
+					<div class="jodit jodit_form_group">
+						<input class="jodit_input" required name="code" placeholder="http://" type="url"/>
+						<button class="jodit_button" type="submit">${editor.i18n('Insert')}</button>
+					</div>
+				</form>`) as HTMLFormElement,
+				bycode = editor.create.fromHTML(
 					`<form class="jodit_form">
-												<input required name="code" placeholder="http://" type="url"/>
-												<button type="submit">${editor.i18n('Insert')}</button>
-												</form>`
-				) as HTMLFormElement,
-				bycode: HTMLFormElement = editor.create.fromHTML(
-					`<form class="jodit_form">
-												<textarea required name="code" placeholder="${editor.i18n(
-													'Embed code'
-												)}"></textarea>
-												<button type="submit">${editor.i18n('Insert')}</button>
-												</form>`
+									<div class="jodit_form_group">
+										<textarea class="jodit_textarea" required name="code" placeholder="${editor.i18n(
+											'Embed code'
+										)}"></textarea>
+										<button class="jodit_button" type="submit">${editor.i18n('Insert')}</button>
+									</div>
+								</form>`
 				) as HTMLFormElement,
 				tab: IDictionary<HTMLFormElement> = {},
 				selinfo = editor.selection.save(),

@@ -7,26 +7,26 @@
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 
-import { default as ar } from './ar';
-import { default as cs_cz } from './cs_cz';
-import { default as de } from './de';
-import { default as es } from './es';
-import { default as fr } from './fr';
-import { default as he } from './he';
-import { default as hu } from './hu';
-import { default as id } from './id';
-import { default as it } from './it';
-import { default as nl } from './nl';
-import { default as pt_br } from './pt_br';
-import { default as ru } from './ru';
-import { default as tr } from './tr';
-import { default as zh_cn } from './zh_cn';
-import { default as zh_tw } from './zh_tw';
+import { IDictionary } from '../types';
 
-import { default as en } from './en';
+import ar from './ar';
+import cs_cz from './cs_cz';
+import de from './de';
+import es from './es';
+import fr from './fr';
+import he from './he';
+import hu from './hu';
+import id from './id';
+import it from './it';
+import nl from './nl';
+import pt_br from './pt_br';
+import ru from './ru';
+import tr from './tr';
+import zh_cn from './zh_cn';
+import zh_tw from './zh_tw';
+import en from './en';
 
-
-const exp: any = {
+const exp: IDictionary<IDictionary<string>> = {
 	ar,
 	de,
 	cs_cz,
@@ -46,23 +46,26 @@ const exp: any = {
 };
 
 /* Unpack array to hash */
-const hashLang: any = {};
+const
+	get = (value: IDictionary) => value.default || value,
+	hashLang: IDictionary = {};
 
-if (Array.isArray(en)) {
-	en.forEach((key: string, index: number) => {
+if (Array.isArray(get(en))) {
+	get(en).forEach((key: string, index: number) => {
 		hashLang[index] = key;
 	});
 }
 
 Object.keys(exp).forEach((lang: string) => {
-	const list: unknown = exp[lang];
+	const list: unknown = get(exp[lang]);
 
 	if (Array.isArray(list)) {
 		exp[lang] = {};
+
 		list.forEach((value: string, index: number) => {
 			exp[lang][hashLang[index]] = value;
 		});
 	}
 });
 
-export = exp;
+export default exp;

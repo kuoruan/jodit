@@ -24,6 +24,7 @@ import {
 	each,
 	hexToRgb,
 	isPlainObject,
+	isFunction,
 	normalizeColor,
 	val,
 	hasBrowserColorPicker
@@ -369,7 +370,7 @@ export namespace Widget {
 	interface ImageSelectorCallbacks {
 		url?: (this: IJodit, url: string, alt: string) => void;
 		filebrowser?: (data: IFileBrowserCallBackData) => void;
-		upload?: (this: IJodit, data: IFileBrowserCallBackData) => void;
+		upload?: ((this: IJodit, data: IFileBrowserCallBackData) => void) | true;
 	}
 
 	/**
@@ -399,7 +400,7 @@ export namespace Widget {
 			(editor.options.uploader.url ||
 				editor.options.uploader.insertImageAsBase64URI)
 		) {
-			const dragbox: HTMLElement = editor.create.fromHTML(
+			const dragbox = editor.create.fromHTML(
 				'<div class="jodit_draganddrop_file_box">' +
 					`<strong>${editor.i18n(
 						isImage ? 'Drop image' : 'Drop file'
@@ -414,11 +415,13 @@ export namespace Widget {
 			editor.getInstance<IUploader>('Uploader').bind(
 				dragbox,
 				(resp: IUploaderData) => {
-					let handler = editor.options.uploader.defaultHandlerSuccess || callbacks.upload
+					let handler = isFunction(callbacks.upload) ? callbacks.upload : editor.options.uploader.defaultHandlerSuccess;
+
 					if (typeof handler === 'function') {
 						handler.call(editor, {
 							baseurl: resp.baseurl,
-							files: resp.files
+							files: resp.files,
+							isImages: resp.isImages,
 						} as IFileBrowserCallBackData);
 					}
 				},
@@ -426,6 +429,7 @@ export namespace Widget {
 					editor.events.fire('errorMessage', error.message);
 				}
 			);
+
 			const icon = editor.options.textIcons
 				? ''
 				: ToolbarIcon.getIcon('upload');
@@ -452,23 +456,21 @@ export namespace Widget {
 		}
 
 		if (callbacks.url) {
-			const form: HTMLFormElement = editor.create.fromHTML(
-					'<form onsubmit="return false;" class="jodit_form">' +
-						'<input type="text" required name="url" placeholder="http://"/>' +
-						'<input type="text" name="text" placeholder="' +
-						editor.i18n('Alternative text') +
-						'"/>' +
-						'<div style="text-align: right">' +
-						'<button>' +
-						editor.i18n('Insert') +
-						'</button>' +
-						'</div>' +
-						'</form>'
+			const form = editor.create.fromHTML(
+		`<form onsubmit="return false;" class="jodit_form">
+						<div class="jodit_form_group">
+							<input class="jodit_input" type="text" required name="url" placeholder="http://"/>
+						</div>
+						<div class="jodit_form_group">
+							<input class="jodit_input" type="text" name="text" placeholder="${editor.i18n('Alternative text')}"/>
+						</div>
+						<div style="text-align: right"><button class="jodit_button">${editor.i18n('Insert')}</button></div>
+					</form>`
 				) as HTMLFormElement,
-				button: HTMLButtonElement = form.querySelector(
+				button = form.querySelector(
 					'button'
 				) as HTMLButtonElement,
-				url: HTMLInputElement = form.querySelector(
+				url = form.querySelector(
 					'input[name=url]'
 				) as HTMLInputElement;
 

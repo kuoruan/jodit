@@ -735,11 +735,13 @@ __webpack_require__.d(helpers_namespaceObject, "JoditObject", function() { retur
 __webpack_require__.d(helpers_namespaceObject, "asArray", function() { return asArray; });
 __webpack_require__.d(helpers_namespaceObject, "inArray", function() { return inArray; });
 __webpack_require__.d(helpers_namespaceObject, "splitArray", function() { return splitArray; });
+__webpack_require__.d(helpers_namespaceObject, "debounce", function() { return debounce; });
+__webpack_require__.d(helpers_namespaceObject, "setTimeout", function() { return setTimeout_setTimeout; });
 __webpack_require__.d(helpers_namespaceObject, "isNumeric", function() { return isNumeric; });
 __webpack_require__.d(helpers_namespaceObject, "isPlainObject", function() { return isPlainObject; });
 __webpack_require__.d(helpers_namespaceObject, "isURL", function() { return isURL; });
 __webpack_require__.d(helpers_namespaceObject, "isWindow", function() { return isWindow; });
-__webpack_require__.d(helpers_namespaceObject, "normilizeCSSValue", function() { return normilizeCSSValue; });
+__webpack_require__.d(helpers_namespaceObject, "colorToHex", function() { return colorToHex; });
 __webpack_require__.d(helpers_namespaceObject, "camelCase", function() { return camelCase; });
 __webpack_require__.d(helpers_namespaceObject, "fromCamelCase", function() { return fromCamelCase; });
 __webpack_require__.d(helpers_namespaceObject, "appendScript", function() { return appendScript; });
@@ -762,8 +764,6 @@ __webpack_require__.d(helpers_namespaceObject, "getXPathByElement", function() {
 __webpack_require__.d(helpers_namespaceObject, "hasOwn", function() { return hasOwn; });
 __webpack_require__.d(helpers_namespaceObject, "type", function() { return type_type; });
 __webpack_require__.d(helpers_namespaceObject, "val", function() { return val_val; });
-__webpack_require__.d(helpers_namespaceObject, "debounce", function() { return debounce; });
-__webpack_require__.d(helpers_namespaceObject, "setTimeout", function() { return setTimeout_setTimeout; });
 __webpack_require__.d(helpers_namespaceObject, "throttle", function() { return throttle; });
 __webpack_require__.d(helpers_namespaceObject, "isHTML", function() { return isHTML; });
 __webpack_require__.d(helpers_namespaceObject, "isHTMLFromWord", function() { return isHTMLFromWord; });
@@ -773,7 +773,6 @@ __webpack_require__.d(helpers_namespaceObject, "isString", function() { return i
 __webpack_require__.d(helpers_namespaceObject, "isFunction", function() { return isFunction; });
 __webpack_require__.d(helpers_namespaceObject, "hasBrowserColorPicker", function() { return hasBrowserColorPicker; });
 __webpack_require__.d(helpers_namespaceObject, "hexToRgb", function() { return hexToRgb; });
-__webpack_require__.d(helpers_namespaceObject, "colorToHex", function() { return colorToHex; });
 __webpack_require__.d(helpers_namespaceObject, "applyStyles", function() { return applyStyles; });
 __webpack_require__.d(helpers_namespaceObject, "cleanFromWord", function() { return cleanFromWord; });
 __webpack_require__.d(helpers_namespaceObject, "clear", function() { return clear_clear; });
@@ -786,6 +785,7 @@ __webpack_require__.d(helpers_namespaceObject, "normalizePath", function() { ret
 __webpack_require__.d(helpers_namespaceObject, "normalizeRelativePath", function() { return normalizeRelativePath; });
 __webpack_require__.d(helpers_namespaceObject, "normalizeSize", function() { return normalizeSize; });
 __webpack_require__.d(helpers_namespaceObject, "normalizeURL", function() { return normalizeURL; });
+__webpack_require__.d(helpers_namespaceObject, "normilizeCSSValue", function() { return normilizeCSSValue; });
 __webpack_require__.d(helpers_namespaceObject, "normalizeColor", function() { return normalizeColor; });
 __webpack_require__.d(helpers_namespaceObject, "getContentWidth", function() { return getContentWidth; });
 __webpack_require__.d(helpers_namespaceObject, "innerWidth", function() { return innerWidth_innerWidth; });

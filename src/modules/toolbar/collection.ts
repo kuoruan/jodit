@@ -97,6 +97,7 @@ export class ToolbarCollection<T extends IViewBased = IViewBased>
 			.filter(a => a !== '');
 	}
 
+	// @ts-ignore
 	private __parentContainer: HTMLElement;
 
 	/**

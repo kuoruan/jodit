@@ -12,8 +12,6 @@
 		"forceConsistentCasingInFileNames": true,
 		"strictPropertyInitialization": false,
 
-		"declaration": true,
-		"declarationDir": "build/types",
 		"sourceMap": true,
 
 		"noImplicitAny": true,

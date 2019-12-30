@@ -9,9 +9,7 @@
 
 import { Config } from '../Config';
 import * as consts from '../constants';
-import { Plugin } from '../modules/Plugin';
 import { Dom } from '../modules/Dom';
-import { Table } from '../modules/Table';
 import {
 	$$,
 	getContentWidth,
@@ -19,9 +17,11 @@ import {
 	scrollIntoView
 } from '../modules/helpers/';
 import { setTimeout } from '../modules/helpers/async';
+import { Plugin } from '../modules/Plugin';
+import { Table } from '../modules/Table';
+import { IJodit } from '../types';
 import { IControlType } from '../types/toolbar';
 import { IBound, IDictionary } from '../types/types';
-import { IJodit } from '../types';
 
 declare module '../Config' {
 	interface Config {
@@ -295,6 +295,7 @@ export class TableProcessor extends Plugin {
 	private __selectMode: boolean = false;
 
 	private __resizerDelta: number = 0;
+	// @ts-ignore
 	private __resizerHandler: HTMLElement;
 
 	showResizer() {
@@ -309,15 +310,21 @@ export class TableProcessor extends Plugin {
 		}, this.jodit.defaultTimeout);
 	}
 
+	// @ts-ignore
 	private hideTimeout: number;
 
 	private __drag: boolean = false;
 
+	// @ts-ignore
 	private __wholeTable: boolean | null;
+	// @ts-ignore
 	private __workCell: HTMLTableCellElement;
+	// @ts-ignore
 	private __workTable: HTMLTableElement;
 
+	// @ts-ignore
 	private __minX: number;
+	// @ts-ignore
 	private __maxX: number;
 
 	/**

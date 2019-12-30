@@ -122,6 +122,7 @@ export class xpath extends Plugin {
 		return li;
 	};
 
+	// @ts-ignore
 	private selectAllButton: ToolbarButton;
 	private removeSelectAll = () => {
 		if (this.selectAllButton) {

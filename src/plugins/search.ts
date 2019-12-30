@@ -11,12 +11,12 @@ import { Config } from '../Config';
 import * as consts from '../constants';
 import { MODE_WYSIWYG } from '../constants';
 import { Dom } from '../modules/Dom';
-import { ToolbarIcon } from '../modules/toolbar/icon';
-import { Plugin } from '../modules/Plugin';
 import { debounce } from '../modules/helpers/async';
 import { trim } from '../modules/helpers/string';
-import { ISelectionRange, markerInfo } from '../types/types';
+import { Plugin } from '../modules/Plugin';
+import { ToolbarIcon } from '../modules/toolbar/icon';
 import { IJodit } from '../types';
+import { ISelectionRange, markerInfo } from '../types/types';
 
 declare module '../Config' {
 	interface Config {
@@ -219,13 +219,21 @@ export class search extends Plugin {
 			parentBox.scrollIntoView();
 	}
 
+	// @ts-ignore
 	searchBox: HTMLDivElement;
+	// @ts-ignore
 	queryInput: HTMLInputElement;
+	// @ts-ignore
 	replaceInput: HTMLInputElement;
+	// @ts-ignore
 	closeButton: HTMLButtonElement;
+	// @ts-ignore
 	nextButton: HTMLButtonElement;
+	// @ts-ignore
 	prevButton: HTMLButtonElement;
+	// @ts-ignore
 	replaceButton: HTMLButtonElement;
+	// @ts-ignore
 	counterBox: HTMLSpanElement;
 
 	calcCounts = (

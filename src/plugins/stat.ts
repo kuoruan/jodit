@@ -9,9 +9,9 @@
 
 import { Config } from '../Config';
 import { INVISIBLE_SPACE_REG_EXP, SPACE_REG_EXP } from '../constants';
+import { Dom } from '../modules/Dom';
 import { throttle } from '../modules/helpers/async';
 import { Plugin } from '../modules/Plugin';
-import { Dom } from '../modules/Dom';
 
 declare module '../Config' {
 	interface Config {
@@ -27,7 +27,9 @@ Config.prototype.showWordsCounter = true;
  * Show stat data - words and chars count
  */
 export class stat extends Plugin {
+	// @ts-ignore
 	private charCounter: HTMLElement | null;
+	// @ts-ignore
 	private wordCounter: HTMLElement | null;
 
 	afterInit() {

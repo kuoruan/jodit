@@ -10,17 +10,17 @@
 import { Config } from '../Config';
 import * as consts from '../constants';
 import { MODE_SOURCE } from '../constants';
+import { Dom } from '../modules/Dom';
+import {
+	CallbackAndElement,
+	appendScript
+} from '../modules/helpers/appendScript';
+import { debounce } from '../modules/helpers/async';
+import { css } from '../modules/helpers/css';
+import { $$ } from '../modules/helpers/selector';
 import { Plugin } from '../modules/Plugin';
 import { IJodit, markerInfo } from '../types';
 import { IControlType } from '../types/toolbar';
-import {
-	appendScript,
-	CallbackAndElement
-} from '../modules/helpers/appendScript';
-import { debounce } from '../modules/helpers/async';
-import { $$ } from '../modules/helpers/selector';
-import { css } from '../modules/helpers/css';
-import { Dom } from '../modules/Dom';
 
 declare module '../Config' {
 	interface Config {
@@ -116,6 +116,7 @@ Config.prototype.controls.source = {
 export class source extends Plugin {
 	private className = 'jodit_ace_editor';
 
+	// @ts-ignore
 	private mirrorContainer: HTMLDivElement;
 
 	private __lock = false;
@@ -423,6 +424,7 @@ export class source extends Plugin {
 
 	private replaceMirrorToACE() {
 		const editor: IJodit = this.jodit;
+		// @ts-ignore
 		let aceEditor: AceAjax.Editor, undoManager: AceAjax.UndoManager;
 
 		const updateButtons = () => {
@@ -508,6 +510,7 @@ export class source extends Plugin {
 					);
 
 					this.aceEditor = aceEditor = ((this.jodit
+						// @ts-ignore
 						.ownerWindow as any).ace as AceAjax.Ace).edit(
 						fakeMirror
 					);
@@ -581,6 +584,7 @@ export class source extends Plugin {
 					};
 
 					this.getSelectionStart = (): number => {
+						// @ts-ignore
 						const range: AceAjax.Range = aceEditor.selection.getRange();
 						return getIndexByRowColumn(
 							range.start.row,
@@ -600,7 +604,9 @@ export class source extends Plugin {
 						aceEditor.selection.selectAll();
 					};
 					this.insertHTML = (html: string) => {
+						// @ts-ignore
 						const start: AceAjax.Position = aceEditor.selection.getCursor(),
+							// @ts-ignore
 							end: AceAjax.Position = aceEditor.session.insert(
 								start,
 								html
@@ -610,6 +616,7 @@ export class source extends Plugin {
 							{
 								start,
 								end
+								// @ts-ignore
 							} as AceAjax.Range,
 							false
 						);
@@ -684,8 +691,10 @@ export class source extends Plugin {
 		}
 	}
 
+	// @ts-ignore
 	public mirror: HTMLTextAreaElement;
 
+	// @ts-ignore
 	public aceEditor: AceAjax.Editor;
 	public setMirrorSelectionRange: (start: number, end: number) => void = (
 		start: number,

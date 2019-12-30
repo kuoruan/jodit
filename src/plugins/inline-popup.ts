@@ -8,19 +8,19 @@
  */
 
 import { Config } from '../Config';
-import { Widget } from '../modules/Widget';
-import ColorPickerWidget = Widget.ColorPickerWidget;
-import TabsWidget = Widget.TabsWidget;
+import { ToolbarCollection } from '../modules';
 import { Dom } from '../modules/Dom';
 import { clearCenterAlign, css, debounce, offset, splitArray } from '../modules/helpers/';
 import { Plugin } from '../modules/Plugin';
-import { Table } from '../modules/Table';
 import { Popup } from '../modules/popup/popup';
+import { Table } from '../modules/Table';
+import { JoditToolbarCollection } from '../modules/toolbar/joditToolbarCollection';
+import { Widget } from '../modules/Widget';
 import { IDictionary, IJodit, IPopup, IToolbarCollection } from '../types';
 import { IControlType } from '../types/toolbar';
 import { IBound } from '../types/types';
-import { JoditToolbarCollection } from '../modules/toolbar/joditToolbarCollection';
-import { ToolbarCollection } from '../modules';
+import ColorPickerWidget = Widget.ColorPickerWidget;
+import TabsWidget = Widget.TabsWidget;
 
 declare module '../Config' {
 	interface Config {
@@ -358,15 +358,21 @@ Config.prototype.popup = {
  * @param {Jodit} editor
  */
 export class inlinePopup extends Plugin {
+	// @ts-ignore
 	private toolbar: IToolbarCollection;
+	// @ts-ignore
 	private popup: IPopup;
 
+	// @ts-ignore
 	private target: HTMLDivElement;
+	// @ts-ignore
 	private targetContainer: HTMLDivElement;
+	// @ts-ignore
 	private container: HTMLDivElement;
 
 	private _hiddenClass = 'jodit_toolbar_popup-inline-target-hidden';
 
+	// @ts-ignore
 	private __getRect: () => IBound;
 
 	// was started selection

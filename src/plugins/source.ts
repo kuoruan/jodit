@@ -593,6 +593,7 @@ export class source extends Plugin {
 					};
 
 					this.getSelectionEnd = (): number => {
+						// @ts-ignore
 						const range: AceAjax.Range = aceEditor.selection.getRange();
 						return getIndexByRowColumn(
 							range.end.row,

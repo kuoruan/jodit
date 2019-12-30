@@ -1,7 +1,7 @@
 /*!
  jodit - Jodit is awesome and usefully wysiwyg editor with filebrowser
  Author: Chupurnov <chupurnov@gmail.com> (https://xdsoft.net/)
- Version: v3.3.2
+ Version: v3.3.10
  Url: https://xdsoft.net/jodit/
  License(s): GPL-2.0-or-later OR MIT OR Commercial
 */
@@ -99,7 +99,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 70);
+/******/ 	return __webpack_require__(__webpack_require__.s = 75);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -114,7 +114,7 @@ return /******/ (function(modules) { // webpackBootstrap
  * Copyright 2013-2019 Valeriy Chupurnov https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
+var consts = __webpack_require__(2);
 var helpers_1 = __webpack_require__(4);
 var string_1 = __webpack_require__(9);
 var Dom = (function () {
@@ -228,7 +228,7 @@ var Dom = (function () {
             node instanceof win.HTMLElement &&
             this.isBlock(node, win) &&
             !/^(TD|TH|CAPTION|FORM)$/.test(node.nodeName) &&
-            node.style !== void 0 &&
+            node.style !== undefined &&
             !/^(fixed|absolute)/i.test(node.style.position));
     };
     Dom.prev = function (node, condition, root, withChild) {
@@ -717,9 +717,123 @@ function __importDefault(mod) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.INVISIBLE_SPACE = '\uFEFF';
+exports.INVISIBLE_SPACE_REG_EXP = /[\uFEFF]/g;
+exports.INVISIBLE_SPACE_REG_EXP_END = /[\uFEFF]+$/g;
+exports.INVISIBLE_SPACE_REG_EXP_START = /^[\uFEFF]+/g;
+exports.SPACE_REG_EXP = /[\s\n\t\r\uFEFF\u200b]+/g;
+exports.SPACE_REG_EXP_START = /^[\s\n\t\r\uFEFF\u200b]+/g;
+exports.SPACE_REG_EXP_END = /[\s\n\t\r\uFEFF\u200b]+$/g;
+exports.IS_BLOCK = /^(PRE|DIV|P|LI|H[1-6]|BLOCKQUOTE|TD|TH|TABLE|BODY|HTML|FIGCAPTION|FIGURE|DT|DD)$/i;
+exports.IS_INLINE = /^(STRONG|SPAN|I|EM|B|SUP|SUB)$/;
+exports.MAY_BE_REMOVED_WITH_KEY = /^(IMG|BR|IFRAME|SCRIPT|INPUT|TEXTAREA|HR|JODIT|JODIT-MEDIA)$/;
+exports.KEY_BACKSPACE = 8;
+exports.KEY_TAB = 9;
+exports.KEY_ENTER = 13;
+exports.KEY_ESC = 27;
+exports.KEY_LEFT = 37;
+exports.KEY_UP = 38;
+exports.KEY_RIGHT = 39;
+exports.KEY_DOWN = 40;
+exports.KEY_DELETE = 46;
+exports.KEY_F = 70;
+exports.KEY_R = 82;
+exports.KEY_H = 72;
+exports.KEY_Y = 89;
+exports.KEY_V = 86;
+exports.KEY_Z = 90;
+exports.KEY_F3 = 114;
+exports.NEARBY = 5;
+exports.ACCURACY = 10;
+exports.COMMAND_KEYS = [
+    exports.KEY_BACKSPACE,
+    exports.KEY_DELETE,
+    exports.KEY_UP,
+    exports.KEY_DOWN,
+    exports.KEY_RIGHT,
+    exports.KEY_LEFT,
+    exports.KEY_ENTER,
+    exports.KEY_ESC,
+    exports.KEY_F3,
+    exports.KEY_TAB
+];
+exports.BR = 'br';
+exports.PARAGRAPH = 'p';
+exports.MODE_WYSIWYG = 1;
+exports.MODE_SOURCE = 2;
+exports.MODE_SPLIT = 3;
+exports.IS_IE = typeof navigator !== 'undefined' &&
+    (navigator.userAgent.indexOf('MSIE') !== -1 ||
+        /rv:11.0/i.test(navigator.userAgent));
+exports.URL_LIST = exports.IS_IE ? 'url' : 'text/uri-list';
+exports.TEXT_PLAIN = exports.IS_IE ? 'text' : 'text/plain';
+exports.TEXT_HTML = exports.IS_IE ? 'text' : 'text/html';
+exports.MARKER_CLASS = 'jodit_selection_marker';
+exports.EMULATE_DBLCLICK_TIMEOUT = 300;
+exports.JODIT_SELECTED_CELL_MARKER = 'data-jodit-selected-cell';
+exports.INSERT_AS_HTML = 'insert_as_html';
+exports.INSERT_CLEAR_HTML = 'insert_clear_html';
+exports.INSERT_AS_TEXT = 'insert_as_text';
+exports.INSERT_ONLY_TEXT = 'insert_only_text';
+exports.IS_MAC = typeof window !== 'undefined' &&
+    /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
+exports.KEY_ALIASES = {
+    add: '+',
+    break: 'pause',
+    cmd: 'meta',
+    command: 'meta',
+    ctl: 'control',
+    ctrl: 'control',
+    del: 'delete',
+    down: 'arrowdown',
+    esc: 'escape',
+    ins: 'insert',
+    left: 'arrowleft',
+    mod: exports.IS_MAC ? 'meta' : 'control',
+    opt: 'alt',
+    option: 'alt',
+    return: 'enter',
+    right: 'arrowright',
+    space: ' ',
+    spacebar: ' ',
+    up: 'arrowup',
+    win: 'meta',
+    windows: 'meta'
+};
+exports.BASE_PATH = (function () {
+    if (typeof document === 'undefined') {
+        return '';
+    }
+    var script = document.currentScript, removeScriptName = function (s) { return s.replace(/\/[^\/]+.js$/, '/'); };
+    if (script) {
+        return removeScriptName(script.src);
+    }
+    var scripts = document.querySelectorAll('script[src]');
+    if (scripts && scripts.length) {
+        return removeScriptName(scripts[scripts.length - 1].src);
+    }
+    return window.location.href;
+})();
+
+
+/***/ }),
+/* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var consts = __webpack_require__(3);
-var Widget_1 = __webpack_require__(17);
+var consts = __webpack_require__(2);
+var Widget_1 = __webpack_require__(18);
 var TabsWidget = Widget_1.Widget.TabsWidget;
 var FileSelectorWidget = Widget_1.Widget.FileSelectorWidget;
 var Dom_1 = __webpack_require__(0);
@@ -898,6 +1012,7 @@ var Config = (function () {
         this.imageDefaultWidth = 300;
         this.removeButtons = [];
         this.disablePlugins = [];
+        this.extraPlugins = [];
         this.extraButtons = [];
         this.sizeLG = 900;
         this.sizeMD = 700;
@@ -1277,106 +1392,6 @@ Config.prototype.controls = {
 
 
 /***/ }),
-/* 3 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.INVISIBLE_SPACE = '\uFEFF';
-exports.INVISIBLE_SPACE_REG_EXP = /[\uFEFF]/g;
-exports.INVISIBLE_SPACE_REG_EXP_END = /[\uFEFF]+$/g;
-exports.INVISIBLE_SPACE_REG_EXP_START = /^[\uFEFF]+/g;
-exports.SPACE_REG_EXP = /[\s\n\t\r\uFEFF\u200b]+/g;
-exports.SPACE_REG_EXP_START = /^[\s\n\t\r\uFEFF\u200b]+/g;
-exports.SPACE_REG_EXP_END = /[\s\n\t\r\uFEFF\u200b]+$/g;
-exports.IS_BLOCK = /^(PRE|DIV|P|LI|H[1-6]|BLOCKQUOTE|TD|TH|TABLE|BODY|HTML|FIGCAPTION|FIGURE|DT|DD)$/i;
-exports.IS_INLINE = /^(STRONG|SPAN|I|EM|B|SUP|SUB)$/;
-exports.MAY_BE_REMOVED_WITH_KEY = /^(IMG|BR|IFRAME|SCRIPT|INPUT|TEXTAREA|HR|JODIT|JODIT-MEDIA)$/;
-exports.KEY_BACKSPACE = 8;
-exports.KEY_TAB = 9;
-exports.KEY_ENTER = 13;
-exports.KEY_ESC = 27;
-exports.KEY_LEFT = 37;
-exports.KEY_UP = 38;
-exports.KEY_RIGHT = 39;
-exports.KEY_DOWN = 40;
-exports.KEY_DELETE = 46;
-exports.KEY_F = 70;
-exports.KEY_R = 82;
-exports.KEY_H = 72;
-exports.KEY_Y = 89;
-exports.KEY_V = 86;
-exports.KEY_Z = 90;
-exports.KEY_F3 = 114;
-exports.NEARBY = 5;
-exports.ACCURACY = 10;
-exports.COMMAND_KEYS = [
-    exports.KEY_BACKSPACE,
-    exports.KEY_DELETE,
-    exports.KEY_UP,
-    exports.KEY_DOWN,
-    exports.KEY_RIGHT,
-    exports.KEY_LEFT,
-    exports.KEY_ENTER,
-    exports.KEY_ESC,
-    exports.KEY_F3,
-    exports.KEY_TAB
-];
-exports.BR = 'br';
-exports.PARAGRAPH = 'p';
-exports.MODE_WYSIWYG = 1;
-exports.MODE_SOURCE = 2;
-exports.MODE_SPLIT = 3;
-exports.IS_IE = typeof navigator !== 'undefined' &&
-    (navigator.userAgent.indexOf('MSIE') !== -1 ||
-        /rv:11.0/i.test(navigator.userAgent));
-exports.URL_LIST = exports.IS_IE ? 'url' : 'text/uri-list';
-exports.TEXT_PLAIN = exports.IS_IE ? 'text' : 'text/plain';
-exports.TEXT_HTML = exports.IS_IE ? 'text' : 'text/html';
-exports.MARKER_CLASS = 'jodit_selection_marker';
-exports.EMULATE_DBLCLICK_TIMEOUT = 300;
-exports.JODIT_SELECTED_CELL_MARKER = 'data-jodit-selected-cell';
-exports.INSERT_AS_HTML = 'insert_as_html';
-exports.INSERT_CLEAR_HTML = 'insert_clear_html';
-exports.INSERT_AS_TEXT = 'insert_as_text';
-exports.INSERT_ONLY_TEXT = 'insert_only_text';
-exports.IS_MAC = typeof window !== 'undefined' &&
-    /Mac|iPod|iPhone|iPad/.test(window.navigator.platform);
-exports.KEY_ALIASES = {
-    add: '+',
-    break: 'pause',
-    cmd: 'meta',
-    command: 'meta',
-    ctl: 'control',
-    ctrl: 'control',
-    del: 'delete',
-    down: 'arrowdown',
-    esc: 'escape',
-    ins: 'insert',
-    left: 'arrowleft',
-    mod: exports.IS_MAC ? 'meta' : 'control',
-    opt: 'alt',
-    option: 'alt',
-    return: 'enter',
-    right: 'arrowright',
-    space: ' ',
-    spacebar: ' ',
-    up: 'arrowup',
-    win: 'meta',
-    windows: 'meta'
-};
-
-
-/***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -1392,33 +1407,33 @@ exports.KEY_ALIASES = {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(31), exports);
+tslib_1.__exportStar(__webpack_require__(30), exports);
 tslib_1.__exportStar(__webpack_require__(5), exports);
 tslib_1.__exportStar(__webpack_require__(15), exports);
+tslib_1.__exportStar(__webpack_require__(34), exports);
+tslib_1.__exportStar(__webpack_require__(94), exports);
 tslib_1.__exportStar(__webpack_require__(35), exports);
-tslib_1.__exportStar(__webpack_require__(88), exports);
-tslib_1.__exportStar(__webpack_require__(36), exports);
-tslib_1.__exportStar(__webpack_require__(19), exports);
+tslib_1.__exportStar(__webpack_require__(20), exports);
 tslib_1.__exportStar(__webpack_require__(23), exports);
 tslib_1.__exportStar(__webpack_require__(9), exports);
-tslib_1.__exportStar(__webpack_require__(51), exports);
-tslib_1.__exportStar(__webpack_require__(108), exports);
-tslib_1.__exportStar(__webpack_require__(109), exports);
-tslib_1.__exportStar(__webpack_require__(11), exports);
-tslib_1.__exportStar(__webpack_require__(54), exports);
-tslib_1.__exportStar(__webpack_require__(110), exports);
-tslib_1.__exportStar(__webpack_require__(38), exports);
-tslib_1.__exportStar(__webpack_require__(24), exports);
 tslib_1.__exportStar(__webpack_require__(52), exports);
-tslib_1.__exportStar(__webpack_require__(111), exports);
-tslib_1.__exportStar(__webpack_require__(33), exports);
-tslib_1.__exportStar(__webpack_require__(32), exports);
-tslib_1.__exportStar(__webpack_require__(53), exports);
+tslib_1.__exportStar(__webpack_require__(114), exports);
+tslib_1.__exportStar(__webpack_require__(115), exports);
+tslib_1.__exportStar(__webpack_require__(10), exports);
 tslib_1.__exportStar(__webpack_require__(55), exports);
-tslib_1.__exportStar(__webpack_require__(112), exports);
-tslib_1.__exportStar(__webpack_require__(12), exports);
-tslib_1.__exportStar(__webpack_require__(34), exports);
-tslib_1.__exportStar(__webpack_require__(113), exports);
+tslib_1.__exportStar(__webpack_require__(116), exports);
+tslib_1.__exportStar(__webpack_require__(37), exports);
+tslib_1.__exportStar(__webpack_require__(24), exports);
+tslib_1.__exportStar(__webpack_require__(53), exports);
+tslib_1.__exportStar(__webpack_require__(117), exports);
+tslib_1.__exportStar(__webpack_require__(32), exports);
+tslib_1.__exportStar(__webpack_require__(31), exports);
+tslib_1.__exportStar(__webpack_require__(54), exports);
+tslib_1.__exportStar(__webpack_require__(56), exports);
+tslib_1.__exportStar(__webpack_require__(118), exports);
+tslib_1.__exportStar(__webpack_require__(13), exports);
+tslib_1.__exportStar(__webpack_require__(33), exports);
+tslib_1.__exportStar(__webpack_require__(119), exports);
 
 
 /***/ }),
@@ -1437,9 +1452,9 @@ tslib_1.__exportStar(__webpack_require__(113), exports);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(44), exports);
-tslib_1.__exportStar(__webpack_require__(18), exports);
-tslib_1.__exportStar(__webpack_require__(80), exports);
+tslib_1.__exportStar(__webpack_require__(43), exports);
+tslib_1.__exportStar(__webpack_require__(19), exports);
+tslib_1.__exportStar(__webpack_require__(86), exports);
 
 
 /***/ }),
@@ -1460,15 +1475,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var ToolbarIcon = (function () {
     function ToolbarIcon() {
     }
+    ToolbarIcon.get = function (name) {
+        return ToolbarIcon.icons[name] ||
+            ToolbarIcon.icons[name.replace(/-/g, '_')] ||
+            ToolbarIcon.icons[name.toLowerCase()];
+    };
     ToolbarIcon.exists = function (name) {
-        return ToolbarIcon.icons[name] !== undefined;
+        return this.get(name) !== undefined;
     };
     ToolbarIcon.getIcon = function (name, defaultValue) {
         if (defaultValue === void 0) { defaultValue = '<span></span>'; }
-        var icon = ToolbarIcon.icons[name] ||
-            ToolbarIcon.icons[name.replace(/-/g, '_')] ||
-            ToolbarIcon.icons[name.toLowerCase()];
-        return icon || defaultValue;
+        return this.get(name) || defaultValue;
+    };
+    ToolbarIcon.setIcon = function (name, value) {
+        this.icons[name.replace('_', '-')] = value;
     };
     ToolbarIcon.icons = {};
     return ToolbarIcon;
@@ -1497,19 +1517,21 @@ var Plugin = (function (_super) {
     tslib_1.__extends(Plugin, _super);
     function Plugin(jodit) {
         var _this = _super.call(this, jodit) || this;
-        _this.destruct = function () {
-            if (!_this.isDestructed) {
-                _this.jodit.events &&
-                    _this.jodit.events.off('beforeDestruct', _this.destruct);
-                _this.beforeDestruct(_this.jodit);
-                _super.prototype.destruct.call(_this);
-            }
-        };
+        _this.destruct = _this.destruct.bind(_this, jodit);
         jodit.events
             .on('afterInit', _this.afterInit.bind(_this, jodit))
             .on('beforeDestruct', _this.destruct);
         return _this;
     }
+    Plugin.prototype.init = function (jodit) { };
+    Plugin.prototype.destruct = function () {
+        var _a, _b;
+        if (!this.isDestructed) {
+            (_b = (_a = this.jodit) === null || _a === void 0 ? void 0 : _a.events) === null || _b === void 0 ? void 0 : _b.off('beforeDestruct', this.destruct);
+            this.beforeDestruct(this.jodit);
+            _super.prototype.destruct.call(this);
+        }
+    };
     return Plugin;
 }(Component_1.Component));
 exports.Plugin = Plugin;
@@ -1530,7 +1552,7 @@ exports.Plugin = Plugin;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var isJoditObject_1 = __webpack_require__(13);
+var isJoditObject_1 = __webpack_require__(12);
 var Component = (function () {
     function Component(jodit) {
         this.__isDestructed = false;
@@ -1575,11 +1597,11 @@ exports.Component = Component;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(48), exports);
 tslib_1.__exportStar(__webpack_require__(49), exports);
-tslib_1.__exportStar(__webpack_require__(37), exports);
-tslib_1.__exportStar(__webpack_require__(92), exports);
-tslib_1.__exportStar(__webpack_require__(93), exports);
+tslib_1.__exportStar(__webpack_require__(50), exports);
+tslib_1.__exportStar(__webpack_require__(36), exports);
+tslib_1.__exportStar(__webpack_require__(97), exports);
+tslib_1.__exportStar(__webpack_require__(98), exports);
 
 
 /***/ }),
@@ -1597,18 +1619,93 @@ tslib_1.__exportStar(__webpack_require__(93), exports);
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var isPlainObject_1 = __webpack_require__(21);
+var isNumeric_1 = __webpack_require__(22);
+var normilizeCSSValue_1 = __webpack_require__(51);
+var camelCase_1 = __webpack_require__(49);
+var fromCamelCase_1 = __webpack_require__(50);
+exports.css = function (element, key, value, onlyStyleMode) {
+    if (onlyStyleMode === void 0) { onlyStyleMode = false; }
+    var numberFieldsReg = /^left|top|bottom|right|width|min|max|height|margin|padding|font-size/i;
+    if (isPlainObject_1.isPlainObject(key) || value !== undefined) {
+        var setValue = function (elm, _key, _value) {
+            if (_value !== undefined &&
+                _value !== null &&
+                numberFieldsReg.test(_key) &&
+                isNumeric_1.isNumeric(_value.toString())) {
+                _value = parseInt(_value.toString(), 10) + 'px';
+            }
+            if (_value !== undefined &&
+                exports.css(elm, _key, undefined, true) !== normilizeCSSValue_1.normilizeCSSValue(_key, _value)) {
+                elm.style[_key] = _value;
+            }
+        };
+        if (isPlainObject_1.isPlainObject(key)) {
+            var keys = Object.keys(key);
+            for (var j = 0; j < keys.length; j += 1) {
+                setValue(element, camelCase_1.camelCase(keys[j]), key[keys[j]]);
+            }
+        }
+        else {
+            setValue(element, camelCase_1.camelCase(key), value);
+        }
+        return '';
+    }
+    var key2 = fromCamelCase_1.fromCamelCase(key), doc = element.ownerDocument || document, win = doc ? doc.defaultView || doc.parentWindow : false;
+    var currentValue = element.style[key];
+    var result = '';
+    if (currentValue !== undefined && currentValue !== '') {
+        result = currentValue;
+    }
+    else if (win && !onlyStyleMode) {
+        result = win.getComputedStyle(element).getPropertyValue(key2);
+    }
+    if (numberFieldsReg.test(key) &&
+        /^[\-+]?[0-9.]+px$/.test(result.toString())) {
+        result = parseInt(result.toString(), 10);
+    }
+    return normilizeCSSValue_1.normilizeCSSValue(key, result);
+};
+exports.clearCenterAlign = function (image) {
+    if (exports.css(image, 'display') === 'block') {
+        exports.css(image, 'display', '');
+    }
+    if (image.style.marginLeft === 'auto' &&
+        image.style.marginRight === 'auto') {
+        image.style.marginLeft = '';
+        image.style.marginRight = '';
+    }
+};
+
+
+/***/ }),
+/* 11 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
 var Dom_1 = __webpack_require__(0);
 var helpers_1 = __webpack_require__(4);
-var JoditArray_1 = __webpack_require__(33);
-var JoditObject_1 = __webpack_require__(32);
-var observer_1 = __webpack_require__(56);
-var Selection_1 = __webpack_require__(59);
-var StatusBar_1 = __webpack_require__(115);
+var JoditArray_1 = __webpack_require__(32);
+var JoditObject_1 = __webpack_require__(31);
+var observer_1 = __webpack_require__(57);
+var Selection_1 = __webpack_require__(60);
+var StatusBar_1 = __webpack_require__(121);
 var storage_1 = __webpack_require__(25);
-var viewWithToolbar_1 = __webpack_require__(62);
+var viewWithToolbar_1 = __webpack_require__(63);
+var PluginSystem_1 = __webpack_require__(67);
 var SAFE_COUNT_CHANGE_CALL = 10;
 var Jodit = (function (_super) {
     tslib_1.__extends(Jodit, _super);
@@ -1622,7 +1719,6 @@ var Jodit = (function (_super) {
         _this.storage = storage_1.Storage.makeStorage(true, _this.id);
         _this.editorIsActive = false;
         _this.iframe = null;
-        _this.__plugins = {};
         _this.mode = consts.MODE_WYSIWYG;
         _this.__callChangeCount = 0;
         _this.isInited = false;
@@ -1708,7 +1804,7 @@ var Jodit = (function (_super) {
         _this.workplace.appendChild(_this.editor);
         _this.setNativeEditorValue(_this.getElementValue());
         (function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-            var opt;
+            var e_1, opt;
             return tslib_1.__generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, this.beforeInitHook()];
@@ -1717,14 +1813,19 @@ var Jodit = (function (_super) {
                         return [4, this.events.fire('beforeInit', this)];
                     case 2:
                         _a.sent();
-                        try {
-                            this.__initPlugines();
-                        }
-                        catch (e) {
-                            console.error(e);
-                        }
-                        return [4, this.__initEditor(buffer)];
+                        _a.label = 3;
                     case 3:
+                        _a.trys.push([3, 5, , 6]);
+                        return [4, Jodit.plugins.init(this)];
+                    case 4:
+                        _a.sent();
+                        return [3, 6];
+                    case 5:
+                        e_1 = _a.sent();
+                        console.error(e_1);
+                        return [3, 6];
+                    case 6: return [4, this.__initEditor(buffer)];
+                    case 7:
                         _a.sent();
                         if (this.isDestructed) {
                             return [2];
@@ -1736,14 +1837,14 @@ var Jodit = (function (_super) {
                             this.uploader.bind(this.editor);
                         }
                         this.isInited = true;
-                        if (!this.events) return [3, 5];
+                        if (!this.events) return [3, 9];
                         return [4, this.events.fire('afterInit', this)];
-                    case 4:
+                    case 8:
                         _a.sent();
                         this.events.fire('afterConstructor', this);
-                        _a.label = 5;
-                    case 5: return [4, this.afterInitHook()];
-                    case 6:
+                        _a.label = 9;
+                    case 9: return [4, this.afterInitHook()];
+                    case 10:
                         _a.sent();
                         return [2];
                 }
@@ -2132,7 +2233,8 @@ var Jodit = (function (_super) {
         }
         var toolbarContainer = this.create.div('jodit_toolbar_container');
         this.container.appendChild(toolbarContainer);
-        if (this.options.toolbar instanceof HTMLElement || typeof this.options.toolbar === 'string') {
+        if (this.options.toolbar instanceof HTMLElement ||
+            typeof this.options.toolbar === 'string') {
             toolbarContainer = this.resolveElement(this.options.toolbar);
         }
         this.applyOptionsToToolbarContainer(toolbarContainer);
@@ -2148,18 +2250,6 @@ var Jodit = (function (_super) {
         if (this.options.zIndex) {
             element.style.zIndex = parseInt(this.options.zIndex.toString(), 10).toString();
         }
-    };
-    Jodit.prototype.__initPlugines = function () {
-        var _this = this;
-        var dp = this.options.disablePlugins;
-        var disable = Array.isArray(dp)
-            ? dp.map(function (name) { return name.toLowerCase(); })
-            : dp.toLowerCase().split(/[\s,]+/);
-        Object.keys(Jodit.plugins).forEach(function (key) {
-            if (disable.indexOf(key.toLowerCase()) === -1) {
-                _this.__plugins[key] = new Jodit.plugins[key](_this);
-            }
-        });
     };
     Jodit.prototype.__initEditor = function (buffer) {
         return tslib_1.__awaiter(this, void 0, void 0, function () {
@@ -2237,8 +2327,8 @@ var Jodit = (function (_super) {
                             .on('synchro', function () {
                             _this.setEditorValue();
                         })
-                            .on('focus', function () { return _this.editorIsActive = true; })
-                            .on('blur', function () { return _this.editorIsActive = false; })
+                            .on('focus', function () { return (_this.editorIsActive = true); })
+                            .on('blur', function () { return (_this.editorIsActive = false); })
                             .on(this.editor, 'selectionchange selectionstart keydown keyup keypress mousedown mouseup mousepress ' +
                             'click copy cut dragstart drop dragover paste resize touchstart touchend focus blur', function (event) {
                             if (_this.options.readonly) {
@@ -2273,7 +2363,6 @@ var Jodit = (function (_super) {
         });
     };
     Jodit.prototype.destruct = function () {
-        var _this = this;
         if (this.isDestructed) {
             return;
         }
@@ -2307,15 +2396,6 @@ var Jodit = (function (_super) {
             !this.element.getAttribute('style')) {
             this.element.removeAttribute('style');
         }
-        Object.keys(this.__plugins).forEach(function (pluginName) {
-            var plugin = _this.__plugins[pluginName];
-            if (plugin !== undefined &&
-                plugin.destruct !== undefined &&
-                typeof plugin.destruct === 'function') {
-                plugin.destruct();
-            }
-            delete _this.__plugins[pluginName];
-        });
         this.observer.destruct();
         this.statusbar.destruct();
         delete this.observer;
@@ -2357,87 +2437,13 @@ var Jodit = (function (_super) {
         _super.prototype.destruct.call(this);
         delete this.container;
     };
-    Jodit.plugins = {};
+    Jodit.plugins = new PluginSystem_1.PluginSystem();
     Jodit.modules = {};
     Jodit.instances = {};
     Jodit.lang = {};
     return Jodit;
 }(viewWithToolbar_1.ViewWithToolbar));
 exports.Jodit = Jodit;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var isPlainObject_1 = __webpack_require__(21);
-var isNumeric_1 = __webpack_require__(22);
-var normilizeCSSValue_1 = __webpack_require__(50);
-var camelCase_1 = __webpack_require__(48);
-var fromCamelCase_1 = __webpack_require__(49);
-exports.css = function (element, key, value, onlyStyleMode) {
-    if (onlyStyleMode === void 0) { onlyStyleMode = false; }
-    var numberFieldsReg = /^left|top|bottom|right|width|min|max|height|margin|padding|font-size/i;
-    if (isPlainObject_1.isPlainObject(key) || value !== undefined) {
-        var setValue = function (elm, _key, _value) {
-            if (_value !== undefined &&
-                _value !== null &&
-                numberFieldsReg.test(_key) &&
-                isNumeric_1.isNumeric(_value.toString())) {
-                _value = parseInt(_value.toString(), 10) + 'px';
-            }
-            if (_value !== undefined &&
-                exports.css(elm, _key, undefined, true) !== normilizeCSSValue_1.normilizeCSSValue(_key, _value)) {
-                elm.style[_key] = _value;
-            }
-        };
-        if (isPlainObject_1.isPlainObject(key)) {
-            var keys = Object.keys(key);
-            for (var j = 0; j < keys.length; j += 1) {
-                setValue(element, camelCase_1.camelCase(keys[j]), key[keys[j]]);
-            }
-        }
-        else {
-            setValue(element, camelCase_1.camelCase(key), value);
-        }
-        return '';
-    }
-    var key2 = fromCamelCase_1.fromCamelCase(key), doc = element.ownerDocument || document, win = doc ? doc.defaultView || doc.parentWindow : false;
-    var currentValue = element.style[key];
-    var result = '';
-    if (currentValue !== undefined && currentValue !== '') {
-        result = currentValue;
-    }
-    else if (win && !onlyStyleMode) {
-        result = win.getComputedStyle(element).getPropertyValue(key2);
-    }
-    if (numberFieldsReg.test(key) &&
-        /^[\-+]?[0-9.]+px$/.test(result.toString())) {
-        result = parseInt(result.toString(), 10);
-    }
-    return normilizeCSSValue_1.normilizeCSSValue(key, result);
-};
-exports.clearCenterAlign = function (image) {
-    if (exports.css(image, 'display') === 'block') {
-        exports.css(image, 'display', '');
-    }
-    if (image.style.marginLeft === 'auto' &&
-        image.style.marginRight === 'auto') {
-        image.style.marginLeft = '';
-        image.style.marginRight = '';
-    }
-};
 
 
 /***/ }),
@@ -2455,7 +2461,34 @@ exports.clearCenterAlign = function (image) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = __webpack_require__(3);
+exports.isJoditObject = function (jodit) {
+    if (jodit &&
+        jodit instanceof Object &&
+        typeof jodit.constructor === 'function' &&
+        (jodit instanceof Jodit_1.Jodit || jodit.isJodit)) {
+        return true;
+    }
+    return false;
+};
+var Jodit_1 = __webpack_require__(11);
+
+
+/***/ }),
+/* 13 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var constants_1 = __webpack_require__(2);
 var $$temp = 1;
 exports.$$ = function (selector, root) {
     var result;
@@ -2497,33 +2530,6 @@ exports.getXPathByElement = function (element, root) {
 
 
 /***/ }),
-/* 13 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isJoditObject = function (jodit) {
-    if (jodit &&
-        jodit instanceof Object &&
-        typeof jodit.constructor === 'function' &&
-        (jodit instanceof Jodit_1.Jodit || jodit.isJodit)) {
-        return true;
-    }
-    return false;
-};
-var Jodit_1 = __webpack_require__(10);
-
-
-/***/ }),
 /* 14 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -2538,13 +2544,13 @@ var Jodit_1 = __webpack_require__(10);
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var dialog_1 = __webpack_require__(16);
+var dialog_1 = __webpack_require__(17);
 exports.Dialog = dialog_1.Dialog;
-var alert_1 = __webpack_require__(140);
+var alert_1 = __webpack_require__(188);
 exports.Alert = alert_1.Alert;
-var promt_1 = __webpack_require__(66);
+var promt_1 = __webpack_require__(73);
 exports.Promt = promt_1.Promt;
-var confirm_1 = __webpack_require__(67);
+var confirm_1 = __webpack_require__(74);
 exports.Confirm = confirm_1.Confirm;
 
 
@@ -2563,9 +2569,9 @@ exports.Confirm = confirm_1.Confirm;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var JoditObject_1 = __webpack_require__(32);
-var JoditArray_1 = __webpack_require__(33);
-var type_1 = __webpack_require__(34);
+var JoditObject_1 = __webpack_require__(31);
+var JoditArray_1 = __webpack_require__(32);
+var type_1 = __webpack_require__(33);
 var isPlainObject_1 = __webpack_require__(21);
 function extend() {
     var args = [];
@@ -2638,12 +2644,128 @@ exports.extend = extend;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var helpers_1 = __webpack_require__(4);
-var view_1 = __webpack_require__(63);
+var collection_1 = __webpack_require__(38);
 var Dom_1 = __webpack_require__(0);
-var isJoditObject_1 = __webpack_require__(13);
+var css_1 = __webpack_require__(10);
+var consts = __webpack_require__(2);
+var isJoditObject_1 = __webpack_require__(12);
+var JoditToolbarCollection = (function (_super) {
+    tslib_1.__extends(JoditToolbarCollection, _super);
+    function JoditToolbarCollection() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.checkActiveStatus = function (cssObject, node) {
+            var matches = 0, total = 0;
+            Object.keys(cssObject).forEach(function (cssProperty) {
+                var cssValue = cssObject[cssProperty];
+                if (typeof cssValue === 'function') {
+                    if (cssValue(_this.jodit, css_1.css(node, cssProperty).toString())) {
+                        matches += 1;
+                    }
+                }
+                else {
+                    if (cssValue.indexOf(css_1.css(node, cssProperty).toString()) !== -1) {
+                        matches += 1;
+                    }
+                }
+                total += 1;
+            });
+            return total === matches;
+        };
+        return _this;
+    }
+    JoditToolbarCollection.prototype.buttonIsActive = function (button) {
+        var _this = this;
+        var active = _super.prototype.buttonIsActive.call(this, button);
+        if (active !== undefined) {
+            return active;
+        }
+        var element = this.jodit.selection
+            ? this.jodit.selection.current()
+            : false;
+        if (!element) {
+            return false;
+        }
+        var tags, elm, css;
+        if (button.control.tags ||
+            (button.control.options && button.control.options.tags)) {
+            tags =
+                button.control.tags ||
+                    (button.control.options && button.control.options.tags);
+            elm = element;
+            if (Dom_1.Dom.up(elm, function (node) {
+                if (node &&
+                    tags.indexOf(node.nodeName.toLowerCase()) !== -1) {
+                    return true;
+                }
+            }, this.jodit.editor)) {
+                return true;
+            }
+        }
+        if (button.control.css ||
+            (button.control.options && button.control.options.css)) {
+            css =
+                button.control.css ||
+                    (button.control.options && button.control.options.css);
+            elm = element;
+            if (Dom_1.Dom.up(elm, function (node) {
+                if (node && node.nodeType !== Node.TEXT_NODE) {
+                    return _this.checkActiveStatus(css, node);
+                }
+            }, this.jodit.editor)) {
+                return true;
+            }
+        }
+        return false;
+    };
+    JoditToolbarCollection.prototype.buttonIsDisabled = function (button) {
+        var disabled = _super.prototype.buttonIsDisabled.call(this, button);
+        if (disabled !== undefined) {
+            return disabled;
+        }
+        var mode = button.control === undefined || button.control.mode === undefined
+            ? consts.MODE_WYSIWYG
+            : button.control.mode;
+        return !(mode === consts.MODE_SPLIT || mode === this.jodit.getRealMode());
+    };
+    JoditToolbarCollection.prototype.getTarget = function (button) {
+        return button.target || this.jodit.selection.current() || undefined;
+    };
+    JoditToolbarCollection.makeCollection = function (jodit) {
+        var collection = isJoditObject_1.isJoditObject(jodit)
+            ? new JoditToolbarCollection(jodit)
+            : new collection_1.ToolbarCollection(jodit);
+        if (jodit.options.textIcons) {
+            collection.container.classList.add('jodit_text_icons');
+        }
+        return collection;
+    };
+    return JoditToolbarCollection;
+}(collection_1.ToolbarCollection));
+exports.JoditToolbarCollection = JoditToolbarCollection;
+
+
+/***/ }),
+/* 17 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var helpers_1 = __webpack_require__(4);
+var view_1 = __webpack_require__(64);
+var Dom_1 = __webpack_require__(0);
+var isJoditObject_1 = __webpack_require__(12);
 Config_1.Config.prototype.dialog = {
     resizable: true,
     draggable: true,
@@ -2835,7 +2957,7 @@ var Dialog = (function (_super) {
         self.dialogbox_toolbar = self.container.querySelector('.jodit_dialog_header>.jodit_dialog_header-toolbar');
         self.destination.appendChild(self.container);
         self.container.addEventListener('close_dialog', self.close);
-        self.toolbar = __1.JoditToolbarCollection.makeCollection(self);
+        self.toolbar = joditToolbarCollection_1.JoditToolbarCollection.makeCollection(self);
         self.toolbar.build(self.options.buttons, self.dialogbox_toolbar);
         self.events
             .on(_this.window, 'mousemove', self.onMouseMove)
@@ -2848,13 +2970,19 @@ var Dialog = (function (_super) {
         if (self.options.resizable) {
             self.resizer.addEventListener('mousedown', self.onResizerMouseDown.bind(self));
         }
-        Jodit_1.Jodit.plugins.fullsize(self);
+        plugins_1.fullsize(self);
         return _this;
     }
     Dialog.prototype.setElements = function (root, elements) {
         var _this = this;
         var elements_list = [];
         helpers_1.asArray(elements).forEach(function (elm) {
+            if (Array.isArray(elm)) {
+                var div = _this.create.div('jodit_dialog_column');
+                elements_list.push(div);
+                root.appendChild(div);
+                return _this.setElements(div, elm);
+            }
             var element = typeof elm === 'string' ? _this.create.fromHTML(elm) : elm;
             elements_list.push(element);
             if (element.parentNode !== root) {
@@ -3008,12 +3136,12 @@ var Dialog = (function (_super) {
     return Dialog;
 }(view_1.View));
 exports.Dialog = Dialog;
-var Jodit_1 = __webpack_require__(10);
-var __1 = __webpack_require__(29);
+var joditToolbarCollection_1 = __webpack_require__(16);
+var plugins_1 = __webpack_require__(69);
 
 
 /***/ }),
-/* 17 */
+/* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3296,7 +3424,7 @@ var Widget;
 
 
 /***/ }),
-/* 18 */
+/* 19 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -3322,33 +3450,6 @@ exports.setTimeout = function (callback, timeout, a1, a2, a3) {
 
 
 /***/ }),
-/* 19 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(97), exports);
-tslib_1.__exportStar(__webpack_require__(98), exports);
-tslib_1.__exportStar(__webpack_require__(99), exports);
-tslib_1.__exportStar(__webpack_require__(100), exports);
-tslib_1.__exportStar(__webpack_require__(101), exports);
-tslib_1.__exportStar(__webpack_require__(102), exports);
-tslib_1.__exportStar(__webpack_require__(103), exports);
-tslib_1.__exportStar(__webpack_require__(50), exports);
-tslib_1.__exportStar(__webpack_require__(104), exports);
-
-
-/***/ }),
 /* 20 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -3364,104 +3465,15 @@ tslib_1.__exportStar(__webpack_require__(104), exports);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var collection_1 = __webpack_require__(39);
-var Dom_1 = __webpack_require__(0);
-var css_1 = __webpack_require__(11);
-var consts = __webpack_require__(3);
-var isJoditObject_1 = __webpack_require__(13);
-var JoditToolbarCollection = (function (_super) {
-    tslib_1.__extends(JoditToolbarCollection, _super);
-    function JoditToolbarCollection() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.checkActiveStatus = function (cssObject, node) {
-            var matches = 0, total = 0;
-            Object.keys(cssObject).forEach(function (cssProperty) {
-                var cssValue = cssObject[cssProperty];
-                if (typeof cssValue === 'function') {
-                    if (cssValue(_this.jodit, css_1.css(node, cssProperty).toString())) {
-                        matches += 1;
-                    }
-                }
-                else {
-                    if (cssValue.indexOf(css_1.css(node, cssProperty).toString()) !== -1) {
-                        matches += 1;
-                    }
-                }
-                total += 1;
-            });
-            return total === matches;
-        };
-        return _this;
-    }
-    JoditToolbarCollection.prototype.buttonIsActive = function (button) {
-        var _this = this;
-        var active = _super.prototype.buttonIsActive.call(this, button);
-        if (active !== undefined) {
-            return active;
-        }
-        var element = this.jodit.selection
-            ? this.jodit.selection.current()
-            : false;
-        if (!element) {
-            return false;
-        }
-        var tags, elm, css;
-        if (button.control.tags ||
-            (button.control.options && button.control.options.tags)) {
-            tags =
-                button.control.tags ||
-                    (button.control.options && button.control.options.tags);
-            elm = element;
-            if (Dom_1.Dom.up(elm, function (node) {
-                if (node &&
-                    tags.indexOf(node.nodeName.toLowerCase()) !== -1) {
-                    return true;
-                }
-            }, this.jodit.editor)) {
-                return true;
-            }
-        }
-        if (button.control.css ||
-            (button.control.options && button.control.options.css)) {
-            css =
-                button.control.css ||
-                    (button.control.options && button.control.options.css);
-            elm = element;
-            if (Dom_1.Dom.up(elm, function (node) {
-                if (node && node.nodeType !== Node.TEXT_NODE) {
-                    return _this.checkActiveStatus(css, node);
-                }
-            }, this.jodit.editor)) {
-                return true;
-            }
-        }
-        return false;
-    };
-    JoditToolbarCollection.prototype.buttonIsDisabled = function (button) {
-        var disabled = _super.prototype.buttonIsDisabled.call(this, button);
-        if (disabled !== undefined) {
-            return disabled;
-        }
-        var mode = button.control === undefined || button.control.mode === undefined
-            ? consts.MODE_WYSIWYG
-            : button.control.mode;
-        return !(mode === consts.MODE_SPLIT || mode === this.jodit.getRealMode());
-    };
-    JoditToolbarCollection.prototype.getTarget = function (button) {
-        return button.target || this.jodit.selection.current() || undefined;
-    };
-    JoditToolbarCollection.makeCollection = function (jodit) {
-        var collection = isJoditObject_1.isJoditObject(jodit)
-            ? new JoditToolbarCollection(jodit)
-            : new collection_1.ToolbarCollection(jodit);
-        if (jodit.options.textIcons) {
-            collection.container.classList.add('jodit_text_icons');
-        }
-        return collection;
-    };
-    return JoditToolbarCollection;
-}(collection_1.ToolbarCollection));
-exports.JoditToolbarCollection = JoditToolbarCollection;
+tslib_1.__exportStar(__webpack_require__(103), exports);
+tslib_1.__exportStar(__webpack_require__(104), exports);
+tslib_1.__exportStar(__webpack_require__(105), exports);
+tslib_1.__exportStar(__webpack_require__(106), exports);
+tslib_1.__exportStar(__webpack_require__(107), exports);
+tslib_1.__exportStar(__webpack_require__(108), exports);
+tslib_1.__exportStar(__webpack_require__(109), exports);
+tslib_1.__exportStar(__webpack_require__(51), exports);
+tslib_1.__exportStar(__webpack_require__(110), exports);
 
 
 /***/ }),
@@ -3479,8 +3491,8 @@ exports.JoditToolbarCollection = JoditToolbarCollection;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var isWindow_1 = __webpack_require__(45);
-var type_1 = __webpack_require__(34);
+var isWindow_1 = __webpack_require__(44);
+var type_1 = __webpack_require__(33);
 exports.isPlainObject = function (obj) {
     if (typeof obj !== 'object' || obj.nodeType || isWindow_1.isWindow(obj)) {
         return false;
@@ -3532,9 +3544,9 @@ exports.isNumeric = function (value) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(105), exports);
-tslib_1.__exportStar(__webpack_require__(106), exports);
-tslib_1.__exportStar(__webpack_require__(107), exports);
+tslib_1.__exportStar(__webpack_require__(111), exports);
+tslib_1.__exportStar(__webpack_require__(112), exports);
+tslib_1.__exportStar(__webpack_require__(113), exports);
 
 
 /***/ }),
@@ -3591,8 +3603,8 @@ exports.each = each;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_1 = __webpack_require__(9);
-var localStorageProvider_1 = __webpack_require__(60);
-var memoryStorageProvider_1 = __webpack_require__(61);
+var localStorageProvider_1 = __webpack_require__(61);
+var memoryStorageProvider_1 = __webpack_require__(62);
 exports.StorageKey = 'Jodit_';
 var Storage = (function () {
     function Storage(provider, suffix) {
@@ -3647,7 +3659,7 @@ exports.Storage = Storage;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var Component_1 = __webpack_require__(8);
-var collection_1 = __webpack_require__(39);
+var collection_1 = __webpack_require__(38);
 var icon_1 = __webpack_require__(6);
 var Dom_1 = __webpack_require__(0);
 var string_1 = __webpack_require__(9);
@@ -3687,7 +3699,9 @@ var ToolbarElement = (function (_super) {
             if (control && control.iconURL && iconSVG === undefined) {
                 iconElement = this.jodit.create.element('i');
                 iconElement.style.backgroundImage =
-                    'url(' + control.iconURL + ')';
+                    'url(' +
+                        control.iconURL.replace('{basePath}', this.jodit.basePath) +
+                        ')';
             }
             else {
                 if (iconSVG === undefined) {
@@ -3732,11 +3746,11 @@ var tslib_1 = __webpack_require__(1);
 var Dom_1 = __webpack_require__(0);
 var helpers_1 = __webpack_require__(4);
 var element_1 = __webpack_require__(26);
-var list_1 = __webpack_require__(120);
+var list_1 = __webpack_require__(126);
 var popup_1 = __webpack_require__(28);
-var tooltip_1 = __webpack_require__(121);
-var isJoditObject_1 = __webpack_require__(13);
-var constants_1 = __webpack_require__(3);
+var tooltip_1 = __webpack_require__(127);
+var isJoditObject_1 = __webpack_require__(12);
+var constants_1 = __webpack_require__(2);
 var icon_1 = __webpack_require__(6);
 var ToolbarButton = (function (_super) {
     tslib_1.__extends(ToolbarButton, _super);
@@ -4061,7 +4075,7 @@ var Popup = (function (_super) {
     return Popup;
 }(Component_1.Component));
 exports.Popup = Popup;
-var Jodit_1 = __webpack_require__(10);
+var Jodit_1 = __webpack_require__(11);
 
 
 /***/ }),
@@ -4079,73 +4093,7 @@ var Jodit_1 = __webpack_require__(10);
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Ajax_1 = __webpack_require__(40);
-exports.Ajax = Ajax_1.Ajax;
-var eventsNative_1 = __webpack_require__(64);
-exports.EventsNative = eventsNative_1.EventsNative;
-var Component_1 = __webpack_require__(8);
-exports.Component = Component_1.Component;
-var ContextMenu_1 = __webpack_require__(41);
-exports.ContextMenu = ContextMenu_1.ContextMenu;
-var dialog_1 = __webpack_require__(14);
-exports.Alert = dialog_1.Alert;
-exports.Confirm = dialog_1.Confirm;
-exports.Promt = dialog_1.Promt;
-exports.Dialog = dialog_1.Dialog;
-var Dom_1 = __webpack_require__(0);
-exports.Dom = Dom_1.Dom;
-var Plugin_1 = __webpack_require__(7);
-exports.Plugin = Plugin_1.Plugin;
-var Create_1 = __webpack_require__(65);
-exports.Create = Create_1.Create;
-var fileBrowser_1 = __webpack_require__(141);
-exports.FileBrowser = fileBrowser_1.FileBrowser;
-var Helpers = __webpack_require__(4);
-exports.Helpers = Helpers;
-var ImageEditor_1 = __webpack_require__(148);
-exports.ImageEditor = ImageEditor_1.ImageEditor;
-var observer_1 = __webpack_require__(56);
-exports.Observer = observer_1.Observer;
-var Selection_1 = __webpack_require__(59);
-exports.Select = Selection_1.Select;
-var storage_1 = __webpack_require__(25);
-exports.Storage = storage_1.Storage;
-var Snapshot_1 = __webpack_require__(57);
-exports.Snapshot = Snapshot_1.Snapshot;
-var Table_1 = __webpack_require__(30);
-exports.Table = Table_1.Table;
-var icon_1 = __webpack_require__(6);
-exports.ToolbarIcon = icon_1.ToolbarIcon;
-var joditToolbarCollection_1 = __webpack_require__(20);
-exports.JoditToolbarCollection = joditToolbarCollection_1.JoditToolbarCollection;
-var collection_1 = __webpack_require__(39);
-exports.ToolbarCollection = collection_1.ToolbarCollection;
-var button_1 = __webpack_require__(27);
-exports.ToolbarButton = button_1.ToolbarButton;
-var Stack_1 = __webpack_require__(58);
-exports.Stack = Stack_1.Stack;
-var Widget_1 = __webpack_require__(17);
-exports.Widget = Widget_1.Widget;
-var Uploader_1 = __webpack_require__(149);
-exports.Uploader = Uploader_1.Uploader;
-
-
-/***/ }),
-/* 30 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
+var consts = __webpack_require__(2);
 var Dom_1 = __webpack_require__(0);
 var helpers_1 = __webpack_require__(4);
 var Table = (function () {
@@ -4666,7 +4614,7 @@ exports.Table = Table;
 
 
 /***/ }),
-/* 31 */
+/* 30 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4680,16 +4628,16 @@ exports.Table = Table;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var asArray_1 = __webpack_require__(43);
+var asArray_1 = __webpack_require__(42);
 exports.asArray = asArray_1.asArray;
-var inArray_1 = __webpack_require__(78);
+var inArray_1 = __webpack_require__(84);
 exports.inArray = inArray_1.inArray;
-var splitArray_1 = __webpack_require__(79);
+var splitArray_1 = __webpack_require__(85);
 exports.splitArray = splitArray_1.splitArray;
 
 
 /***/ }),
-/* 32 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4714,7 +4662,7 @@ exports.JoditObject = JoditObject;
 
 
 /***/ }),
-/* 33 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4763,7 +4711,7 @@ exports.JoditArray = JoditArray;
 
 
 /***/ }),
-/* 34 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4813,6 +4761,38 @@ exports.type = function (obj) {
 
 
 /***/ }),
+/* 34 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+tslib_1.__exportStar(__webpack_require__(87), exports);
+tslib_1.__exportStar(__webpack_require__(45), exports);
+tslib_1.__exportStar(__webpack_require__(88), exports);
+tslib_1.__exportStar(__webpack_require__(89), exports);
+tslib_1.__exportStar(__webpack_require__(90), exports);
+tslib_1.__exportStar(__webpack_require__(91), exports);
+tslib_1.__exportStar(__webpack_require__(12), exports);
+tslib_1.__exportStar(__webpack_require__(92), exports);
+tslib_1.__exportStar(__webpack_require__(22), exports);
+tslib_1.__exportStar(__webpack_require__(21), exports);
+tslib_1.__exportStar(__webpack_require__(93), exports);
+tslib_1.__exportStar(__webpack_require__(46), exports);
+tslib_1.__exportStar(__webpack_require__(47), exports);
+tslib_1.__exportStar(__webpack_require__(44), exports);
+
+
+/***/ }),
 /* 35 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -4828,17 +4808,11 @@ exports.type = function (obj) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(81), exports);
-tslib_1.__exportStar(__webpack_require__(82), exports);
-tslib_1.__exportStar(__webpack_require__(83), exports);
-tslib_1.__exportStar(__webpack_require__(84), exports);
-tslib_1.__exportStar(__webpack_require__(22), exports);
-tslib_1.__exportStar(__webpack_require__(85), exports);
-tslib_1.__exportStar(__webpack_require__(86), exports);
-tslib_1.__exportStar(__webpack_require__(21), exports);
-tslib_1.__exportStar(__webpack_require__(46), exports);
-tslib_1.__exportStar(__webpack_require__(45), exports);
-tslib_1.__exportStar(__webpack_require__(87), exports);
+tslib_1.__exportStar(__webpack_require__(96), exports);
+tslib_1.__exportStar(__webpack_require__(99), exports);
+tslib_1.__exportStar(__webpack_require__(100), exports);
+tslib_1.__exportStar(__webpack_require__(101), exports);
+tslib_1.__exportStar(__webpack_require__(102), exports);
 
 
 /***/ }),
@@ -4856,30 +4830,7 @@ tslib_1.__exportStar(__webpack_require__(87), exports);
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(90), exports);
-tslib_1.__exportStar(__webpack_require__(91), exports);
-tslib_1.__exportStar(__webpack_require__(94), exports);
-tslib_1.__exportStar(__webpack_require__(95), exports);
-tslib_1.__exportStar(__webpack_require__(96), exports);
-
-
-/***/ }),
-/* 37 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
 exports.trim = function (value) {
     return value
         .replace(constants_1.SPACE_REG_EXP_START, '')
@@ -4888,7 +4839,7 @@ exports.trim = function (value) {
 
 
 /***/ }),
-/* 38 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4918,7 +4869,7 @@ exports.defaultLanguage = function (language, defaultLanguage) {
 
 
 /***/ }),
-/* 39 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -4934,13 +4885,13 @@ exports.defaultLanguage = function (language, defaultLanguage) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var async_1 = __webpack_require__(5);
-var break_1 = __webpack_require__(119);
+var break_1 = __webpack_require__(125);
 var button_1 = __webpack_require__(27);
-var separator_1 = __webpack_require__(122);
+var separator_1 = __webpack_require__(128);
 var Dom_1 = __webpack_require__(0);
 var Component_1 = __webpack_require__(8);
-var Config_1 = __webpack_require__(2);
-var isJoditObject_1 = __webpack_require__(13);
+var Config_1 = __webpack_require__(3);
+var isJoditObject_1 = __webpack_require__(12);
 var ToolbarCollection = (function (_super) {
     tslib_1.__extends(ToolbarCollection, _super);
     function ToolbarCollection(jodit) {
@@ -5043,6 +4994,8 @@ var ToolbarCollection = (function (_super) {
     };
     ToolbarCollection.prototype.build = function (buttons, parentContainer, target) {
         var _this = this;
+        this.jodit.events.off('rebuildToolbar');
+        this.jodit.events.on('afterInit rebuildToolbar', function () { return _this.build(buttons, parentContainer, target); });
         this.__parentContainer = parentContainer;
         var lastBtnSeparator = false;
         this.clear();
@@ -5134,7 +5087,7 @@ exports.ToolbarCollection = ToolbarCollection;
 
 
 /***/ }),
-/* 40 */
+/* 39 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5149,9 +5102,9 @@ exports.ToolbarCollection = ToolbarCollection;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
+var Config_1 = __webpack_require__(3);
 var helpers_1 = __webpack_require__(4);
-var buildQuery_1 = __webpack_require__(55);
+var buildQuery_1 = __webpack_require__(56);
 Config_1.Config.prototype.defaultAjaxOptions = {
     dataType: 'json',
     method: 'GET',
@@ -5293,7 +5246,7 @@ exports.Ajax = Ajax;
 
 
 /***/ }),
-/* 41 */
+/* 40 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5309,7 +5262,7 @@ exports.Ajax = Ajax;
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var Component_1 = __webpack_require__(8);
-var css_1 = __webpack_require__(11);
+var css_1 = __webpack_require__(10);
 var icon_1 = __webpack_require__(6);
 var Dom_1 = __webpack_require__(0);
 var ContextMenu = (function (_super) {
@@ -5372,7 +5325,7 @@ exports.ContextMenu = ContextMenu;
 
 
 /***/ }),
-/* 42 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5384,7 +5337,7 @@ exports.ICON_LOADER = '<i class="jodit_icon-loader"></i>';
 
 
 /***/ }),
-/* 43 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5394,7 +5347,7 @@ exports.asArray = function (a) { return (Array.isArray(a) ? a : [a]); };
 
 
 /***/ }),
-/* 44 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5408,7 +5361,7 @@ exports.asArray = function (a) { return (Array.isArray(a) ? a : [a]); };
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var setTimeout_1 = __webpack_require__(18);
+var setTimeout_1 = __webpack_require__(19);
 exports.debounce = function (fn, timeout, invokeAsap, ctx) {
     if (arguments.length === 3 && typeof invokeAsap !== 'boolean') {
         ctx = invokeAsap;
@@ -5435,7 +5388,7 @@ exports.debounce = function (fn, timeout, invokeAsap, ctx) {
 
 
 /***/ }),
-/* 45 */
+/* 44 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5451,6 +5404,26 @@ exports.debounce = function (fn, timeout, invokeAsap, ctx) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isWindow = function (obj) {
     return obj !== null && obj === obj.window;
+};
+
+
+/***/ }),
+/* 45 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isFunction = function (value) {
+    return typeof value === 'function';
 };
 
 
@@ -5495,6 +5468,32 @@ exports.isURL = function (str) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.isValidName = function (name) {
+    if (!name.length) {
+        return false;
+    }
+    if (/[^0-9A-Za-zа-яА-ЯЁё\w\-_\.]/.test(name)) {
+        return false;
+    }
+    return true;
+};
+
+
+/***/ }),
+/* 48 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.colorToHex = function (color) {
     if (color === 'rgba(0, 0, 0, 0)' || color === '') {
         return false;
@@ -5524,7 +5523,7 @@ exports.colorToHex = function (color) {
 
 
 /***/ }),
-/* 48 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5546,7 +5545,7 @@ exports.camelCase = function (key) {
 
 
 /***/ }),
-/* 49 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5568,7 +5567,7 @@ exports.fromCamelCase = function (key) {
 
 
 /***/ }),
-/* 50 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5601,7 +5600,7 @@ exports.normilizeCSSValue = function (key, value) {
 
 
 /***/ }),
-/* 51 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5615,9 +5614,19 @@ exports.normilizeCSSValue = function (key, value) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var completeUrl_1 = __webpack_require__(52);
+var completeUrl_1 = __webpack_require__(53);
+var alreadyLoadedList = new Map();
+var cacheLoaders = function (loader) {
+    return function (url, doc) {
+        if (alreadyLoadedList.has(url)) {
+            return alreadyLoadedList.get(url);
+        }
+        var promise = loader(url, doc);
+        alreadyLoadedList.set(url, promise);
+        return promise;
+    };
+};
 exports.appendScript = function (url, callback, className, doc) {
-    if (className === void 0) { className = ''; }
     var script = doc.createElement('script');
     script.className = className;
     script.type = 'text/javascript';
@@ -5631,10 +5640,30 @@ exports.appendScript = function (url, callback, className, doc) {
         element: script
     };
 };
+exports.appendScriptAsync = cacheLoaders(function (url, doc) {
+    if (doc === void 0) { doc = document; }
+    return new Promise(function (resolve, reject) {
+        var element = exports.appendScript(url, resolve, '', doc).element;
+        element.addEventListener('error', reject);
+    });
+});
+exports.appendStyleAsync = cacheLoaders(function (url, doc) {
+    if (doc === void 0) { doc = document; }
+    return new Promise(function (resolve, reject) {
+        var link = doc.createElement('link');
+        link.rel = 'stylesheet';
+        link.media = 'all';
+        link.crossOrigin = 'anonymous';
+        link.addEventListener('load', function () { return resolve(link); });
+        link.addEventListener('error', reject);
+        link.href = completeUrl_1.completeUrl(url);
+        doc.body.appendChild(link);
+    });
+});
 
 
 /***/ }),
-/* 52 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5657,7 +5686,7 @@ exports.completeUrl = function (url) {
 
 
 /***/ }),
-/* 53 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5682,7 +5711,7 @@ exports.parseQuery = function (queryString) {
 
 
 /***/ }),
-/* 54 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5711,7 +5740,7 @@ exports.ctrlKey = function (e) {
 
 
 /***/ }),
-/* 55 */
+/* 56 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5725,7 +5754,7 @@ exports.ctrlKey = function (e) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var checker_1 = __webpack_require__(35);
+var checker_1 = __webpack_require__(34);
 exports.buildQuery = function (data, prefix) {
     var str = [];
     var enc = encodeURIComponent;
@@ -5741,7 +5770,7 @@ exports.buildQuery = function (data, prefix) {
 
 
 /***/ }),
-/* 56 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5756,12 +5785,12 @@ exports.buildQuery = function (data, prefix) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
+var Config_1 = __webpack_require__(3);
 var Component_1 = __webpack_require__(8);
 var async_1 = __webpack_require__(5);
-var Snapshot_1 = __webpack_require__(57);
-var Stack_1 = __webpack_require__(58);
-var command_1 = __webpack_require__(114);
+var Snapshot_1 = __webpack_require__(58);
+var Stack_1 = __webpack_require__(59);
+var command_1 = __webpack_require__(120);
 Config_1.Config.prototype.observer = {
     timeout: 100
 };
@@ -5838,7 +5867,7 @@ exports.Observer = Observer;
 
 
 /***/ }),
-/* 57 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -5978,7 +6007,7 @@ exports.Snapshot = Snapshot;
 
 
 /***/ }),
-/* 58 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6041,7 +6070,7 @@ exports.Stack = Stack;
 
 
 /***/ }),
-/* 59 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6055,13 +6084,13 @@ exports.Stack = Stack;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
 var Dom_1 = __webpack_require__(0);
-var css_1 = __webpack_require__(11);
-var normalize_1 = __webpack_require__(19);
-var selector_1 = __webpack_require__(12);
-var checker_1 = __webpack_require__(35);
+var css_1 = __webpack_require__(10);
+var normalize_1 = __webpack_require__(20);
+var selector_1 = __webpack_require__(13);
+var checker_1 = __webpack_require__(34);
 var each_1 = __webpack_require__(24);
 var string_1 = __webpack_require__(9);
 var Select = (function () {
@@ -6876,7 +6905,7 @@ exports.Select = Select;
 
 
 /***/ }),
-/* 60 */
+/* 61 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6946,7 +6975,7 @@ exports.LocalStorageProvider = LocalStorageProvider;
 
 
 /***/ }),
-/* 61 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -6982,41 +7011,6 @@ exports.MemoryStorageProvider = MemoryStorageProvider;
 
 
 /***/ }),
-/* 62 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var view_1 = __webpack_require__(63);
-var ViewWithToolbar = (function (_super) {
-    tslib_1.__extends(ViewWithToolbar, _super);
-    function ViewWithToolbar() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.toolbar = joditToolbarCollection_1.JoditToolbarCollection.makeCollection(_this);
-        return _this;
-    }
-    ViewWithToolbar.prototype.destruct = function () {
-        this.toolbar.destruct();
-        delete this.toolbar;
-        _super.prototype.destruct.call(this);
-    };
-    return ViewWithToolbar;
-}(view_1.View));
-exports.ViewWithToolbar = ViewWithToolbar;
-var joditToolbarCollection_1 = __webpack_require__(20);
-
-
-/***/ }),
 /* 63 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -7032,15 +7026,50 @@ var joditToolbarCollection_1 = __webpack_require__(20);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var eventsNative_1 = __webpack_require__(64);
-var panel_1 = __webpack_require__(117);
-var storage_1 = __webpack_require__(118);
+var view_1 = __webpack_require__(64);
+var ViewWithToolbar = (function (_super) {
+    tslib_1.__extends(ViewWithToolbar, _super);
+    function ViewWithToolbar() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.toolbar = joditToolbarCollection_1.JoditToolbarCollection.makeCollection(_this);
+        return _this;
+    }
+    ViewWithToolbar.prototype.destruct = function () {
+        this.toolbar.destruct();
+        delete this.toolbar;
+        _super.prototype.destruct.call(this);
+    };
+    return ViewWithToolbar;
+}(view_1.View));
+exports.ViewWithToolbar = ViewWithToolbar;
+var joditToolbarCollection_1 = __webpack_require__(16);
+
+
+/***/ }),
+/* 64 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var eventsNative_1 = __webpack_require__(65);
+var panel_1 = __webpack_require__(123);
+var storage_1 = __webpack_require__(124);
 var helpers_1 = __webpack_require__(4);
 var View = (function (_super) {
     tslib_1.__extends(View, _super);
     function View(jodit, options) {
         var _this = _super.call(this, jodit) || this;
-        _this.version = "3.3.2";
+        _this.version = "3.3.10";
         _this.__modulesInstances = {};
         _this.buffer = storage_1.Storage.makeStorage();
         _this.progress_bar = _this.create.div('jodit_progress_bar', _this.create.div());
@@ -7068,6 +7097,16 @@ var View = (function (_super) {
         _this.options = tslib_1.__assign(tslib_1.__assign({}, _this.options), options);
         return _this;
     }
+    Object.defineProperty(View.prototype, "basePath", {
+        get: function () {
+            if (this.options.basePath) {
+                return this.options.basePath;
+            }
+            return constants_1.BASE_PATH;
+        },
+        enumerable: true,
+        configurable: true
+    });
     Object.defineProperty(View.prototype, "defaultTimeout", {
         get: function () {
             return 100;
@@ -7112,11 +7151,12 @@ var View = (function (_super) {
     return View;
 }(panel_1.Panel));
 exports.View = View;
-var Jodit_1 = __webpack_require__(10);
+var Jodit_1 = __webpack_require__(11);
+var constants_1 = __webpack_require__(2);
 
 
 /***/ }),
-/* 64 */
+/* 65 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7128,7 +7168,7 @@ var Jodit_1 = __webpack_require__(10);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var store_1 = __webpack_require__(116);
+var store_1 = __webpack_require__(122);
 var EventsNative = (function () {
     function EventsNative(doc) {
         var _this = this;
@@ -7480,7 +7520,7 @@ exports.EventsNative = EventsNative;
 
 
 /***/ }),
-/* 65 */
+/* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7496,7 +7536,7 @@ exports.EventsNative = EventsNative;
 Object.defineProperty(exports, "__esModule", { value: true });
 var isPlainObject_1 = __webpack_require__(21);
 var each_1 = __webpack_require__(24);
-var asArray_1 = __webpack_require__(43);
+var asArray_1 = __webpack_require__(42);
 var Dom_1 = __webpack_require__(0);
 var helpers_1 = __webpack_require__(4);
 var Create = (function () {
@@ -7578,124 +7618,145 @@ exports.Create = Create;
 
 
 /***/ }),
-/* 66 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var dialog_1 = __webpack_require__(16);
-var icon_1 = __webpack_require__(6);
-exports.Promt = function (msg, title, callback, placeholder, defaultValue) {
-    var dialog = new dialog_1.Dialog(), cancelButton = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
-        icon_1.ToolbarIcon.getIcon('cancel') +
-        '<span>' +
-        Jodit_1.Jodit.prototype.i18n('Cancel') +
-        '</span></a>'), okButton = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:left;" class="jodit_button">' +
-        icon_1.ToolbarIcon.getIcon('check') +
-        '<span>' +
-        Jodit_1.Jodit.prototype.i18n('Ok') +
-        '</span></a>'), form = dialog.create.element('form', {
-        class: 'jodit_promt'
-    }), inputElement = dialog.create.element('input', {
-        autofocus: true,
-        class: 'jodit_input'
-    }), labelElement = dialog.create.element('label');
-    if (typeof title === 'function') {
-        callback = title;
-        title = undefined;
-    }
-    if (placeholder) {
-        inputElement.setAttribute('placeholder', placeholder);
-    }
-    labelElement.appendChild(dialog.create.text(msg));
-    form.appendChild(labelElement);
-    form.appendChild(inputElement);
-    cancelButton.addEventListener('click', dialog.close, false);
-    var onclick = function () {
-        if (!callback ||
-            typeof callback !== 'function' ||
-            callback(inputElement.value) !== false) {
-            dialog.close();
-        }
-    };
-    okButton.addEventListener('click', onclick);
-    form.addEventListener('submit', function () {
-        onclick();
-        return false;
-    });
-    dialog.setFooter([okButton, cancelButton]);
-    dialog.open(form, title || '&nbsp;', true, true);
-    inputElement.focus();
-    if (defaultValue !== undefined && defaultValue.length) {
-        inputElement.value = defaultValue;
-        inputElement.select();
-    }
-    return dialog;
-};
-var Jodit_1 = __webpack_require__(10);
-
-
-/***/ }),
 /* 67 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
 Object.defineProperty(exports, "__esModule", { value: true });
-var dialog_1 = __webpack_require__(16);
-var icon_1 = __webpack_require__(6);
-exports.Confirm = function (msg, title, callback) {
-    var dialog = new dialog_1.Dialog(), $div = dialog.create.fromHTML('<form class="jodit_promt"></form>'), $label = dialog.create.element('label');
-    if (typeof title === 'function') {
-        callback = title;
-        title = undefined;
+var tslib_1 = __webpack_require__(1);
+var helpers_1 = __webpack_require__(4);
+var PluginSystem = (function () {
+    function PluginSystem() {
+        this.items = new Map();
     }
-    $label.appendChild(dialog.create.fromHTML(msg));
-    $div.appendChild($label);
-    var $cancel = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
-        icon_1.ToolbarIcon.getIcon('cancel') +
-        '<span>' +
-        Jodit_1.Jodit.prototype.i18n('Cancel') +
-        '</span>' +
-        '</a>');
-    $cancel.addEventListener('click', function () {
-        if (callback) {
-            callback(false);
-        }
-        dialog.close();
-    });
-    var onok = function () {
-        if (callback) {
-            callback(true);
-        }
-        dialog.close();
+    PluginSystem.prototype.add = function (name, plugin) {
+        this.items.set(name.toLowerCase(), plugin);
     };
-    var $ok = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:left;" class="jodit_button">' +
-        icon_1.ToolbarIcon.getIcon('check') +
-        '<span>' +
-        Jodit_1.Jodit.prototype.i18n('Yes') +
-        '</span>' +
-        '</a>');
-    $ok.addEventListener('click', onok);
-    $div.addEventListener('submit', function () {
-        onok();
-        return false;
-    });
-    dialog.setFooter([$ok, $cancel]);
-    dialog.open($div, title || '&nbsp;', true, true);
-    $ok.focus();
-    return dialog;
-};
-var Jodit_1 = __webpack_require__(10);
+    PluginSystem.prototype.get = function (name) {
+        return this.items.get(name.toLowerCase());
+    };
+    PluginSystem.prototype.remove = function (name) {
+        this.items.delete(name.toLowerCase());
+    };
+    PluginSystem.prototype.init = function (jodit) {
+        return tslib_1.__awaiter(this, void 0, void 0, function () {
+            var extrasList, disableList, doneList, promiseList, plugins, pluginsMap, makeAndInit, needLoadExtras, e_1;
+            var _this = this;
+            return tslib_1.__generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        extrasList = jodit.options.extraPlugins.map(function (s) {
+                            return helpers_1.isString(s) ? { name: s.toLowerCase() } : s;
+                        }), disableList = helpers_1.splitArray(jodit.options.disablePlugins).map(function (s) {
+                            return s.toLowerCase();
+                        }), doneList = [], promiseList = {}, plugins = [], pluginsMap = {}, makeAndInit = function (plugin, name) {
+                            if (disableList.includes(name) ||
+                                doneList.includes(name) ||
+                                promiseList[name]) {
+                                return;
+                            }
+                            var instance = PluginSystem.makePluginInstance(jodit, plugin);
+                            _this.initOrWait(jodit, name, instance, doneList, promiseList);
+                            plugins.push(instance);
+                            pluginsMap[name] = instance;
+                        };
+                        if (!(extrasList && extrasList.length)) return [3, 5];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 4, , 5]);
+                        needLoadExtras = extrasList.filter(function (extra) { return !_this.items.has(extra.name); });
+                        if (!needLoadExtras.length) return [3, 3];
+                        return [4, this.load(jodit, needLoadExtras)];
+                    case 2:
+                        _a.sent();
+                        _a.label = 3;
+                    case 3: return [3, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        console.log(e_1);
+                        return [3, 5];
+                    case 5:
+                        this.items.forEach(makeAndInit);
+                        this.addListenerOnBeforeDestruct(jodit, plugins);
+                        jodit.__plugins = pluginsMap;
+                        return [2];
+                }
+            });
+        });
+    };
+    PluginSystem.makePluginInstance = function (jodit, plugin) {
+        return helpers_1.isFunction(plugin) ? new plugin(jodit) : plugin;
+    };
+    PluginSystem.prototype.initOrWait = function (jodit, pluginName, instance, doneList, promiseList) {
+        var initPlugin = function (name, plugin) {
+            if (plugin.hasStyle) {
+                PluginSystem.loadStyle(jodit, name);
+            }
+            if (helpers_1.isInitable(plugin)) {
+                if (!plugin.requires ||
+                    !plugin.requires.length ||
+                    plugin.requires.every(function (name) { return doneList.includes(name); })) {
+                    plugin.init(jodit);
+                    doneList.push(name);
+                }
+                else {
+                    promiseList[name] = plugin;
+                    return false;
+                }
+            }
+            else {
+                doneList.push(name);
+            }
+            return true;
+        };
+        initPlugin(pluginName, instance);
+        Object.keys(promiseList).forEach(function (name) {
+            var plugin = promiseList[name];
+            if (!plugin) {
+                return;
+            }
+            if (initPlugin(name, instance)) {
+                promiseList[name] = undefined;
+                delete promiseList[name];
+            }
+        });
+    };
+    PluginSystem.prototype.addListenerOnBeforeDestruct = function (jodit, plugins) {
+        jodit.events.on('beforeDestruct', function () {
+            plugins.forEach(function (instance) {
+                if (helpers_1.isDestructable(instance)) {
+                    instance.destruct(jodit);
+                }
+            });
+            plugins.length = 0;
+            delete jodit.__plugins;
+        });
+    };
+    PluginSystem.prototype.load = function (jodit, pluginList) {
+        var reflect = function (p) {
+            return p.then(function (v) { return ({ v: v, status: 'fulfilled' }); }, function (e) { return ({ e: e, status: 'rejected' }); });
+        };
+        return Promise.all(pluginList.map(function (extra) {
+            var url = extra.url || PluginSystem.getFullUrl(jodit, name, true);
+            return reflect(helpers_1.appendScriptAsync(url, jodit.ownerDocument));
+        }));
+    };
+    PluginSystem.loadStyle = function (jodit, pluginName) {
+        helpers_1.appendStyleAsync(PluginSystem.getFullUrl(jodit, pluginName, false), jodit.ownerDocument);
+    };
+    PluginSystem.getFullUrl = function (jodit, name, js) {
+        return (jodit.basePath +
+            'plugins/' +
+            name +
+            '/' +
+            name +
+            '.' +
+            (js ? 'js' : 'css'));
+    };
+    return PluginSystem;
+}());
+exports.PluginSystem = PluginSystem;
 
 
 /***/ }),
@@ -7713,12 +7774,187 @@ var Jodit_1 = __webpack_require__(10);
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+var Ajax_1 = __webpack_require__(39);
+exports.Ajax = Ajax_1.Ajax;
+var eventsNative_1 = __webpack_require__(65);
+exports.EventsNative = eventsNative_1.EventsNative;
+var Component_1 = __webpack_require__(8);
+exports.Component = Component_1.Component;
+var ContextMenu_1 = __webpack_require__(40);
+exports.ContextMenu = ContextMenu_1.ContextMenu;
+var dialog_1 = __webpack_require__(14);
+exports.Alert = dialog_1.Alert;
+exports.Confirm = dialog_1.Confirm;
+exports.Promt = dialog_1.Promt;
+exports.Dialog = dialog_1.Dialog;
+var Dom_1 = __webpack_require__(0);
+exports.Dom = Dom_1.Dom;
+var Plugin_1 = __webpack_require__(7);
+exports.Plugin = Plugin_1.Plugin;
+var Create_1 = __webpack_require__(66);
+exports.Create = Create_1.Create;
+var fileBrowser_1 = __webpack_require__(189);
+exports.FileBrowser = fileBrowser_1.FileBrowser;
+var Helpers = __webpack_require__(4);
+exports.Helpers = Helpers;
+var ImageEditor_1 = __webpack_require__(195);
+exports.ImageEditor = ImageEditor_1.ImageEditor;
+var observer_1 = __webpack_require__(57);
+exports.Observer = observer_1.Observer;
+var Selection_1 = __webpack_require__(60);
+exports.Select = Selection_1.Select;
+var storage_1 = __webpack_require__(25);
+exports.Storage = storage_1.Storage;
+var Snapshot_1 = __webpack_require__(58);
+exports.Snapshot = Snapshot_1.Snapshot;
+var Table_1 = __webpack_require__(29);
+exports.Table = Table_1.Table;
+var icon_1 = __webpack_require__(6);
+exports.ToolbarIcon = icon_1.ToolbarIcon;
+var joditToolbarCollection_1 = __webpack_require__(16);
+exports.JoditToolbarCollection = joditToolbarCollection_1.JoditToolbarCollection;
+var collection_1 = __webpack_require__(38);
+exports.ToolbarCollection = collection_1.ToolbarCollection;
+var button_1 = __webpack_require__(27);
+exports.ToolbarButton = button_1.ToolbarButton;
+var Stack_1 = __webpack_require__(59);
+exports.Stack = Stack_1.Stack;
+var Widget_1 = __webpack_require__(18);
+exports.Widget = Widget_1.Widget;
+var Uploader_1 = __webpack_require__(196);
+exports.Uploader = Uploader_1.Uploader;
+var PluginSystem_1 = __webpack_require__(67);
+exports.PluginSystem = PluginSystem_1.PluginSystem;
+
+
+/***/ }),
+/* 69 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var add_new_line_1 = __webpack_require__(148);
+exports.addNewLine = add_new_line_1.addNewLine;
+var autofocus_1 = __webpack_require__(149);
+exports.autofocus = autofocus_1.autofocus;
+var backspace_1 = __webpack_require__(150);
+exports.backspace = backspace_1.backspace;
+var bold_1 = __webpack_require__(151);
+exports.bold = bold_1.bold;
+var clean_html_1 = __webpack_require__(152);
+exports.cleanHtml = clean_html_1.cleanHtml;
+var clipboard_1 = __webpack_require__(70);
+exports.clipboard = clipboard_1.clipboard;
+exports.paste = clipboard_1.paste;
+exports.pasteStorage = clipboard_1.pasteStorage;
+var color_1 = __webpack_require__(156);
+exports.color = color_1.color;
+var drag_and_drop_1 = __webpack_require__(157);
+exports.DragAndDrop = drag_and_drop_1.DragAndDrop;
+var drag_and_drop_element_1 = __webpack_require__(158);
+exports.DragAndDropElement = drag_and_drop_element_1.DragAndDropElement;
+var enter_1 = __webpack_require__(159);
+exports.enter = enter_1.enter;
+var error_messages_1 = __webpack_require__(160);
+exports.errorMessages = error_messages_1.errorMessages;
+var font_1 = __webpack_require__(161);
+exports.font = font_1.font;
+var format_block_1 = __webpack_require__(162);
+exports.formatBlock = format_block_1.formatBlock;
+var fullsize_1 = __webpack_require__(163);
+exports.fullsize = fullsize_1.fullsize;
+var hotkeys_1 = __webpack_require__(164);
+exports.hotkeys = hotkeys_1.hotkeys;
+var iframe_1 = __webpack_require__(165);
+exports.iframe = iframe_1.iframe;
+var image_processor_1 = __webpack_require__(166);
+exports.imageProcessor = image_processor_1.imageProcessor;
+var image_properties_1 = __webpack_require__(167);
+exports.imageProperties = image_properties_1.imageProperties;
+var indent_1 = __webpack_require__(168);
+exports.indent = indent_1.indent;
+var inline_popup_1 = __webpack_require__(169);
+exports.inlinePopup = inline_popup_1.inlinePopup;
+var justify_1 = __webpack_require__(170);
+exports.justify = justify_1.justify;
+var limit_1 = __webpack_require__(171);
+exports.limit = limit_1.limit;
+var link_1 = __webpack_require__(172);
+exports.link = link_1.link;
+var media_1 = __webpack_require__(173);
+exports.media = media_1.media;
+var mobile_1 = __webpack_require__(174);
+exports.mobile = mobile_1.mobile;
+var orderedlist_1 = __webpack_require__(175);
+exports.orderedlist = orderedlist_1.orderedlist;
+var placeholder_1 = __webpack_require__(176);
+exports.placeholder = placeholder_1.placeholder;
+var redoundo_1 = __webpack_require__(177);
+exports.redoundo = redoundo_1.redoundo;
+var resizer_1 = __webpack_require__(178);
+exports.resizer = resizer_1.resizer;
+var search_1 = __webpack_require__(179);
+exports.search = search_1.search;
+var size_1 = __webpack_require__(180);
+exports.size = size_1.size;
+var source_1 = __webpack_require__(181);
+exports.source = source_1.source;
+var stat_1 = __webpack_require__(182);
+exports.stat = stat_1.stat;
+var sticky_1 = __webpack_require__(183);
+exports.sticky = sticky_1.sticky;
+var symbols_1 = __webpack_require__(184);
+exports.symbols = symbols_1.symbols;
+var table_keyboard_navigation_1 = __webpack_require__(185);
+exports.tableKeyboardNavigation = table_keyboard_navigation_1.tableKeyboardNavigation;
+var table_1 = __webpack_require__(186);
+exports.table = table_1.TableProcessor;
+var xpath_1 = __webpack_require__(187);
+exports.xpath = xpath_1.xpath;
+
+
+/***/ }),
+/* 70 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var modules_1 = __webpack_require__(29);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var html_1 = __webpack_require__(36);
-var paste_1 = __webpack_require__(69);
+tslib_1.__exportStar(__webpack_require__(71), exports);
+tslib_1.__exportStar(__webpack_require__(72), exports);
+tslib_1.__exportStar(__webpack_require__(154), exports);
+__webpack_require__(155);
+
+
+/***/ }),
+/* 71 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var html_1 = __webpack_require__(35);
+var paste_1 = __webpack_require__(72);
 Config_1.Config.prototype.controls.cut = {
     command: 'cut',
     isDisable: function (editor) { return editor.selection.isCollapsed(); },
@@ -7730,12 +7966,10 @@ Config_1.Config.prototype.controls.copy = {
     tooltip: 'Copy selection'
 };
 exports.pluginKey = 'clipboard';
-var clipboard = (function (_super) {
-    tslib_1.__extends(clipboard, _super);
+var clipboard = (function () {
     function clipboard() {
-        return _super !== null && _super.apply(this, arguments) || this;
     }
-    clipboard.prototype.afterInit = function (editor) {
+    clipboard.prototype.init = function (editor) {
         editor.events
             .on("copy." + exports.pluginKey + " cut." + exports.pluginKey, function (event) {
             var _a, _b;
@@ -7756,18 +7990,18 @@ var clipboard = (function (_super) {
             (_b = (_a = editor) === null || _a === void 0 ? void 0 : _a.events) === null || _b === void 0 ? void 0 : _b.fire('afterCopy', selectedText);
         });
     };
-    clipboard.prototype.beforeDestruct = function (editor) {
+    clipboard.prototype.destruct = function (editor) {
         var _a, _b, _c, _d;
         (_b = (_a = editor) === null || _a === void 0 ? void 0 : _a.buffer) === null || _b === void 0 ? void 0 : _b.set(exports.pluginKey, '');
         (_d = (_c = editor) === null || _c === void 0 ? void 0 : _c.events) === null || _d === void 0 ? void 0 : _d.off('.' + exports.pluginKey);
     };
     return clipboard;
-}(modules_1.Plugin));
+}());
 exports.clipboard = clipboard;
 
 
 /***/ }),
-/* 69 */
+/* 72 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -7782,13 +8016,13 @@ exports.clipboard = clipboard;
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
 var dialog_1 = __webpack_require__(14);
 var helpers_1 = __webpack_require__(4);
 var Dom_1 = __webpack_require__(0);
-var nl2br_1 = __webpack_require__(157);
-var cut_1 = __webpack_require__(68);
+var nl2br_1 = __webpack_require__(153);
+var cut_1 = __webpack_require__(71);
 Config_1.Config.prototype.askBeforePasteHTML = true;
 Config_1.Config.prototype.askBeforePasteFromWord = true;
 Config_1.Config.prototype.nl2brInPlainText = true;
@@ -7797,7 +8031,12 @@ exports.getDataTransfer = function (event) {
     if (event.clipboardData) {
         return event.clipboardData;
     }
-    return event.dataTransfer || new DataTransfer();
+    try {
+        return event.dataTransfer || new DataTransfer();
+    }
+    catch (_a) {
+        return null;
+    }
 };
 Config_1.Config.prototype.controls.paste = {
     tooltip: 'Paste from clipboard',
@@ -7985,7 +8224,7 @@ function paste(editor) {
                 }
             }
             else {
-                types_str_1 = types.toString() + ';';
+                types_str_1 = (types || constants_1.TEXT_PLAIN).toString() + ';';
             }
             var getText = function () {
                 if (/text\/html/i.test(types_str_1)) {
@@ -8132,7 +8371,66 @@ exports.paste = paste;
 
 
 /***/ }),
-/* 70 */
+/* 73 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var dialog_1 = __webpack_require__(17);
+var icon_1 = __webpack_require__(6);
+exports.Promt = function (msg, title, callback, placeholder, defaultValue) {
+    var dialog = new dialog_1.Dialog(), cancelButton = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
+        icon_1.ToolbarIcon.getIcon('cancel') +
+        '<span>' +
+        Jodit_1.Jodit.prototype.i18n('Cancel') +
+        '</span></a>'), okButton = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:left;" class="jodit_button">' +
+        icon_1.ToolbarIcon.getIcon('check') +
+        '<span>' +
+        Jodit_1.Jodit.prototype.i18n('Ok') +
+        '</span></a>'), form = dialog.create.element('form', {
+        class: 'jodit_prompt'
+    }), inputElement = dialog.create.element('input', {
+        autofocus: true,
+        class: 'jodit_input'
+    }), labelElement = dialog.create.element('label');
+    if (typeof title === 'function') {
+        callback = title;
+        title = undefined;
+    }
+    if (placeholder) {
+        inputElement.setAttribute('placeholder', placeholder);
+    }
+    labelElement.appendChild(dialog.create.text(msg));
+    form.appendChild(labelElement);
+    form.appendChild(inputElement);
+    cancelButton.addEventListener('click', dialog.close, false);
+    var onclick = function () {
+        if (!callback ||
+            typeof callback !== 'function' ||
+            callback(inputElement.value) !== false) {
+            dialog.close();
+        }
+    };
+    okButton.addEventListener('click', onclick);
+    form.addEventListener('submit', function () {
+        onclick();
+        return false;
+    });
+    dialog.setFooter([okButton, cancelButton]);
+    dialog.open(form, title || '&nbsp;', true, true);
+    inputElement.focus();
+    if (defaultValue !== undefined && defaultValue.length) {
+        inputElement.value = defaultValue;
+        inputElement.select();
+    }
+    return dialog;
+};
+var Jodit_1 = __webpack_require__(11);
+
+
+/***/ }),
+/* 74 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8146,17 +8444,86 @@ exports.paste = paste;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(71);
+var dialog_1 = __webpack_require__(17);
+var icon_1 = __webpack_require__(6);
+exports.Confirm = function (msg, title, callback) {
+    var dialog = new dialog_1.Dialog(), $div = dialog.create.fromHTML('<form class="jodit_prompt"></form>'), $label = dialog.create.element('label');
+    if (typeof title === 'function') {
+        callback = title;
+        title = undefined;
+    }
+    $label.appendChild(dialog.create.fromHTML(msg));
+    $div.appendChild($label);
+    var $cancel = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
+        icon_1.ToolbarIcon.getIcon('cancel') +
+        '<span>' +
+        Jodit_1.Jodit.prototype.i18n('Cancel') +
+        '</span>' +
+        '</a>');
+    $cancel.addEventListener('click', function () {
+        if (callback) {
+            callback(false);
+        }
+        dialog.close();
+    });
+    var onok = function () {
+        if (callback) {
+            callback(true);
+        }
+        dialog.close();
+    };
+    var $ok = dialog.create.fromHTML('<a href="javascript:void(0)" style="float:left;" class="jodit_button">' +
+        icon_1.ToolbarIcon.getIcon('check') +
+        '<span>' +
+        Jodit_1.Jodit.prototype.i18n('Yes') +
+        '</span>' +
+        '</a>');
+    $ok.addEventListener('click', onok);
+    $div.addEventListener('submit', function () {
+        onok();
+        return false;
+    });
+    dialog.setFooter([$ok, $cancel]);
+    dialog.open($div, title || '&nbsp;', true, true);
+    $ok.focus();
+    return dialog;
+};
+var Jodit_1 = __webpack_require__(11);
+
+
+/***/ }),
+/* 75 */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(76);
+
+
+/***/ }),
+/* 76 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+__webpack_require__(77);
 if ( true && typeof window !== 'undefined') {
-    __webpack_require__(72);
+    __webpack_require__(78);
 }
-var Jodit_1 = __webpack_require__(10);
-var index_1 = __webpack_require__(123);
-var consts = __webpack_require__(3);
-var Modules = __webpack_require__(29);
-var Plugins = __webpack_require__(150);
-var Icons = __webpack_require__(192);
-var Config_1 = __webpack_require__(2);
+var Jodit_1 = __webpack_require__(11);
+var index_1 = __webpack_require__(129);
+var consts = __webpack_require__(2);
+var Modules = __webpack_require__(68);
+var Plugins = __webpack_require__(69);
+var Icons = __webpack_require__(197);
+var Config_1 = __webpack_require__(3);
 var icon_1 = __webpack_require__(6);
 Object.keys(consts).forEach(function (key) {
     Jodit_1.Jodit[key] = consts[key];
@@ -8165,7 +8532,7 @@ var esFilter = function (key) { return key !== '__esModule'; };
 Object.keys(Icons)
     .filter(esFilter)
     .forEach(function (key) {
-    icon_1.ToolbarIcon.icons[key.replace('_', '-')] = Icons[key];
+    icon_1.ToolbarIcon.setIcon(key.replace('_', '-'), Icons[key]);
 });
 Object.keys(Modules)
     .filter(esFilter)
@@ -8178,7 +8545,7 @@ Object.keys(Modules)
 Object.keys(Plugins)
     .filter(esFilter)
     .forEach(function (key) {
-    Jodit_1.Jodit.plugins[key] = Plugins[key];
+    Jodit_1.Jodit.plugins.add(key, Plugins[key]);
 });
 Object.keys(index_1.default)
     .filter(esFilter)
@@ -8192,13 +8559,13 @@ exports.default = Jodit_1.Jodit;
 
 
 /***/ }),
-/* 71 */
+/* 77 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // extracted by mini-css-extract-plugin
 
 /***/ }),
-/* 72 */
+/* 78 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -8212,8 +8579,8 @@ exports.default = Jodit_1.Jodit;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-__webpack_require__(73);
-__webpack_require__(74);
+__webpack_require__(79);
+__webpack_require__(80);
 (function (e) {
     e.matches ||
         (e.matches =
@@ -8243,7 +8610,7 @@ if (!Array.prototype.includes) {
 
 
 /***/ }),
-/* 73 */
+/* 79 */
 /***/ (function(module, exports) {
 
 /*
@@ -8489,18 +8856,18 @@ if (objCtr.defineProperty) {
 
 
 /***/ }),
-/* 74 */
+/* 80 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 // This file can be required in Browserify and Node.js for automatic polyfill
 // To use it:  require('es6-promise/auto');
 
-module.exports = __webpack_require__(75).polyfill();
+module.exports = __webpack_require__(81).polyfill();
 
 
 /***/ }),
-/* 75 */
+/* 81 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(process, global) {/*!
@@ -9677,10 +10044,10 @@ return Promise$1;
 
 //# sourceMappingURL=es6-promise.map
 
-/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(76), __webpack_require__(77)))
+/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(82), __webpack_require__(83)))
 
 /***/ }),
-/* 76 */
+/* 82 */
 /***/ (function(module, exports) {
 
 // shim for using process in browser
@@ -9870,7 +10237,7 @@ process.umask = function() { return 0; };
 
 
 /***/ }),
-/* 77 */
+/* 83 */
 /***/ (function(module, exports) {
 
 var g;
@@ -9896,7 +10263,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 78 */
+/* 84 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9914,7 +10281,7 @@ exports.inArray = function (needle, haystack) { return haystack.indexOf(needle) 
 
 
 /***/ }),
-/* 79 */
+/* 85 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9934,7 +10301,7 @@ exports.splitArray = function (a) {
 
 
 /***/ }),
-/* 80 */
+/* 86 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -9948,7 +10315,7 @@ exports.splitArray = function (a) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var setTimeout_1 = __webpack_require__(18);
+var setTimeout_1 = __webpack_require__(19);
 exports.throttle = function (fn, timeout, ctx) {
     var timer = null, args, needInvoke, callee;
     return function () {
@@ -9973,134 +10340,6 @@ exports.throttle = function (fn, timeout, ctx) {
             callee();
         }
     };
-};
-
-
-/***/ }),
-/* 81 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isHTML = function (str) {
-    return /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/m.test(str);
-};
-
-
-/***/ }),
-/* 82 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isHTMLFromWord = function (data) {
-    return (data.search(/<meta.*?Microsoft Excel\s[\d].*?>/) !== -1 ||
-        data.search(/<meta.*?Microsoft Word\s[\d].*?>/) !== -1 ||
-        (data.search(/style="[^"]*mso-/) !== -1 && data.search(/<font/) !== -1));
-};
-
-
-/***/ }),
-/* 83 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var isNumeric_1 = __webpack_require__(22);
-exports.isInt = function (value) {
-    if (typeof value === 'string' && isNumeric_1.isNumeric(value)) {
-        value = parseFloat(value);
-    }
-    return typeof value === 'number' && Number.isFinite(value) && !(value % 1);
-};
-
-
-/***/ }),
-/* 84 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isLicense = function (license) {
-    return typeof license === 'string' &&
-        license.length === 32 &&
-        /^[a-z0-9]+$/.test(license);
-};
-
-
-/***/ }),
-/* 85 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isString = function (value) {
-    return typeof value === 'string';
-};
-
-
-/***/ }),
-/* 86 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isFunction = function (value) {
-    return typeof value === 'function';
 };
 
 
@@ -10148,13 +10387,145 @@ exports.hasBrowserColorPicker = function () {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(89), exports);
-tslib_1.__exportStar(__webpack_require__(47), exports);
+exports.isHTML = function (str) {
+    return /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/m.test(str);
+};
 
 
 /***/ }),
 /* 89 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isHTMLFromWord = function (data) {
+    return (data.search(/<meta.*?Microsoft Excel\s[\d].*?>/) !== -1 ||
+        data.search(/<meta.*?Microsoft Word\s[\d].*?>/) !== -1 ||
+        (data.search(/style="[^"]*mso-/) !== -1 && data.search(/<font/) !== -1));
+};
+
+
+/***/ }),
+/* 90 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var isFunction_1 = __webpack_require__(45);
+exports.isInitable = function (value) {
+    return value && isFunction_1.isFunction(value.init);
+};
+exports.isDestructable = function (value) {
+    return value && isFunction_1.isFunction(value.destruct);
+};
+
+
+/***/ }),
+/* 91 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var isNumeric_1 = __webpack_require__(22);
+exports.isInt = function (value) {
+    if (typeof value === 'string' && isNumeric_1.isNumeric(value)) {
+        value = parseFloat(value);
+    }
+    return typeof value === 'number' && Number.isFinite(value) && !(value % 1);
+};
+
+
+/***/ }),
+/* 92 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isLicense = function (license) {
+    return typeof license === 'string' &&
+        license.length === 32 &&
+        /^[a-z0-9]+$/.test(license);
+};
+
+
+/***/ }),
+/* 93 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isString = function (value) {
+    return typeof value === 'string';
+};
+
+
+/***/ }),
+/* 94 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+tslib_1.__exportStar(__webpack_require__(95), exports);
+tslib_1.__exportStar(__webpack_require__(48), exports);
+
+
+/***/ }),
+/* 95 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10185,7 +10556,7 @@ exports.hexToRgb = function (hex) {
 
 
 /***/ }),
-/* 90 */
+/* 96 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10200,7 +10571,17 @@ exports.hexToRgb = function (hex) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var Dom_1 = __webpack_require__(0);
-var selector_1 = __webpack_require__(12);
+var selector_1 = __webpack_require__(13);
+var string_1 = __webpack_require__(9);
+function normalizeCSS(s) {
+    return s
+        .replace(/mso-[a-z\-]+:[\s]*[^;]+;/gi, '')
+        .replace(/mso-[a-z\-]+:[\s]*[^";]+$/gi, '')
+        .replace(/border[a-z\-]*:[\s]*[^;]+;/gi, '')
+        .replace(/([0-9.]+)pt/gi, function (match) {
+        return (parseFloat(match) * 1.328).toFixed(0) + 'px';
+    });
+}
 exports.applyStyles = function (html) {
     if (html.indexOf('<html ') === -1) {
         return html;
@@ -10227,16 +10608,26 @@ exports.applyStyles = function (html) {
                 }
                 collection = selector_1.$$(rules[idx].selectorText, iframeDoc.body);
                 collection.forEach(function (elm) {
-                    elm.style.cssText = rules[idx].style.cssText
-                        .replace(/mso-[a-z\-]+:[\s]*[^;]+;/g, '')
-                        .replace(/border[a-z\-]*:[\s]*[^;]+;/g, '') + elm.style.cssText;
+                    elm.style.cssText = normalizeCSS(rules[idx].style.cssText + ';' + elm.style.cssText);
                 });
             };
             for (var idx = 0; idx < rules.length; idx += 1) {
                 _loop_1(idx);
             }
+            Dom_1.Dom.each(iframeDoc.body, function (node) {
+                if (node.nodeType === Node.ELEMENT_NODE) {
+                    var elm = node;
+                    var css = elm.style.cssText;
+                    if (css) {
+                        elm.style.cssText = normalizeCSS(css);
+                    }
+                    if (elm.hasAttribute('lang')) {
+                        elm.removeAttribute('lang');
+                    }
+                }
+            });
             convertedString = iframeDoc.firstChild
-                ? iframeDoc.body.innerHTML
+                ? string_1.trim(iframeDoc.body.innerHTML)
                 : '';
         }
     }
@@ -10248,14 +10639,119 @@ exports.applyStyles = function (html) {
     if (convertedString) {
         html = convertedString;
     }
-    return html
+    return string_1.trim(html
         .replace(/<(\/)?(html|colgroup|col|o:p)[^>]*>/g, '')
-        .replace(/<!--[^>]*>/g, '');
+        .replace(/<!--[^>]*>/g, ''));
 };
 
 
 /***/ }),
-/* 91 */
+/* 97 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ucfirst = function (value) {
+    if (!value.length) {
+        return '';
+    }
+    return value[0].toUpperCase() + value.substr(1);
+};
+
+
+/***/ }),
+/* 98 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var defaultLanguage_1 = __webpack_require__(37);
+var __1 = __webpack_require__(4);
+exports.sprintf = function (str, args) {
+    if (!args || !args.length) {
+        return str;
+    }
+    var reg = /%([sd])/g;
+    var fnd = reg.exec(str);
+    var res = str, i = 0;
+    while (fnd && args[i] !== undefined) {
+        res = res.replace(fnd[0], args[i].toString());
+        i += 1;
+        fnd = reg.exec(str);
+    }
+    return res;
+};
+exports.i18n = function (key, params, options, safe) {
+    if (safe === void 0) { safe = "production" === 'production'; }
+    var _a, _b;
+    var debug = Boolean(options !== undefined && options.debugLanguage);
+    var store;
+    var parse = function (value) { return (params && params.length) ? exports.sprintf(value, params) : value; }, defaultLanguage = defaultLanguage_1.defaultLanguage(Config_1.Config.defaultOptions.language, Config_1.Config.defaultOptions.language), language = defaultLanguage_1.defaultLanguage((_a = options) === null || _a === void 0 ? void 0 : _a.language, defaultLanguage), tryGet = function (store) {
+        if (!store) {
+            return;
+        }
+        if (__1.isString(store[key])) {
+            return parse(store[key]);
+        }
+        var lcKey = key.toLowerCase();
+        if (__1.isString(store[lcKey])) {
+            return parse(store[lcKey]);
+        }
+        var ucfKey = __1.ucfirst(key);
+        if (__1.isString(store[ucfKey])) {
+            return parse(store[ucfKey]);
+        }
+        return;
+    };
+    if (Jodit_1.Jodit.lang[language] !== undefined) {
+        store = Jodit_1.Jodit.lang[language];
+    }
+    else {
+        if (Jodit_1.Jodit.lang[defaultLanguage] !== undefined) {
+            store = Jodit_1.Jodit.lang[defaultLanguage];
+        }
+        else {
+            store = Jodit_1.Jodit.lang.en;
+        }
+    }
+    var i18nOvr = (_b = options) === null || _b === void 0 ? void 0 : _b.i18n;
+    if (i18nOvr && i18nOvr[language]) {
+        var result_1 = tryGet(i18nOvr[language]);
+        if (result_1) {
+            return result_1;
+        }
+    }
+    var result = tryGet(store);
+    if (result) {
+        return result;
+    }
+    if (Jodit_1.Jodit.lang.en && typeof Jodit_1.Jodit.lang.en[key] === 'string' && Jodit_1.Jodit.lang.en[key]) {
+        return parse(Jodit_1.Jodit.lang.en[key]);
+    }
+    if (debug) {
+        return '{' + key + '}';
+    }
+    if (!safe && language !== 'en') {
+        throw new TypeError("i18n need \"" + key + "\" in \"" + language + "\"");
+    }
+    return parse(key);
+};
+var Jodit_1 = __webpack_require__(11);
+
+
+/***/ }),
+/* 99 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10336,112 +10832,7 @@ exports.cleanFromWord = function (html) {
 
 
 /***/ }),
-/* 92 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ucfirst = function (value) {
-    if (!value.length) {
-        return '';
-    }
-    return value[0].toUpperCase() + value.substr(1);
-};
-
-
-/***/ }),
-/* 93 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var defaultLanguage_1 = __webpack_require__(38);
-var __1 = __webpack_require__(4);
-exports.sprintf = function (str, args) {
-    if (!args || !args.length) {
-        return str;
-    }
-    var reg = /%([sd])/g;
-    var fnd = reg.exec(str);
-    var res = str, i = 0;
-    while (fnd && args[i] !== undefined) {
-        res = res.replace(fnd[0], args[i].toString());
-        i += 1;
-        fnd = reg.exec(str);
-    }
-    return res;
-};
-exports.i18n = function (key, params, options, safe) {
-    if (safe === void 0) { safe = "production" === 'production'; }
-    var _a, _b;
-    var debug = Boolean(options !== undefined && options.debugLanguage);
-    var store;
-    var parse = function (value) { return (params && params.length) ? exports.sprintf(value, params) : value; }, defaultLanguage = defaultLanguage_1.defaultLanguage(Config_1.Config.defaultOptions.language, Config_1.Config.defaultOptions.language), language = defaultLanguage_1.defaultLanguage((_a = options) === null || _a === void 0 ? void 0 : _a.language, defaultLanguage), tryGet = function (store) {
-        if (!store) {
-            return;
-        }
-        if (__1.isString(store[key])) {
-            return parse(store[key]);
-        }
-        var lcKey = key.toLowerCase();
-        if (__1.isString(store[lcKey])) {
-            return parse(store[lcKey]);
-        }
-        var ucfKey = __1.ucfirst(key);
-        if (__1.isString(store[ucfKey])) {
-            return parse(store[ucfKey]);
-        }
-        return;
-    };
-    if (Jodit_1.Jodit.lang[language] !== undefined) {
-        store = Jodit_1.Jodit.lang[language];
-    }
-    else {
-        if (Jodit_1.Jodit.lang[defaultLanguage] !== undefined) {
-            store = Jodit_1.Jodit.lang[defaultLanguage];
-        }
-        else {
-            store = Jodit_1.Jodit.lang.en;
-        }
-    }
-    var i18nOvr = (_b = options) === null || _b === void 0 ? void 0 : _b.i18n;
-    if (i18nOvr && i18nOvr[language]) {
-        var result_1 = tryGet(i18nOvr[language]);
-        if (result_1) {
-            return result_1;
-        }
-    }
-    var result = tryGet(store);
-    if (result) {
-        return result;
-    }
-    if (Jodit_1.Jodit.lang.en && typeof Jodit_1.Jodit.lang.en[key] === 'string' && Jodit_1.Jodit.lang.en[key]) {
-        return parse(Jodit_1.Jodit.lang.en[key]);
-    }
-    if (debug) {
-        return '{' + key + '}';
-    }
-    if (!safe && language !== 'en') {
-        throw new TypeError("i18n need \"" + key + "\" in \"" + language + "\"");
-    }
-    return parse(key);
-};
-var Jodit_1 = __webpack_require__(10);
-
-
-/***/ }),
-/* 94 */
+/* 100 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10455,8 +10846,8 @@ var Jodit_1 = __webpack_require__(10);
 * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
 */
 Object.defineProperty(exports, "__esModule", { value: true });
-var trim_1 = __webpack_require__(37);
-var constants_1 = __webpack_require__(3);
+var trim_1 = __webpack_require__(36);
+var constants_1 = __webpack_require__(2);
 exports.clear = function (value, removeEmptyBlocks) {
     if (removeEmptyBlocks === void 0) { removeEmptyBlocks = false; }
     value = trim_1.trim(value)
@@ -10470,7 +10861,7 @@ exports.clear = function (value, removeEmptyBlocks) {
 
 
 /***/ }),
-/* 95 */
+/* 101 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10492,7 +10883,7 @@ exports.htmlspecialchars = function (html) {
 
 
 /***/ }),
-/* 96 */
+/* 102 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10514,7 +10905,7 @@ exports.stripTags = function (html) {
 
 
 /***/ }),
-/* 97 */
+/* 103 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10529,7 +10920,7 @@ exports.stripTags = function (html) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var string_1 = __webpack_require__(9);
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
 exports.normalizeKeyAliases = function (keys) {
     var memory = {};
     return keys
@@ -10544,7 +10935,7 @@ exports.normalizeKeyAliases = function (keys) {
 
 
 /***/ }),
-/* 98 */
+/* 104 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10572,7 +10963,7 @@ exports.normalizeLicense = function (license, count) {
 
 
 /***/ }),
-/* 99 */
+/* 105 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10586,7 +10977,7 @@ exports.normalizeLicense = function (license, count) {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var constants_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
 var Dom_1 = __webpack_require__(0);
 exports.normalizeNode = function (node) {
     if (!node) {
@@ -10612,7 +11003,7 @@ exports.normalizeNode = function (node) {
 
 
 /***/ }),
-/* 100 */
+/* 106 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10649,7 +11040,7 @@ exports.normalizePath = function () {
 
 
 /***/ }),
-/* 101 */
+/* 107 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10686,7 +11077,7 @@ exports.normalizeRelativePath = function (path) {
 
 
 /***/ }),
-/* 102 */
+/* 108 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10709,7 +11100,7 @@ exports.normalizeSize = function (value) {
 
 
 /***/ }),
-/* 103 */
+/* 109 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10737,7 +11128,7 @@ exports.normalizeURL = function () {
 
 
 /***/ }),
-/* 104 */
+/* 110 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10751,8 +11142,8 @@ exports.normalizeURL = function () {
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var colorToHex_1 = __webpack_require__(47);
-var trim_1 = __webpack_require__(37);
+var colorToHex_1 = __webpack_require__(48);
+var trim_1 = __webpack_require__(36);
 exports.normalizeColor = function (colorInput) {
     var newcolor = ['#'];
     var color = colorToHex_1.colorToHex(colorInput);
@@ -10776,7 +11167,7 @@ exports.normalizeColor = function (colorInput) {
 
 
 /***/ }),
-/* 105 */
+/* 111 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10797,7 +11188,7 @@ exports.getContentWidth = function (element, win) {
 
 
 /***/ }),
-/* 106 */
+/* 112 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10822,7 +11213,7 @@ exports.innerWidth = function (element, win) {
 
 
 /***/ }),
-/* 107 */
+/* 113 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10860,7 +11251,7 @@ exports.offset = function (elm, jodit, doc, recurse) {
 
 
 /***/ }),
-/* 108 */
+/* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10900,7 +11291,7 @@ exports.browser = function (browser) {
 
 
 /***/ }),
-/* 109 */
+/* 115 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10915,7 +11306,7 @@ exports.browser = function (browser) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var isURL_1 = __webpack_require__(46);
-var parseQuery_1 = __webpack_require__(53);
+var parseQuery_1 = __webpack_require__(54);
 exports.convertMediaURLToVideoEmbed = function (url, width, height) {
     if (width === void 0) { width = 400; }
     if (height === void 0) { height = 345; }
@@ -10967,7 +11358,7 @@ exports.convertMediaURLToVideoEmbed = function (url, width, height) {
 
 
 /***/ }),
-/* 110 */
+/* 116 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11000,7 +11391,7 @@ exports.dataBind = function (elm, key, value) {
 
 
 /***/ }),
-/* 111 */
+/* 117 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11026,7 +11417,7 @@ exports.humanSizeToBytes = function (human) {
 
 
 /***/ }),
-/* 112 */
+/* 118 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11070,7 +11461,7 @@ exports.scrollIntoView = function (elm, root, doc) {
 
 
 /***/ }),
-/* 113 */
+/* 119 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11097,7 +11488,7 @@ exports.val = function (elm, selector, value) {
 
 
 /***/ }),
-/* 114 */
+/* 120 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11129,7 +11520,7 @@ exports.Command = Command;
 
 
 /***/ }),
-/* 115 */
+/* 121 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11187,7 +11578,7 @@ exports.StatusBar = StatusBar;
 
 
 /***/ }),
-/* 116 */
+/* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11257,7 +11648,7 @@ exports.EventHandlersStore = EventHandlersStore;
 
 
 /***/ }),
-/* 117 */
+/* 123 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11274,8 +11665,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var Component_1 = __webpack_require__(8);
 var Dom_1 = __webpack_require__(0);
-var Create_1 = __webpack_require__(65);
-var isJoditObject_1 = __webpack_require__(13);
+var Create_1 = __webpack_require__(66);
+var isJoditObject_1 = __webpack_require__(12);
 var Panel = (function (_super) {
     tslib_1.__extends(Panel, _super);
     function Panel(jodit) {
@@ -11335,20 +11726,20 @@ exports.Panel = Panel;
 
 
 /***/ }),
-/* 118 */
+/* 124 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
+tslib_1.__exportStar(__webpack_require__(62), exports);
 tslib_1.__exportStar(__webpack_require__(61), exports);
-tslib_1.__exportStar(__webpack_require__(60), exports);
 tslib_1.__exportStar(__webpack_require__(25), exports);
 
 
 /***/ }),
-/* 119 */
+/* 125 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11377,7 +11768,7 @@ exports.ToolbarBreak = ToolbarBreak;
 
 
 /***/ }),
-/* 120 */
+/* 126 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11395,7 +11786,7 @@ var tslib_1 = __webpack_require__(1);
 var helpers_1 = __webpack_require__(4);
 var button_1 = __webpack_require__(27);
 var popup_1 = __webpack_require__(28);
-var joditToolbarCollection_1 = __webpack_require__(20);
+var joditToolbarCollection_1 = __webpack_require__(16);
 var PopupList = (function (_super) {
     tslib_1.__extends(PopupList, _super);
     function PopupList(jodit, target, current, className) {
@@ -11473,7 +11864,7 @@ exports.PopupList = PopupList;
 
 
 /***/ }),
-/* 121 */
+/* 127 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11534,7 +11925,7 @@ exports.ToolbarTooltip = ToolbarTooltip;
 
 
 /***/ }),
-/* 122 */
+/* 128 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11555,7 +11946,7 @@ exports.ToolbarSeparator = ToolbarSeparator;
 
 
 /***/ }),
-/* 123 */
+/* 129 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11569,26 +11960,28 @@ exports.ToolbarSeparator = ToolbarSeparator;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var ar_1 = __webpack_require__(124);
-var cs_cz_1 = __webpack_require__(125);
-var de_1 = __webpack_require__(126);
-var es_1 = __webpack_require__(127);
-var fr_1 = __webpack_require__(128);
-var he_1 = __webpack_require__(129);
-var hu_1 = __webpack_require__(130);
-var id_1 = __webpack_require__(131);
-var it_1 = __webpack_require__(132);
-var nl_1 = __webpack_require__(133);
-var pt_br_1 = __webpack_require__(134);
-var ru_1 = __webpack_require__(135);
-var tr_1 = __webpack_require__(136);
-var zh_cn_1 = __webpack_require__(137);
-var zh_tw_1 = __webpack_require__(138);
-var en_1 = __webpack_require__(139);
+var ar_1 = __webpack_require__(130);
+var cs_cz_1 = __webpack_require__(131);
+var de_1 = __webpack_require__(132);
+var en_1 = __webpack_require__(133);
+var es_1 = __webpack_require__(134);
+var fr_1 = __webpack_require__(135);
+var he_1 = __webpack_require__(136);
+var hu_1 = __webpack_require__(137);
+var id_1 = __webpack_require__(138);
+var it_1 = __webpack_require__(139);
+var ja_1 = __webpack_require__(140);
+var nl_1 = __webpack_require__(141);
+var pl_1 = __webpack_require__(142);
+var pt_br_1 = __webpack_require__(143);
+var ru_1 = __webpack_require__(144);
+var tr_1 = __webpack_require__(145);
+var zh_cn_1 = __webpack_require__(146);
+var zh_tw_1 = __webpack_require__(147);
 var exp = {
     ar: ar_1.default,
-    de: de_1.default,
     cs_cz: cs_cz_1.default,
+    de: de_1.default,
     en: en_1.default,
     es: es_1.default,
     fr: fr_1.default,
@@ -11596,7 +11989,9 @@ var exp = {
     hu: hu_1.default,
     id: id_1.default,
     it: it_1.default,
+    ja: ja_1.default,
     nl: nl_1.default,
+    pl: pl_1.default,
     pt_br: pt_br_1.default,
     ru: ru_1.default,
     tr: tr_1.default,
@@ -11622,109 +12017,7424 @@ exports.default = exp;
 
 
 /***/ }),
-/* 124 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["إبدأ في الكتابة...","حول جوديت","محرر جوديت","الإصدار الغير تجاري مجاني","رخصة جنو العمومية العامة ، الإصدار الثاني أو الأحدث","دليل مستخدم جوديت","يحتوي على مساعدة مفصلة للاستخدام","للحصول على معلومات حول الترخيص، يرجى الذهاب لموقعنا:","شراء النسخة الكاملة","حقوق الطبع والنشر © XDSoft.net - Chupurnov Valeriy. كل الحقوق محفوظة.","مِرْساة","فتح في نافذة جديدة","فتح المحرر في الحجم الكامل","مسح التنسيق","ملء اللون أو تعيين لون النص","إعادة","تراجع","عريض","مائل","إدراج قائمة غير مرتبة","إدراج قائمة مرتبة","محاذاة للوسط","محاذاة مثبتة","محاذاة لليسار","محاذاة لليمين","إدراج خط أفقي","إدراج صورة","ادخال الملف","إدراج فيديو يوتيوب/فيميو ","إدراج رابط","حجم الخط","نوع الخط","إدراج كتلة تنسيق","عادي","عنوان 1","عنوان 2","عنوان 3","عنوان 4","إقتباس","كود","إدراج","إدراج جدول","تقليل المسافة البادئة","زيادة المسافة البادئة","تحديد أحرف خاصة","إدراج حرف خاص","تنسيق الرسم","تغيير الوضع","هوامش","أعلى","يمين","أسفل","يسار","الأنماط","الطبقات","محاذاة","اليمين","الوسط","اليسار","--غير مضبوط--","Src","العنوان","العنوان البديل","الرابط","افتح الرابط في نافذة جديدة","الصورة","ملف","متقدم","خصائص الصورة","إلغاء","حسنا","متصفح الملفات","حدث خطأ في تحميل القائمة ","حدث خطأ في تحميل المجلدات","هل أنت واثق؟","أدخل اسم المجلد","إنشاء مجلد","أكتب إسم","إسقاط صورة","إسقاط الملف","أو أنقر","النص البديل","رفع","تصفح","الخلفية","نص","أعلى","الوسط","الأسفل","إدراج عمود قبل","إدراج عمود بعد","إدراج صف أعلى","إدراج صف أسفل","حذف الجدول","حذف الصف","حذف العمود","خلية فارغة","%d حرف","%d كلام","اضرب من خلال","أكد","حرف فوقي","مخطوطة","قطع الاختيار","اختر الكل","استراحة","البحث عن","استبدل ب","يحل محل","معجون","اختر محتوى للصق","مصدر","بالخط العريض","مائل","شغل","صلة","إلغاء","كرر","طاولة","صورة","نظيف","فقرة","حجم الخط","فيديو","الخط","حول المحرر","طباعة","رمز","أكد","شطب","المسافة البادئة","نتوء","ملء الشاشة","الحجم التقليدي","نسخ التنسيق","الخط","قائمة","قائمة مرقمة","قطع","اختر الكل","قانون","فتح الرابط","تعديل الرابط","سمة Nofollow","إزالة الرابط","تحديث","لتحرير","مراجعة","URL","تحرير","محاذاة أفقية","فلتر","عن طريق التغيير","بالاسم","حسب الحجم","إضافة مجلد","إعادة","احتفظ","حفظ باسم","تغيير الحجم","حجم القطع","عرض","ارتفاع","حافظ على النسب","أن","لا","حذف","تميز","تميز %s","محاذاة عمودية","انشق، مزق","اذهب","أضف العمود","اضف سطر","رخصة %s","حذف","انقسام عمودي","تقسيم أفقي","الحدود","يشبه الكود الخاص بك HTML. تبقي كما HTML؟","الصق ك HTML","احتفظ","إدراج كنص","إدراج النص فقط","يمكنك فقط تحرير صورك الخاصة. تحميل هذه الصورة على المضيف؟","تم تحميل الصورة بنجاح على الخادم!","لوحة","لا توجد ملفات في هذا الدليل.","إعادة تسمية","أدخل اسم جديد","معاينة","تحميل","لصق من الحافظة","متصفحك لا يدعم إمكانية الوصول المباشر إلى الحافظة.","نسخ التحديد","نسخ","دائرة نصف قطرها الحدود"]
-
-/***/ }),
-/* 125 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["Napiš něco","O Jodit","Editor Jodit","Verze pro nekomerční použití","Licence GNU (GPL), verze 2 nebo vyšší","Jodit Uživatelská příručka","obsahuje detailní nápovědu","Pro informace o licenci, prosím, přejděte na naši stránku:","Koupit plnou verzi","Copyright © XDSoft.net - Chupurnov Valeriy. Všechna práva vyhrazena.","Anchor","Otevřít v nové záložce","Otevřít v celoobrazovkovém režimu","Vyčistit formátování","Barva výplně a písma","Vpřed","Zpět","Tučné","Kurzíva","Odrážky","Číslovaný seznam","Zarovnat na střed","Zarovnat do bloku","Zarovnat vlevo","Zarovnat vpravo","Vložit horizontální linku","Vložit obrázek","Vložit soubor","Vložit video (YT/Vimeo)","Vložit odkaz","Velikost písma","Typ písma","Formátovat blok","Normální text","Nadpis 1","Nadpis 2","Nadpis 3","Nadpis 4","Citát","Kód","Vložit","Vložit tabulku","Zmenšit odsazení","Zvětšit odsazení","Vybrat speciální symbol","Vložit speciální symbol","Použít formát","Změnit mód","Okraje","horní","pravý","spodní","levý","Styly","Třídy","Zarovnání","Vpravo","Na střed","Vlevo","--nenastaveno--","src","Titulek","Alternativní text (alt)","Link","Otevřít link v nové záložce","Obrázek","soubor","Rozšířené","Vlastnosti obrázku","Zpět","Ok","Prohlížeč souborů","Chyba při načítání seznamu souborů","Chyba při načítání složek","Jste si jistý(á)?","Název složky","Vytvořit složku","název","Přetáhněte sem obrázek","Přetáhněte sem soubor","nebo klikněte","Alternativní text","Nahrát","Server","Pozadí","Text","Nahoru","Na střed","Dolu","Vložit sloupec před","Vložit sloupec za","Vložit řádek nad","Vložit řádek pod","Vymazat tabulku","Vymazat řádku","Vymazat sloupec","Vyčistit buňku","Znaky: %d","Slova: %d","Přeškrtnuto","Podtrženo","Horní index","Dolní index","Vyjmout označené","Označit vše","Zalomení","Najdi","Nahradit za","Nahradit","Vložit","Vyber obsah pro vložení","HTML","tučně","kurzíva","štětec","odkaz","zpět","vpřed","tabulka","obrázek","guma","odstavec","velikost písma","video","písmo","о editoru","tisk","symbol","podtrženo","přeškrtnuto","zvětšit odsazení","zmenšit odsazení","celoobrazovkový režim","smrsknout","Kopírovat formát","Linka","Odrážka","Číslovaný seznam","Vyjmout","Označit vše","Kód","Otevřít odkaz","Upravit odkaz","Atribut no-follow","Odstranit odkaz","Aktualizovat","Chcete-li upravit","Zobrazit","URL","Editovat","Horizontální zarovnání","Filtr","Dle poslední změny","Dle názvu","Dle velikosti","Přidat složku","Reset","Uložit","Uložit jako...","Změnit rozměr","Ořezat","Šířka","Výška","Ponechat poměr","Ano","Ne","Vyjmout","Označit","Označit %s","Vertikální zarovnání","Rozdělit","Spojit","Přidat sloupec","Přidat řádek","Licence: %s","Vymazat","Rozdělit vertikálně","Rozdělit horizontálně","Okraj","Váš text se podobá HTML. Vložit ho jako HTML?","Vložit jako HTML","Ponechat originál","Vložit jako TEXT","Vložit pouze TEXT","Můžete upravovat pouze své obrázky. Načíst obrázek?","Obrázek byl úspěšně nahrán!","paleta","V tomto adresáři nejsou žádné soubory.","přejmenovat","Zadejte nový název","náhled","Stažení","Vložit ze schránky","Váš prohlížeč nepodporuje přímý přístup do schránky.","Kopírovat výběr","kopírování","Border radius"]
-
-/***/ }),
-/* 126 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["Bitte geben Sie einen Text ein","Über Jodit","Jodit Editor","Freie Nicht-kommerzielle Version","GNU General Public License, Version 2 oder höher","Das Jodit Benutzerhandbuch","beinhaltet ausführliche Informationen wie Sie den Editor verwenden können.","Für Lizenz-Informationen, besuchen Sie bitte unsere Webseite:","Vollversion kaufen","Copyright © XDSoft.net - Chupurnov Valeriy. Alle Rechte vorbehalten.","Anker","In neuer Registerkarte öffnen","Editor in voller Größe öffnen","Formatierung löschen","Füllfarbe oder Textfarbe ändern","Wiederholen","Rückgängig machen","Fett","Kursiv","Ungeordnete Liste einfügen","Sortierte Liste einfügen","Mittig ausrichten","Blocksatz","Links ausrichten","Rechts ausrichten","Horizontale Linie einfügen","Bild einfügen","Datei einfügen","Youtube/vimeo Video einfügen","Link einfügen","Schriftgröße","Schriftfamilie","Formatblock einfügen","Normal","Überschrift 1","Überschrift 2","Überschrift 3","Überschrift 4","Zitat","Code","Einfügen","Tabelle einfügen","Einzug verkleinern","Einzug vergrößern","Sonderzeichen auswählen","Sonderzeichen einfügen","Format kopieren","Änderungsmodus","Ränder","Oben","Rechts","Unten","Links","CSS Stiel","CSS Klassen","Ausrichten","Rechts","Zentriert","Links","Keine","Pfad","Titel","Alternativer Text","Link","Link in neuem Tab öffnen","Bild","Datei","Fortgeschritten","Bildeigenschaften","Abbrechen","OK","Dateibrowser","Fehler beim Laden der Liste","Fehler beim Laden der Ordner","Sind Sie sicher?","Geben Sie den Verzeichnisnamen ein","Verzeichnis erstellen","Typname","Bild hier hinziehen","Datei löschen","oder hier klicken","Alternativtext","Hochladen","Auswählen","Hintergrund","Text","Oben","Mittig","Unten","Spalte einfügen vor","Spalte einfügen nach","Zeile einfügen oberhalb","Zeile unterhalb einfügen","Tabelle löschen","Zeile löschen","Spalte löschen","Leere Zelle","Zeichen: %d","Wörter: %d","Durchschlagen","Unterstreichen","hochgestellt","Index","Auswahl ausschneid","Wählen Sie Alle aus","Pause","Suche nach","Ersetzen durch","Ersetzen","Einfügen","Wählen Sie Inhalt zum Einfügen","HTML","Fett gedruckt","kursiv","Bürste","Verknüpfung","rückgängig machen","wiederholen","Tabelle","Bild","Radiergummi","Absatz","Schriftgröße","Video","Schriftart","Über","drucken","Symbol","unterstreichen","durchgestrichen","Einzug","Aussenseiter","Vollgröße","schrumpfen","Format kopierenт","die Linie","Liste von","Nummerierte Liste","Schnitt","Wählen Sie Alle aus","Code einbetten","Link öffnen","Link bearbeiten","Nofollow-Attribut","Link entfernen","Aktualisieren","Bearbeiten","Ansehen","URL","Bearbeiten","Horizontale Ausrichtung","filter","Sortieren nach geändert","Nach Name sortieren","Nach Größe sortiert","Ordner hinzufügen","Wiederherstellen","Speichern","Speichern als","Ändern Sie die Größe","Größe anpassen","Breite","Höhe","Halten Sie Proportionen","Ja","Nein","Entfernen","Markieren","Markieren: %s","Vertikale Ausrichtung","Split","Verschmelzen","Spalte hinzufügen","Zeile hinzufügen",null,"Löschen","Split vertikal","Split horizontally","Rand","Es scheint als dass Sie HTML-Text einfügen möchten","Als HTML einfügen?","Original speichern","Als Text einfügen","Nur Text einfügen","Sie können nur Ihre eigenen Bilder bearbeiten. Laden Sie dieses Bild auf dem Host herunter?","Das Bild wurde erfolgreich auf den Server hochgeladen!null","Palette","In diesem Verzeichnis befinden sich keine Dateien.","umbenennen","Geben Sie einen neuen Namen ein","Vorschau","Herunterladen","Aus der Zwischenablage einfügen","Ihr browser unterstützt kein direkter Zugriff auf die Zwischenablage.","Auswahl kopieren","kopieren","Border-radius"]
-
-/***/ }),
-/* 127 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["Escriba algo...","Acerca de Jodit","Jodit Editor","Versión gratis no comercial","GNU General Public License, Versión 2 o posterior","Guía de usuario Jodit","contiene ayuda detallada para el uso.","Para información sobre la licencia, por favor visite nuestro sitio:","Compre la versión completa","Copyright © XDSoft.net - Chupurnov Valeriy. Todos los derechos reservados.","Anclar","Abrir en nueva pestaña","Abrir editor en pantalla completa","Limpiar formato","Color de relleno o de letra","Rehacer","Deshacer","Negrita","Cursiva","Insertar lista no ordenada","Insertar lista ordenada","Alinear Centrado","Alinear Justificado","Alinear Izquierda","Alinear Derecha","Insertar línea horizontal","Insertar imagen","Insertar archivo","Insertar video de Youtube/vimeo","Insertar vínculo","Tamaño de letra","Familia de letra","Insertar bloque","Normal","Encabezado 1","Encabezado 2","Encabezado 3","Encabezado 4","Cita","Código","Insertar","Insertar tabla","Disminuir sangría","Aumentar sangría","Seleccionar caracter especial","Insertar caracter especial","Copiar formato","Cambiar modo","Márgenes","arriba","derecha","abajo","izquierda","Estilos CSS","Clases CSS","Alinear","Derecha","Centrado","Izquierda","--No Establecido--","Fuente","Título","Texto Alternativo","Vínculo","Abrir vínculo en nueva pestaña","Imagen","Archivo","Avanzado","Propiedades de imagen","Cancelar","Aceptar","Buscar archivo","Error al cargar la lista","Error al cargar las carpetas","¿Está seguro?","Entre nombre de carpeta","Crear carpeta","Entre el nombre","Soltar imagen","Soltar archivo","o click","Texto alternativo","Subir","Buscar","Fondo","Texto","Arriba","Centro","Abajo","Insertar columna antes","Interar columna después","Insertar fila arriba","Insertar fila debajo","Borrar tabla","Borrar fila","Borrar columna","Vaciar celda","Caracteres: %d","Palabras: %d","Tachado","Subrayado","superíndice","subíndice","Cortar selección","Seleccionar todo","Pausa","Buscar","Reemplazar con","Reemplazar","Pegar","Seleccionar contenido para pegar","HTML","negrita","cursiva","Brocha","Vínculo","deshacer","rehacer","Tabla","Imagen","Borrar","Párrafo","Tamaño de letra","Video","Letra","Acerca de","Imprimir","Símbolo","subrayar","tachar","sangría","quitar sangría","Tamaño completo","encoger","Copiar formato","línea horizontal","lista sin ordenar","lista ordenada","Cortar","Seleccionar todo","Incluir código","Abrir vínculo","Editar vínculo","No seguir","Desvincular","Actualizar","Para editar","Ver","URL","Editar","Alineación horizontal","filtrar","Ordenar por fecha modificación","Ordenar por nombre","Ordenar por tamaño","Agregar carpeta","Resetear","Guardar","Guardar como...","Redimensionar","Recortar","Ancho","Alto","Mantener relación de aspecto","Si","No","Quitar","Seleccionar","Seleccionar: %s","Alineación vertical","Dividir","Mezclar","Agregar columna","Agregar fila",null,"Borrar","Dividir vertical","Dividir horizontal","Borde","El código es similar a HTML. ¿Mantener como HTML?","Pegar como HTML?","Mantener","Insertar como texto","Insertar solo texto","Solo puedes editar tus propias imágenes. ¿Descargar esta imagen en el servidor?","¡La imagen se ha subido correctamente al servidor!","paleta","No hay archivos en este directorio.","renombrar","Ingresa un nuevo nombre","avance","Descargar","Pegar desde el portapapeles","Su navegador no soporta el acceso directo en el portapapeles.","Selección de copia","copia","Radio frontera"]
-
-/***/ }),
-/* 128 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["Ecrivez ici","A propos de Jodit","Editeur Jodit","Version gratuite, non commerciale","GNU General Public License, version 2 ou ultérieure","Guide de l'utilisateur","Aide détaillée à l'utilisation","Consulter la licence sur notre site web:","Acheter la version complète","Copyright © XDSoft.net - Chupurnov Valeriy. Tous droits réservés.","Ancre","Ouvrir dans un nouvel onglet","Ouvrir l'éditeur en pleine page","Supprimer le formattage","Modifier la couleur du fond ou du texte","Refaire","Défaire","Gras","Italique","Liste non ordonnée","Liste ordonnée","Centrer","Justifier","Aligner à gauche ","Aligner à droite","Insérer une ligne horizontale","Insérer une image","Insérer un fichier","Insérer une vidéo","Insérer un lien","Taille des caractères","Famille des caractères","Bloc formatté","Normal","Titre 1","Titre 2","Titre 3","Titre 4","Citation","Code","Insérer","Insérer un tableau","Diminuer le retrait","Retrait plus","Sélectionnez un caractère spécial","Insérer un caractère spécial","Cloner le format","Mode wysiwyg <-> code html","Marges","haut","droite","Bas","gauche","Styles","Classes","Alignement","Droite","Centre","Gauche","--Non disponible--","Source","Titre","Alternative","Lien","Ouvrir le lien dans un nouvel onglet","Image","fichier","Avancé","Propriétés de l'image","Effacer","OK","Explorateur de fichiers","Erreur de liste de chargement","Erreur de dossier de chargement","Etes-vous sûrs ?","Entrer le non de dossier","Créer un dossier","type de fichier","Coller une image","Déposer un fichier","ou cliquer","Texte de remplacemement","Charger","Chercher","Arrière-plan","Texte","Haut","Milieu","Bas","Insérer une colonne avant","Insérer une colonne après","Insérer une ligne en dessus","Insérer une ligne en dessous","Supprimer le tableau","Supprimer la ligne","Supprimer la colonne","Vider la cellule","Symboles: %d","Mots: %d","Frapper à travers","Souligner","exposant","indice","Couper la sélection","Tout sélectionner","Pause","Rechercher","Remplacer par","Remplacer","Coller","Choisissez le contenu à coller","la source","graisseux","italique","verser","lien","abolir","prêt","graphique","Image","la gommen","clause","taille de police","Video","police","à propos de l'éditeur","impression","caractère","souligné","barré","indentation","indifférent","taille réelle","taille conventionnelle","Format de copie","la ligne","Liste des","Liste numérotée","Couper","Sélectionner tout",null,"Ouvrir le lien","Modifier le lien","Attribut Nofollow","Supprimer le lien","Mettre à jour","Pour éditer","Voir","URL",null,"Alignement horizontal","Filtre","Trier par modifié","Trier par nom","Classer par taille","Ajouter le dossier","Restaurer","Sauvegarder","Enregistrer sous","Changer la taille","Taille de garniture","Largeur","Hauteur","Garder les proportions","Oui","Non","Supprimer","Mettre en évidence","Mettre en évidence: %s","Alignement vertical","Split","aller","Ajouter une colonne","Ajouter une rangée",null,"Effacer","Split vertical","Split horizontal",null,"Votre texte que vous essayez de coller est similaire au HTML. Collez-le en HTML?","Coller en HTML?","Sauvegarder l'original","Coller en tant que texte","Coller le texte seulement","Vous ne pouvez éditer que vos propres images. Téléchargez cette image sur l'hôte?","L'image a été téléchargée avec succès sur le serveur!null","Palette","Il n'y a aucun fichier dans ce répertoire.","renommer","Entrez un nouveau nom","Aperçu","Télécharger","Coller à partir du presse-papiers","Votre navigateur ne prend pas en charge l'accès direct à la presse-papiers.","Copier la sélection","copie","Rayon des frontières"]
-
-/***/ }),
-/* 129 */
-/***/ (function(module, exports) {
-
-module.exports.default = ["הקלד משהו...","About Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","Jodit User's Guide","contains detailed help for using.","For information about the license, please go to our website:","Buy full version","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","מקום עיגון","פתח בכרטיסיה חדשה","פתח את העורך בחלון חדש","נקה עיצוב","שנה צבע טקסט או רקע","בצע שוב","בטל","מודגש","נטוי","הכנס רשימת תבליטים","הכנס רשימה ממוספרת","מרכז","ישר ","ישר לשמאל","ישר לימין","הכנס קו אופקי","הכנס תמונה","הכנס קובץ","הכנס סרטון וידאו מYouTube/Vimeo","הכנס קישור","גודל גופן","גופן","מעוצב מראש","רגיל","כותרת 1","כותרת 2","כותרת 3","כותרת 4","ציטוט","קוד","הכנס","הכנס טבלה","הקטן כניסה","הגדל כניסה","בחר תו מיוחד","הכנס תו מיוחד","העתק עיצוב","החלף מצב","ריווח","עליון","ימין","תחתון","שמאל","עיצוב CSS","מחלקת CSS","יישור","ימין","מרכז","שמאל","--לא נקבע--","מקור","כותרת","כיתוב חלופי","קישור","פתח בכרטיסיה חדשה","תמונה","קובץ","מתקדם","מאפייני תמונה","ביטול","אישור","סייר הקבצים","שגיאה  בזמן טעינת רשימה","שגיאה בזמן טעינת תקיות","האם אתה בטוח?","הכנס שם תקיה","צור תקיה","סוג הקובץ","הסר תמונה","הסר קובץ","או לחץ","כיתוב חלופי","העלה","סייר","רקע","טקסט","עליון","מרכז","תחתון","הכנס עמודה לפני","הכנס עמודה אחרי","הכנס שורה מעל","הכנס שורה מתחת","מחק טבלה","מחק שורה","מחק עמודה","רוקן תא","תווים: %d","מילים: %d","קו חוצה","קו תחתון","superscript","subscript","גזור בחירה","בחר הכל","שבירת שורה","חפש","החלף ב","החלף","הדבק","בחר תוכן להדבקה","HTML","מודגש","נטוי","מברשת","קישור","בטל","בצע שוב","טבלה","תמונה","מחק","פסקה","גודל גופן","וידאו","גופן","עלינו","הדפס","תו מיוחד","קו תחתון","קו חוצה","הגדל כניסה","הקטן כניסה","גודל מלא","כווץ","העתק עיצוב","קו אופקי","רשימת תבליטים","רשימה ממוספרת","חתוך","בחר הכל","הוסף קוד","פתח קישור","ערוך קישור","ללא מעקב","בטל קישור","עדכן","כדי לערוך","הצג","כתובת","ערוך","יישור אופקי","סנן","מין לפי שינוי","מיין לפי שם","מיין לפי גודל","הוסף תקייה","אפס","שמור","שמור בשם...","שנה גודל","חתוך","רוחב","גובה","שמור יחס","כן","לא","הסר","בחר","נבחר: %s","יישור אנכי","פיצול","מזג","הוסף עמודה","הוסף שורה",null,"מחק","פיצול אנכי","פיצול אופקי","מסגרת","הקוד דומה לHTML, האם להשאיר כHTML","הדבק כHTML","השאר","הכנס כטקסט","הכנס טקסט בלבד","רק קבצים המשוייכים שלך ניתנים לעריכה. האם להוריד את הקובץ?","התמונה עלתה בהצלחה!","לוח","אין קבצים בספריה זו.","הונגרית","הזן שם חדש","תצוגה מקדימה","הורד","להדביק מהלוח","הדפדפן שלך לא תומך גישה ישירה ללוח.","העתק בחירה","העתק","רדיוס הגבול"]
-
-/***/ }),
 /* 130 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Írjon be valamit","Joditról","Jodit Editor","Ingyenes változat","GNU General Public License, Verzió 2 vagy későbbi","Jodit útmutató","további segítséget tartalmaz","További licence információkért látogassa meg a weboldalunkat:","Teljes verzió megvásárlása","Copyright © XDSoft.net - Chupurnov Valeriy. Minden jog fenntartva.","Horgony","Megnyitás új lapon","Megnyitás teljes méretben","Formázás törlése","Háttér/szöveg szín","Újra","Visszavon","Félkövér","Dőlt","Pontozott lista","Számozott lista","Középre zárt","Sorkizárt","Balra zárt","Jobbra zárt","Vízszintes vonal beszúrása","Kép beszúrás","Fájl beszúrás","Youtube videó beszúrása","Link beszúrás","Betűméret","Betűtípus","Formázott blokk beszúrása","Normál","Fejléc 1","Fejléc 2","Fejléc 3","Fejléc 4","Idézet","Kód","Beszúr","Táblázat beszúrása","Behúzás csökkentése","Behúzás növelése","Speciális karakter kiválasztása","Speciális karakter beszúrása","Kép formázása","Nézet váltása","Szegélyek","felső","jobb","alsó","bal","CSS stílusok","CSS osztályok","Igazítás","Jobbra","Középre","Balra","Nincs","Forrás","Cím","Helyettesítő szöveg","Link","Link megnyitása új lapon","Kép","Fájl","Haladó","Kép tulajdonságai","Mégsem","OK","Fájl tallózó","Hiba a lista betöltése közben","Hiba a mappák betöltése közben","Biztosan ezt szeretné?","Írjon be egy mappanevet","Mappa létrehozása","írjon be bevet","Húzza ide a képet","Húzza ide a fájlt","vagy kattintson","Helyettesítő szöveg","Feltölt","Tallóz","Háttér","Szöveg","Fent","Középen","Lent","Oszlop beszúrás elé","Oszlop beszúrás utána","Sor beszúrás fölé","Sor beszúrás alá","Táblázat törlése","Sor törlése","Oszlop törlése","Cella tartalmának törlése","Karakterek száma: %d","Szavak száma: %d","Áthúzott","Aláhúzott","Felső index","Alsó index","Kivágás","Összes kijelölése","Szünet","Keresés","Csere erre","Csere","Beillesztés","Válasszon tartalmat a beillesztéshez","HTML","Félkövér","Dőlt","Ecset","Link","Visszavon","Újra","Táblázat","Kép","Törlés","Paragráfus","Betűméret","Videó","Betű","Rólunk","Nyomtat","Szimbólum","Aláhúzott","Áthúzott","Behúzás","Aussenseiter","Teljes méret","Összenyom","Formátum másolás","Egyenes vonal","Lista","Számozott lista","Kivág","Összes kijelölése","Beágyazott kód","Link megnyitása","Link szerkesztése","Nincs követés","Link leválasztása","Frissít","Szerkesztés","felülvizsgálat","URL","Szerkeszt","Vízszintes igazítás","Szűrő","Rendezés módosítás szerint","Rendezés név szerint","Rendezés méret szerint","Mappa hozzáadás","Visszaállít","Mentés","Mentés másként...","Átméretezés","Kivág","Szélesség","Magasság","Képarány megtartása","Igen","Nem","Eltávolít","Kijelöl","Kijelöl: %s","Függőleges igazítás","Felosztás","Összevonás","Oszlop hozzáadás","Sor hozzáadás",null,"Törlés","Függőleges felosztás","Vízszintes felosztás","Szegély","A beillesztett szöveg HTML-nek tűnik. Megtartsuk HTML-ként?","Beszúrás HTML-ként","Megtartás","Beszúrás szövegként","Csak szöveg beillesztése","Csak a saját képeit tudja szerkeszteni. Letölti ezt a képet?","Kép sikeresen feltöltve!","Palette","Er zijn geen bestanden in deze map.","átnevezés","Adja meg az új nevet","előnézet","Letöltés","Illessze be a vágólap","A böngésző nem támogatja a közvetlen hozzáférést biztosít a vágólapra.","Másolás kiválasztása","másolás","Határ sugár"]
+module.exports.default = ["إبدأ في الكتابة...","متقدم","حول جوديت","محرر جوديت","الإصدار الغير تجاري مجاني","رخصة جنو العمومية العامة ، الإصدار الثاني أو الأحدث","دليل مستخدم جوديت","يحتوي على مساعدة مفصلة للاستخدام","للحصول على معلومات حول الترخيص، يرجى الذهاب لموقعنا:","شراء النسخة الكاملة","حقوق الطبع والنشر © XDSoft.net - Chupurnov Valeriy. كل الحقوق محفوظة.","مِرْساة","فتح في نافذة جديدة","فتح المحرر في الحجم الكامل","مسح التنسيق","ملء اللون أو تعيين لون النص","إعادة","تراجع","عريض","مائل","إدراج قائمة غير مرتبة","إدراج قائمة مرتبة","محاذاة للوسط","محاذاة مثبتة","محاذاة لليسار","محاذاة لليمين","إدراج خط أفقي","إدراج صورة","ادخال الملف","إدراج فيديو يوتيوب/فيميو ","إدراج رابط","حجم الخط","نوع الخط","إدراج كتلة تنسيق","عادي","عنوان 1","عنوان 2","عنوان 3","عنوان 4","إقتباس","كود","إدراج","إدراج جدول","تقليل المسافة البادئة","زيادة المسافة البادئة","تحديد أحرف خاصة","إدراج حرف خاص","تنسيق الرسم","تغيير الوضع","هوامش","أعلى","يمين","أسفل","يسار","الأنماط","الطبقات","محاذاة","اليمين","الوسط","اليسار","--غير مضبوط--","Src","العنوان","العنوان البديل","الرابط","افتح الرابط في نافذة جديدة","الصورة","ملف",null,"خصائص الصورة","إلغاء","حسنا","يشبه الكود الخاص بك HTML. تبقي كما HTML؟","الصق ك HTML","احتفظ",null,"إدراج كنص",null,null,"إدراج النص فقط","متصفح الملفات","حدث خطأ في تحميل القائمة ","حدث خطأ في تحميل المجلدات","هل أنت واثق؟","أدخل اسم المجلد","إنشاء مجلد","أكتب إسم","إسقاط صورة","إسقاط الملف","أو أنقر","النص البديل","تصفح","رفع","الخلفية","نص","أعلى","الوسط","الأسفل","إدراج عمود قبل","إدراج عمود بعد","إدراج صف أعلى","إدراج صف أسفل","حذف الجدول","حذف الصف","حذف العمود","خلية فارغة","حذف","اضرب من خلال","أكد","استراحة","البحث عن","استبدل ب","يحل محل","تحرير","محاذاة عمودية","محاذاة أفقية","فلتر","عن طريق التغيير","بالاسم","حسب الحجم","إضافة مجلد","انقسام عمودي","تقسيم أفقي","انشق، مزق","اذهب","أضف العمود","اضف سطر","الحدود","قانون","تحديث","حرف فوقي","مخطوطة","قطع الاختيار","معجون","اختر محتوى للصق","%d حرف","%d كلام",null,"تميز %s","اختر الكل","مصدر","بالخط العريض","مائل","شغل","صلة","إلغاء","كرر","طاولة","صورة","نظيف","فقرة","حجم الخط","فيديو","الخط","حول المحرر","طباعة","رمز","أكد","شطب","المسافة البادئة","نتوء","ملء الشاشة","الحجم التقليدي","نسخ التنسيق","الخط","قائمة","قائمة مرقمة","قطع","اختر الكل","فتح الرابط","تعديل الرابط","سمة Nofollow","إزالة الرابط","مراجعة","لتحرير","URL","إعادة","احتفظ","حفظ باسم","تغيير الحجم","حجم القطع","عرض","ارتفاع","حافظ على النسب","أن","لا","حذف","تميز","يمكنك فقط تحرير صورك الخاصة. تحميل هذه الصورة على المضيف؟","تم تحميل الصورة بنجاح على الخادم!","لوحة","لا توجد ملفات في هذا الدليل.","إعادة تسمية","أدخل اسم جديد","معاينة","تحميل","لصق من الحافظة","متصفحك لا يدعم إمكانية الوصول المباشر إلى الحافظة.","نسخ التحديد","نسخ","دائرة نصف قطرها الحدود"]
 
 /***/ }),
 /* 131 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Ketik sesuatu","Tentang Jodit","Editor Jodit","Versi Bebas Non-komersil","Lisensi Publik Umum (GPL), versi 2 atau terbaru","Panduan Pengguna Jodit","mencakup detail bantuan penggunaan","Untuk informasi tentang lisensi, silakan kunjungi website:","Beli versi lengkap","Hak Cipta © XDSoft.net - Chupurnov Valeriy. Hak cipta dilindungi undang-undang.","Tautan","Buka di tab baru","Buka editor dalam ukuran penuh","Hapus Pemformatan","Isi warna atau atur warna teks","Ulangi","Batalkan","Tebal","Miring","Sisipkan Daftar Tidak Berurut","Sisipkan Daftar Berurut","Tengah","Penuh","Kiri","Kanan","Sisipkan Garis Horizontal","Sisipkan Gambar","Sisipkan Berkas","Sisipkan video youtube/vimeo","Sisipkan tautan","Ukuran font","Keluarga font","Sisipkan blok format","Normal","Heading 1","Heading 2","Heading 3","Heading 4","Kutip","Kode","Sisipkan","Sisipkan tabel","Kurangi Indentasi","Tambah Indentasi","Pilih Karakter Spesial","Sisipkan Karakter Spesial","Formar warna","Ubah mode","Batas","atas","kanan","bawah","kiri","Gaya","Class","Rata","Kanan","Tengah","Kiri","--Tidak diset--","Src","Judul","Teks alternatif","Tautan","Buka tautan di tab baru","Gambar","berkas","Lanjutan","Properti gambar","Batal","Ya","Penjelajah Berkas","Error ketika memuat list","Error ketika memuat folder","Apakah Anda yakin?","Masukkan nama Direktori","Buat direktori","ketik nama","Letakkan gambar","Letakkan berkas","atau klik","Teks alternatif","Unggah","Jelajahi","Latar Belakang","Teks","Atas","Tengah","Bawah","Sisipkan kolom sebelumnya","Sisipkan kolom setelahnya","Sisipkan baris di atasnya","Sisipkan baris di bawahnya","Hapus tabel","Hapus baris","Hapus kolom","Kosongkan cell","Karakter: %d","Kata: %d","Coret","Garis Bawah","Superskrip","Subskrip","Potong pilihan","Pilih semua","Berhenti","Mencari","Ganti dengan","Ganti","Paste","Pilih konten untuk dipaste","sumber","tebal","miring","sikat","tautan","batalkan","ulangi","tabel","gambar","penghapus","paragraf","ukuran font","video","font","tentang","cetak","simbol","garis bawah","coret","menjorok ke dalam","menjorok ke luar","ukuran penuh","menyusut","salin format","hr","ul","ol","potong","Pilih semua","Kode embed","Buka tautan","Edit tautan","No follow","Hapus tautan","Perbarui","pensil","Mata","URL","Edit","Perataan horizontal","Filter","Urutkan berdasarkan perubahan","Urutkan berdasarkan nama","Urutkan berdasarkan ukuran","Tambah folder","Reset","Simpan","Simpan sebagai...","Ubah ukuran","Crop","Lebar","Tinggi","Jaga aspek rasio","Ya","Tidak","Copot","Pilih","Pilih %s","Rata vertikal","Bagi","Gabungkan","Tambah kolom","tambah baris","Lisensi: %s","Hapus","Bagi secara vertikal","Bagi secara horizontal","Bingkai","Kode Anda cenderung ke HTML. Biarkan sebagai HTML?","Paste sebagai HTML","Jaga","Sisipkan sebagai teks","Sisipkan hanya teks","Anda hanya dapat mengedit gambar Anda sendiri. Unduh gambar ini di host?","Gambar telah sukses diunggah ke host!","palet","Tidak ada berkas","ganti nama","Masukkan nama baru","pratinjau","Unduh","Paste dari clipboard","Browser anda tidak mendukung akses langsung ke clipboard.","Copy seleksi","copy","Border radius"]
+module.exports.default = ["Napiš něco","Rozšířené","O Jodit","Editor Jodit","Verze pro nekomerční použití","Licence GNU (GPL), verze 2 nebo vyšší","Jodit Uživatelská příručka","obsahuje detailní nápovědu","Pro informace o licenci, prosím, přejděte na naši stránku:","Koupit plnou verzi","Copyright © XDSoft.net - Chupurnov Valeriy. Všechna práva vyhrazena.","Anchor","Otevřít v nové záložce","Otevřít v celoobrazovkovém režimu","Vyčistit formátování","Barva výplně a písma","Vpřed","Zpět","Tučné","Kurzíva","Odrážky","Číslovaný seznam","Zarovnat na střed","Zarovnat do bloku","Zarovnat vlevo","Zarovnat vpravo","Vložit horizontální linku","Vložit obrázek","Vložit soubor","Vložit video (YT/Vimeo)","Vložit odkaz","Velikost písma","Typ písma","Formátovat blok","Normální text","Nadpis 1","Nadpis 2","Nadpis 3","Nadpis 4","Citát","Kód","Vložit","Vložit tabulku","Zmenšit odsazení","Zvětšit odsazení","Vybrat speciální symbol","Vložit speciální symbol","Použít formát","Změnit mód","Okraje","horní","pravý","spodní","levý","Styly","Třídy","Zarovnání","Vpravo","Na střed","Vlevo","--nenastaveno--","src","Titulek","Alternativní text (alt)","Link","Otevřít link v nové záložce","Obrázek","soubor",null,"Vlastnosti obrázku","Zpět","Ok","Váš text se podobá HTML. Vložit ho jako HTML?","Vložit jako HTML","Ponechat originál","Vyčistit","Vložit jako TEXT","Detekován fragment z Wordu nebo Excelu","Obsah, který vkládáte, je pravděpodobně z Microsoft Word / Excel. Chcete ponechat formát nebo vložit pouze text?","Vložit pouze TEXT","Prohlížeč souborů","Chyba při načítání seznamu souborů","Chyba při načítání složek","Jste si jistý(á)?","Název složky","Vytvořit složku","název","Přetáhněte sem obrázek","Přetáhněte sem soubor","nebo klikněte","Alternativní text","Server","Nahrát","Pozadí","Text","Nahoru","Na střed","Dolu","Vložit sloupec před","Vložit sloupec za","Vložit řádek nad","Vložit řádek pod","Vymazat tabulku","Vymazat řádku","Vymazat sloupec","Vyčistit buňku","Vymazat","Přeškrtnuto","Podtrženo","Zalomení","Najdi","Nahradit za","Nahradit","Editovat","Vertikální zarovnání","Horizontální zarovnání","Filtr","Dle poslední změny","Dle názvu","Dle velikosti","Přidat složku","Rozdělit vertikálně","Rozdělit horizontálně","Rozdělit","Spojit","Přidat sloupec","Přidat řádek","Okraj","Kód","Aktualizovat","Horní index","Dolní index","Vyjmout označené","Vložit","Vyber obsah pro vložení","Znaky: %d","Slova: %d","Vše","Označit %s","Označit vše","HTML","tučně","kurzíva","štětec","odkaz","zpět","vpřed","tabulka","obrázek","guma","odstavec","velikost písma","video","písmo","о editoru","tisk","symbol","podtrženo","přeškrtnuto","zvětšit odsazení","zmenšit odsazení","celoobrazovkový režim","smrsknout","Kopírovat formát","Linka","Odrážka","Číslovaný seznam","Vyjmout","Označit vše","Otevřít odkaz","Upravit odkaz","Atribut no-follow","Odstranit odkaz","Zobrazit","Chcete-li upravit","URL","Reset","Uložit","Uložit jako...","Změnit rozměr","Ořezat","Šířka","Výška","Ponechat poměr","Ano","Ne","Vyjmout","Označit","Můžete upravovat pouze své obrázky. Načíst obrázek?","Obrázek byl úspěšně nahrán!","paleta","V tomto adresáři nejsou žádné soubory.","přejmenovat","Zadejte nový název","náhled","Stažení","Vložit ze schránky","Váš prohlížeč nepodporuje přímý přístup do schránky.","Kopírovat výběr","kopírování","Border radius"]
 
 /***/ }),
 /* 132 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Scrivi qualcosa...","A proposito di Jodit","Jodit Editor","Versione gratuita non commerciale","Licenza pubblica generale GNU, versione 2 o successiva","Guida utente di Jodit","contiene una guida dettagliata per l'uso.","Per informazioni sulla licenza, si prega di visitare il nostro sito:","Acquista la versione completa","Copyright © XDSoft.net - Chupurnov Valeriy. Alle Rechte vorbehalten.","Ancora","Apri in una nuova scheda","Apri l'editor a schermo intero","Formato chiaro","Riempi colore o lettera","Ripristina","Annulla","Grassetto","Corsivo","Inserisci lista non ordinata","Inserisci l'elenco ordinato","Allinea Centra","Allineare Giustificato","Allinea a Sinistra","Allinea a Destra","Inserisci la linea orizzontale","Inserisci immagine","Inserisci un file","Inserisci video Youtube/Vimeo","Inserisci il link","Dimensione del carattere","Tipo di font","Inserisci blocco","Normale","Heading 1","Heading 2","Heading 3","Heading 4","Citazione","Codice","Inserisci","Inserisci tabella","Riduci il rientro","Aumenta il rientro","Seleziona una funzione speciale","Inserisci un carattere speciale","Copia formato","Cambia modo","Margini","su","destra","giù","sinistra","Stili CSS","Classi CSS","Allinea","Destra","Centro","Sinistra","--Non Impostato--","Fonte","Titolo","Testo Alternativo","Link","Apri il link in una nuova scheda","Immagine","Archivio","Avanzato","Proprietà dell'immagine","Annulla","Accetta","Cerca il file","Errore durante il caricamento dell'elenco","Errore durante il caricamento delle cartelle","Sei sicuro?","Inserisci il nome della cartella","Crea cartella","Entre el nombre","Rilascia l'immagine","Rilascia file","o click","Testo alternativo","Carica","Sfoglia","Sfondo","Testo","Su","Centro","Sotto","Inserisci prima la colonna","Inserisci colonna dopo","Inserisci la riga sopra","Inserisci la riga sotto","Elimina tabella","Elimina riga","Elimina colonna","Cella vuota","Caratteri: %d","Parole: %d","Barrato","Sottolineato","indice","deponente","Taglia la selezione","Seleziona tutto","Pausa","Cerca","Sostituisci con","Sostituisci","Incolla","Seleziona il contenuto da incollare","HTML","Grassetto","Corsivo","Pennello","Link","Annulla","Ripristina","Tabella","Immagine","Gomma","Paragrafo","Dimensione del carattere","Video","Font","Approposito di","Stampa","Simbolo","Sottolineato","Barrato","trattino","annulla rientro","A grandezza normale","comprimere","Copia il formato","linea orizzontale","lista non ordinata","lista ordinata","Taglia","Seleziona tutto","Includi codice","Apri link","Modifica link","Non seguire","Togli link","Aggiornare","Per modificare","Recensione"," URL","Modifica","Allineamento orizzontale","Filtro","Ordina per data di modifica","Ordina per nome","Ordina per dimensione","Aggiungi cartella","Reset","Salva","Salva con nome...","Ridimensiona","Tagliare","Larghezza","Altezza","Mantenere le proporzioni","Si","No","Rimuovere","Seleziona","Seleziona: %s","Allineamento verticala","Dividere","Fondi","Aggiungi colonna","Aggiungi riga",null,"Cancella","Dividere verticalmente","Diviso orizzontale","Bordo","Il codice è simile all'HTML. Mantieni come HTML?","Incolla come HTML?","Mantieni","Inserisci come testo","Inserisci solo il testo","Puoi modificare solo le tue immagini. Scarica questa immagine sul server?","L'immagine è stata caricata con successo sul server!","tavolozza","Non ci sono file in questa directory.","ungherese","Inserisci un nuovo nome","anteprima","Scaricare","Incolla dagli appunti","Il tuo browser non supporta l'accesso diretto agli appunti.","Selezione di copia","copia","Border radius"]
+module.exports.default = ["Bitte geben Sie einen Text ein","Fortgeschritten","Über Jodit","Jodit Editor","Freie Nicht-kommerzielle Version","GNU General Public License, Version 2 oder höher","Das Jodit Benutzerhandbuch","beinhaltet ausführliche Informationen wie Sie den Editor verwenden können.","Für Lizenz-Informationen, besuchen Sie bitte unsere Webseite:","Vollversion kaufen","Copyright © XDSoft.net - Chupurnov Valeriy. Alle Rechte vorbehalten.","Anker","In neuer Registerkarte öffnen","Editor in voller Größe öffnen","Formatierung löschen","Füllfarbe oder Textfarbe ändern","Wiederholen","Rückgängig machen","Fett","Kursiv","Ungeordnete Liste einfügen","Sortierte Liste einfügen","Mittig ausrichten","Blocksatz","Links ausrichten","Rechts ausrichten","Horizontale Linie einfügen","Bild einfügen","Datei einfügen","Youtube/vimeo Video einfügen","Link einfügen","Schriftgröße","Schriftfamilie","Formatblock einfügen","Normal","Überschrift 1","Überschrift 2","Überschrift 3","Überschrift 4","Zitat","Code","Einfügen","Tabelle einfügen","Einzug verkleinern","Einzug vergrößern","Sonderzeichen auswählen","Sonderzeichen einfügen","Format kopieren","Änderungsmodus","Ränder","Oben","Rechts","Unten","Links","CSS Stiel","CSS Klassen","Ausrichten","Rechts","Zentriert","Links","Keine","Pfad","Titel","Alternativer Text","Link","Link in neuem Tab öffnen","Bild","Datei","Erweitert","Bildeigenschaften","Abbrechen","OK","Es scheint als dass Sie HTML-Text einfügen möchten","Als HTML einfügen?","Original speichern","Säubern","Als Text einfügen","In Word formatierter Text erkannt","Der Inhalt, den Sie einfügen, stammt aus einem Microsoft Word / Excel-Dokument. Möchten Sie das Format erhalten oder löschen?","Nur Text einfügen","Dateibrowser","Fehler beim Laden der Liste","Fehler beim Laden der Ordner","Sind Sie sicher?","Geben Sie den Verzeichnisnamen ein","Verzeichnis erstellen","Typname","Bild hier hinziehen","Datei löschen","oder hier klicken","Alternativtext","Auswählen","Hochladen","Hintergrund","Text","Oben","Mittig","Unten","Spalte einfügen vor","Spalte einfügen nach","Zeile einfügen oberhalb","Zeile unterhalb einfügen","Tabelle löschen","Zeile löschen","Spalte löschen","Leere Zelle","Löschen","Durchschlagen","Unterstreichen","Pause","Suche nach","Ersetzen durch","Ersetzen","Bearbeiten","Vertikale Ausrichtung","Horizontale Ausrichtung","filter","Sortieren nach geändert","Nach Name sortieren","Nach Größe sortiert","Ordner hinzufügen","Split vertikal","Split horizontally","Split","Verschmelzen","Spalte hinzufügen","Zeile hinzufügen","Rand","Code einbetten","Aktualisieren","hochgestellt","Index","Auswahl ausschneid","Einfügen","Wählen Sie Inhalt zum Einfügen","Zeichen: %d","Wörter: %d","Wählen Sie Alle aus","Markieren: %s","Wählen Sie Alle aus","HTML","Fett gedruckt","kursiv","Bürste","Verknüpfung","rückgängig machen","wiederholen","Tabelle","Bild","Radiergummi","Absatz","Schriftgröße","Video","Schriftart","Über","drucken","Symbol","unterstreichen","durchgestrichen","Einzug","Aussenseiter","Vollgröße","schrumpfen","Format kopierenт","die Linie","Liste von","Nummerierte Liste","Schnitt","Wählen Sie Alle aus","Link öffnen","Link bearbeiten","Nofollow-Attribut","Link entfernen","Ansehen","Bearbeiten","URL","Wiederherstellen","Speichern","Speichern als","Ändern Sie die Größe","Größe anpassen","Breite","Höhe","Halten Sie Proportionen","Ja","Nein","Entfernen","Markieren","Sie können nur Ihre eigenen Bilder bearbeiten. Laden Sie dieses Bild auf dem Host herunter?","Das Bild wurde erfolgreich auf den Server hochgeladen!null","Palette","In diesem Verzeichnis befinden sich keine Dateien.","umbenennen","Geben Sie einen neuen Namen ein","Vorschau","Herunterladen","Aus der Zwischenablage einfügen","Ihr browser unterstützt kein direkter Zugriff auf die Zwischenablage.","Auswahl kopieren","kopieren","Border-radius"]
 
 /***/ }),
 /* 133 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Begin met typen..","Over Jodit","Jodit Editor","Gratis niet-commerciële versie","GNU General Public License, versie 2 of hoger","Jodit gebruikershandleiding","bevat gedetailleerde informatie voor gebruik.","Voor informatie over de licentie, ga naar onze website:","Volledige versie kopen","Copyright © XDSoft.net - Chupurnov Valeriy. Alle rechten voorbehouden.","Anker","Open in nieuwe tab","Editor in volledig scherm openen","Opmaak verwijderen","Vulkleur of tekstkleur aanpassen","Opnieuw","Ongedaan maken","Vet","Cursief","Geordende list invoegen","Ongeordende lijst invoegen","Centreren","Uitlijnen op volledige breedte","Links uitlijnen","Rechts uitlijnen","Horizontale lijn invoegen","Afbeelding invoegen","Bestand invoegen","Youtube/Vimeo video invoegen","Link toevoegen","Tekstgrootte","Lettertype","Format blok invoegen","Normaal","Koptekst 1","Koptekst 2","Koptekst 3","Koptekst 4","Citaat","Code","Invoegen","Tabel invoegen","Inspringing verkleinen","Inspringing vergroten","Symbool selecteren","Symbool invoegen","Opmaak kopieren","Modus veranderen","Marges","Boven","Rechts","Onder","Links","CSS styles","CSS classes","Uitlijning","Rechts","Gecentreerd","Links","--Leeg--","Src","Titel","Alternatieve tekst","Link","Link in nieuwe tab openen","Afbeelding","Bestand","Geavanceerd","Afbeeldingseigenschappen","Annuleren","OK","Bestandsbrowser","Fout bij het laden van de lijst","Fout bij het laden van de mappenlijst","Weet je het zeker?","Geef de map een naam","Map aanmaken","Type naam","Sleep hier een afbeelding naartoe","Sleep hier een bestand naartoe","of klik","Alternatieve tekst","Uploaden","Bladeren","Achtergrond","Tekst","Boven","Midden","Onder","Kolom invoegen (voor)","Kolom invoegen (na)","Rij invoegen (boven)","Rij invoegen (onder)","Tabel verwijderen","Rij verwijderen","Kolom verwijderen","Cel leegmaken","Tekens: %d","Woorden: %d","Doorstrepen","Onderstrepen","Superscript","Subscript","Selectie knippen","Selecteer alles","Enter","Zoek naar","Vervangen door","Vervangen","Plakken","Kies content om te plakken","Broncode","vet","cursief","kwast","link","ongedaan maken","opnieuw","tabel","afbeelding","gum","paragraaf","lettergrootte","video","lettertype","over","afdrukken","symbool","onderstreept","doorgestreept","inspringen","minder inspringen","volledige grootte","kleiner maken","opmaak kopiëren","horizontale lijn","lijst","genummerde lijst","knip","alles selecteren","Embed code","link openen","link aanpassen","niet volgen","link verwijderen","Updaten","Om te bewerken","Recensie"," URL","Bewerken","Horizontaal uitlijnen","Filteren","Sorteren op wijzigingsdatum","Sorteren op naam","Sorteren op grootte","Map toevoegen","Herstellen","Opslaan","Opslaan als ...","Grootte aanpassen","Bijknippen","Breedte","Hoogte","Verhouding behouden","Ja","Nee","Verwijderen","Selecteren","Selecteer: %s","Verticaal uitlijnen","Splitsen","Samenvoegen","Kolom toevoegen","Rij toevoegen",null,"Verwijderen","Verticaal splitsen","Horizontaal splitsen","Rand","Deze code lijkt op HTML. Als HTML behouden?","Invoegen als HTML","Origineel behouden","Als tekst invoegen","Als onopgemaakte tekst invoegen","Je kunt alleen je eigen afbeeldingen aanpassen. Deze afbeelding downloaden?","De afbeelding is succesvol geüploadet!","Palette","Er zijn geen bestanden in deze map.","Hongaars","Voer een nieuwe naam in","voorvertoning","Download","Plakken van klembord","Uw browser ondersteunt geen directe toegang tot het klembord.","Selectie kopiëren","kopiëren","Border radius"]
+module.exports.default = ["Type something","Advanced","About Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","Jodit User's Guide","contains detailed help for using","For information about the license, please go to our website:","Buy full version","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","Open in new tab","Open editor in fullsize","Clear Formatting","Fill color or set the text color","Redo","Undo","Bold","Italic","Insert Unordered List","Insert Ordered List","Align Center","Align Justify","Align Left","Align Right","Insert Horizontal Line","Insert Image","Insert file","Insert youtube/vimeo video","Insert link","Font size","Font family","Insert format block","Normal","Heading 1","Heading 2","Heading 3","Heading 4","Quote","Code","Insert","Insert table","Decrease Indent","Increase Indent","Select Special Character","Insert Special Character","Paint format","Change mode","Margins","top","right","bottom","left","Styles","Classes","Align","Right","Center","Left","--Not Set--","Src","Title","Alternative","Link","Open link in new tab","Image","file","Advansed","Image properties","Cancel","Ok","Your code is similar to HTML. Keep as HTML?","Paste as HTML","Keep","Clean","Insert as Text","Word Paste Detected","The pasted content is coming from a Microsoft Word/Excel document. Do you want to keep the format or clean it up?","Insert only Text","File Browser","Error on load list","Error on load folders","Are you sure?","Enter Directory name","Create directory","type name","Drop image","Drop file","or click","Alternative text","Browse","Upload","Background","Text","Top","Middle","Bottom","Insert column before","Insert column after","Insert row above","Insert row below","Delete table","Delete row","Delete column","Empty cell","Delete","Strike through","Underline","Break","Search for","Replace with","Replace","Edit","Vertical align","Horizontal align","Filter","Sort by changed","Sort by name","Sort by size","Add folder","Split vertical","Split horizontal","Split","Merge","Add column","Add row","Border","Embed code","Update","superscript","subscript","Cut selection","Paste","Choose Content to Paste","Chars: %d","Words: %d","All","Select %s","Select all","source","bold","italic","brush","link","undo","redo","table","image","eraser","paragraph","fontsize","video","font","about","print","symbol","underline","strikethrough","indent","outdent","fullsize","shrink","copyformat","hr","ul","ol","cut","selectall","Open link","Edit link","No follow","Unlink","Eye","pencil"," URL","Reset","Save","Save as ...","Resize","Crop","Width","Height","Keep Aspect Ratio","Yes","No","Remove","Select","You can only edit your own images. Download this image on the host?","The image has been successfully uploaded to the host!","palette","There are no files","rename","Enter new name","preview","download","Paste from clipboard","Your browser doesn't support direct access to the clipboard.","Copy selection","copy","Border radius"]
 
 /***/ }),
 /* 134 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Escreva algo...","Sobre o Jodit","Editor Jodit","Versão Gratuita não-comercial","Licença Pública GNU General, Versão 2 ou posterior","Guia de usuário Jodit","contém ajuda detalhada para o uso.","Para informação sobre a licença, por favor visite nosso site:","Compre a versão completa","Copyright © XDSoft.net - Chupurnov Valeriy. Todos os direitos reservados.","Link","Abrir em nova aba","Abrir editor em tela cheia","Limpar formatação","Cor de preenchimento ou cor do texto","Refazer","Desfazer","Negrito","Itálico","Inserir lista não ordenada","Inserir lista ordenada","Centralizar","Justificar","Alinhar à Esquerda","Alinhar à Direita","Inserir linha horizontal","Inserir imagem","Inserir arquivo","Inserir vídeo do Youtube/vimeo","Inserir link","Tamanho da letra","Fonte","Inserir bloco","Normal","Cabeçalho 1","Cabeçalho 2","Cabeçalho 3","Cabeçalho 4","Citação","Código","Inserir","Inserir tabela","Diminuir recuo","Aumentar recuo","Selecionar caractere especial","Inserir caractere especial","Copiar formato","Mudar modo","Margens","cima","direta","baixo","esquerda","Estilos CSS","Classes CSS","Alinhamento","Direita","Centro","Esquerda","--Não Estabelecido--","Fonte","Título","Texto Alternativo","Link","Abrir link em nova aba","Imagem","Arquivo","Avançado","Propriedades da imagem","Cancelar","Ok","Procurar arquivo","Erro ao carregar a lista","Erro ao carregar as pastas","Você tem certeza?","Escreva o nome da pasta","Criar pasta","Escreva seu nome","Soltar imagem","Soltar arquivo","ou clique","Texto alternativo","Upload","Explorar","Fundo","Texto","Cima","Meio","Baixo","Inserir coluna antes","Inserir coluna depois","Inserir linha acima","Inserir linha abaixo","Excluir tabela","Excluir linha","Excluir coluna","Limpar célula","Caracteres: %d","Palavras: %d","Tachado","Sublinhar","sobrescrito","subscrito","Cortar seleção","Selecionar tudo","Pausa","Procurar por","Substituir com","Substituir","Colar","Escolher conteúdo para colar","HTML","negrito","itálico","pincel","link","desfazer","refazer","tabela","imagem","apagar","parágrafo","tamanho da letra","vídeo","fonte","Sobre de","Imprimir","Símbolo","sublinhar","tachado","recuar","diminuir recuo","Tamanho completo","diminuir","Copiar formato","linha horizontal","lista não ordenada","lista ordenada","Cortar","Selecionar tudo","Incluir código","Abrir link","Editar link","Não siga","Remover link","Atualizar","Editar","Visualizar","URL","Editar","Alinhamento horizontal","filtrar","Ordenar por modificação","Ordenar por nome","Ordenar por tamanho","Adicionar pasta","Resetar","Salvar","Salvar como...","Redimensionar","Recortar","Largura","Altura","Manter a proporção","Sim","Não","Remover","Selecionar","Selecionar: %s","Alinhamento vertical","Dividir","Mesclar","Adicionar coluna","Adicionar linha",null,"Excluir","Dividir vertical","Dividir horizontal","Borda","Seu código é simular ao HTML. Manter como HTML?","Colar como HTML?","Manter","Inserir como Texto","Inserir somente o Texto","Você só pode editar suas próprias imagens. Baixar essa imagem pro servidor?","A imagem foi enviada com sucesso para o servidor!","Palette","Não há arquivos nesse diretório.","Húngara","Digite um novo nome","preview","Baixar","Colar da área de transferência","O seu navegador não oferece suporte a acesso direto para a área de transferência.","Selecção de cópia","cópia","Border radius"]
+module.exports.default = ["Escriba algo...","Avanzado","Acerca de Jodit","Jodit Editor","Versión gratis no comercial","GNU General Public License, Versión 2 o posterior","Guía de usuario Jodit","contiene ayuda detallada para el uso.","Para información sobre la licencia, por favor visite nuestro sitio:","Compre la versión completa","Copyright © XDSoft.net - Chupurnov Valeriy. Todos los derechos reservados.","Anclar","Abrir en nueva pestaña","Abrir editor en pantalla completa","Limpiar formato","Color de relleno o de letra","Rehacer","Deshacer","Negrita","Cursiva","Insertar lista no ordenada","Insertar lista ordenada","Alinear Centrado","Alinear Justificado","Alinear Izquierda","Alinear Derecha","Insertar línea horizontal","Insertar imagen","Insertar archivo","Insertar video de Youtube/vimeo","Insertar vínculo","Tamaño de letra","Familia de letra","Insertar bloque","Normal","Encabezado 1","Encabezado 2","Encabezado 3","Encabezado 4","Cita","Código","Insertar","Insertar tabla","Disminuir sangría","Aumentar sangría","Seleccionar caracter especial","Insertar caracter especial","Copiar formato","Cambiar modo","Márgenes","arriba","derecha","abajo","izquierda","Estilos CSS","Clases CSS","Alinear","Derecha","Centrado","Izquierda","--No Establecido--","Fuente","Título","Texto Alternativo","Vínculo","Abrir vínculo en nueva pestaña","Imagen","Archivo","Avanzado","Propiedades de imagen","Cancelar","Aceptar","El código es similar a HTML. ¿Mantener como HTML?","Pegar como HTML?","Mantener","Limpiar","Insertar como texto","Pegado desde Word detectado","El contenido pegado proviene de un documento de Microsoft Word/Excel. ¿Desea mantener el formato o limpiarlo?","Insertar solo texto","Buscar archivo","Error al cargar la lista","Error al cargar las carpetas","¿Está seguro?","Entre nombre de carpeta","Crear carpeta","Entre el nombre","Soltar imagen","Soltar archivo","o click","Texto alternativo","Buscar","Subir","Fondo","Texto","Arriba","Centro","Abajo","Insertar columna antes","Interar columna después","Insertar fila arriba","Insertar fila debajo","Borrar tabla","Borrar fila","Borrar columna","Vaciar celda","Borrar","Tachado","Subrayado","Pausa","Buscar","Reemplazar con","Reemplazar","Editar","Alineación vertical","Alineación horizontal","filtrar","Ordenar por fecha modificación","Ordenar por nombre","Ordenar por tamaño","Agregar carpeta","Dividir vertical","Dividir horizontal","Dividir","Mezclar","Agregar columna","Agregar fila","Borde","Incluir código","Actualizar","superíndice","subíndice","Cortar selección","Pegar","Seleccionar contenido para pegar","Caracteres: %d","Palabras: %d","Todo","Seleccionar: %s","Seleccionar todo","HTML","negrita","cursiva","Brocha","Vínculo","deshacer","rehacer","Tabla","Imagen","Borrar","Párrafo","Tamaño de letra","Video","Letra","Acerca de","Imprimir","Símbolo","subrayar","tachar","sangría","quitar sangría","Tamaño completo","encoger","Copiar formato","línea horizontal","lista sin ordenar","lista ordenada","Cortar","Seleccionar todo","Abrir vínculo","Editar vínculo","No seguir","Desvincular","Ver","Para editar","URL","Resetear","Guardar","Guardar como...","Redimensionar","Recortar","Ancho","Alto","Mantener relación de aspecto","Si","No","Quitar","Seleccionar","Solo puedes editar tus propias imágenes. ¿Descargar esta imagen en el servidor?","¡La imagen se ha subido correctamente al servidor!","paleta","No hay archivos en este directorio.","renombrar","Ingresa un nuevo nombre","avance","Descargar","Pegar desde el portapapeles","Su navegador no soporta el acceso directo en el portapapeles.","Selección de copia","copia","Radio frontera"]
 
 /***/ }),
 /* 135 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Напишите что-либо","О Jodit","Редактор Jodit","Версия для не коммерческого использования","Стандартная общественная лицензия GNU (GPL), версия 2 или выше","Jodit Руководство пользователя","содержит детальную информацию по использованию","Для получения сведений о лицензии , пожалуйста, перейдите на наш сайт:","Купить полную версию","Авторские права © XDSoft.net - Чупурнов Валерий. Все права защищены.","Анкор","Открывать ссылку в новой вкладке","Открыть редактор в полном размере","Очистить форматирование","Цвет заливки или цвет текста","Повтор","Отмена","Жирный","Наклонный","Вставка маркированного списка","Вставить нумерованный список","Выровнять по центру","Выровнять по ширине","Выровнять по левому краю","Выровнять по правому краю","Вставить горизонтальную линию","Вставить изображение","Вставить файл","Вставьте видео","Вставить ссылку","Размер шрифта","Шрифт","Вставить блочный элемент","Нормальный текст","Заголовок 1","Заголовок 2","Заголовок 3","Заголовок 4","Цитата","Код","Вставить","Вставить таблицу","Уменьшить отступ","Увеличить отступ","Выберите специальный символ","Вставить специальный символ","Формат краски","Источник","Отступы","сверху","справа","снизу","слева","Стили","Классы","Выравнивание","По правому краю","По центру","По левому краю","--не устанавливать--","src","Заголовок","Альтернативный текст (alt)","Ссылка","Открывать ссылку в новом окне",null,"Файл","Расширенные","Свойства изображения","Отмена","Ок","Браузер файлов","Ошибка при загрузке списка изображений","Ошибка при загрузке списка директорий","Вы уверены?","Введите название директории","Создать директорию","введите название","Перетащите сюда изображение","Перетащите сюда файл","или нажмите","Альтернативный текст","Загрузка","Сервер","Фон","Текст"," К верху","По середине","К низу","Вставить столбец до","Вставить столбец после","Вставить ряд выше","Вставить ряд ниже","Удалить таблицу","Удалять ряд","Удалить столбец","Отчистить ячейку","Символов: %d","Слов: %d","Перечеркнуть","Подчеркивание","верхний индекс","индекс","Вырезать","Выделить все","Разделитель","Найти","Заменить на","Заменить","Вставить","Выбрать контент для вставки","HTML","жирный","курсив","заливка","ссылка","отменить","повторить","таблица","Изображение","очистить","параграф","размер шрифта","видео","шрифт","о редакторе","печать","символ","подчеркнутый","перечеркнутый","отступ","выступ","во весь экран","обычный размер","Копировать формат","линия","Список","Нумерованный список","Вырезать","Выделить все","Код","Открыть ссылку","Редактировать ссылку","Атрибут nofollow","Убрать ссылку","Обновить","Редактировать","Просмотр","URL","Редактировать","Горизонтальное выравнивание","Фильтр","По изменению","По имени","По размеру","Добавить папку","Восстановить","Сохранить","Сохранить как","Изменить размер","Обрезать размер","Ширина","Высота","Сохранять пропорции","Да","Нет","Удалить","Выделить","Выделить: %s","Вертикальное выравнивание","Разделить","Объеденить в одну","Добавить столбец","Добавить строку","Лицензия: %s","Удалить","Разделить по вертикали","Разделить по горизонтали","Рамка","Ваш текст, который вы пытаетесь вставить похож на HTML. Вставить его как HTML?","Вставить как HTML?","Сохранить оригинал","Вставить как текст","Вставить только текст","Вы можете редактировать только свои собственные изображения. Загрузить это изображение на ваш сервер?","Изображение успешно загружено на сервер!","палитра","В данном каталоге нет файлов","Переименовать","Введите новое имя","Предпросмотр","Скачать","Вставить из буфера обмена","Ваш браузер не поддерживает прямой доступ к буферу обмена.","Скопировать выделенное","копия","Радиус границы"]
+module.exports.default = ["Ecrivez ici","Avancé","A propos de Jodit","Editeur Jodit","Version gratuite, non commerciale","GNU General Public License, version 2 ou ultérieure","Guide de l'utilisateur","Aide détaillée à l'utilisation","Consulter la licence sur notre site web:","Acheter la version complète","Copyright © XDSoft.net - Chupurnov Valeriy. Tous droits réservés.","Ancre","Ouvrir dans un nouvel onglet","Ouvrir l'éditeur en pleine page","Supprimer le formattage","Modifier la couleur du fond ou du texte","Refaire","Défaire","Gras","Italique","Liste non ordonnée","Liste ordonnée","Centrer","Justifier","Aligner à gauche ","Aligner à droite","Insérer une ligne horizontale","Insérer une image","Insérer un fichier","Insérer une vidéo","Insérer un lien","Taille des caractères","Famille des caractères","Bloc formatté","Normal","Titre 1","Titre 2","Titre 3","Titre 4","Citation","Code","Insérer","Insérer un tableau","Diminuer le retrait","Retrait plus","Sélectionnez un caractère spécial","Insérer un caractère spécial","Cloner le format","Mode wysiwyg <-> code html","Marges","haut","droite","Bas","gauche","Styles","Classes","Alignement","Droite","Centre","Gauche","--Non disponible--","Source","Titre","Alternative","Lien","Ouvrir le lien dans un nouvel onglet","Image","fichier",null,"Propriétés de l'image","Effacer","OK","Votre texte que vous essayez de coller est similaire au HTML. Collez-le en HTML?","Coller en HTML?","Sauvegarder l'original","Nettoyer","Coller en tant que texte","C'est peut-être un fragment de Word ou Excel","Le contenu que vous insérez provient d'un document Microsoft Word / Excel. Voulez-vous enregistrer le format ou l'effacer?","Coller le texte seulement","Explorateur de fichiers","Erreur de liste de chargement","Erreur de dossier de chargement","Etes-vous sûrs ?","Entrer le non de dossier","Créer un dossier","type de fichier","Coller une image","Déposer un fichier","ou cliquer","Texte de remplacemement","Chercher","Charger","Arrière-plan","Texte","Haut","Milieu","Bas","Insérer une colonne avant","Insérer une colonne après","Insérer une ligne en dessus","Insérer une ligne en dessous","Supprimer le tableau","Supprimer la ligne","Supprimer la colonne","Vider la cellule","Effacer","Frapper à travers","Souligner","Pause","Rechercher","Remplacer par","Remplacer",null,"Alignement vertical","Alignement horizontal","Filtre","Trier par modifié","Trier par nom","Classer par taille","Ajouter le dossier","Split vertical","Split horizontal","Split","aller","Ajouter une colonne","Ajouter une rangée",null,null,"Mettre à jour","exposant","indice","Couper la sélection","Coller","Choisissez le contenu à coller","Symboles: %d","Mots: %d",null,"Mettre en évidence: %s","Tout sélectionner","la source","graisseux","italique","verser","lien","abolir","prêt","graphique","Image","la gommen","clause","taille de police","Video","police","à propos de l'éditeur","impression","caractère","souligné","barré","indentation","indifférent","taille réelle","taille conventionnelle","Format de copie","la ligne","Liste des","Liste numérotée","Couper","Sélectionner tout","Ouvrir le lien","Modifier le lien","Attribut Nofollow","Supprimer le lien","Voir","Pour éditer","URL","Restaurer","Sauvegarder","Enregistrer sous","Changer la taille","Taille de garniture","Largeur","Hauteur","Garder les proportions","Oui","Non","Supprimer","Mettre en évidence","Vous ne pouvez éditer que vos propres images. Téléchargez cette image sur l'hôte?","L'image a été téléchargée avec succès sur le serveur!null","Palette","Il n'y a aucun fichier dans ce répertoire.","renommer","Entrez un nouveau nom","Aperçu","Télécharger","Coller à partir du presse-papiers","Votre navigateur ne prend pas en charge l'accès direct à la presse-papiers.","Copier la sélection","copie","Rayon des frontières"]
 
 /***/ }),
 /* 136 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Bir şey yazın.","Jodit Hakkında","Jodit Editor","Ücretsiz, ticari olmayan versiyon","GNU General Public License, Versiyon 2 ve sonrası için","Jodit Kullanım Kılavuzu","kullanım için detaylı bilgiler içerir","Lisans hakkında bilgi için lütfen web sitemize gidin:","Tam versiyon satın al","Copyright © XDSoft.net - Chupurnov Valeriy. Tüm Hakları Saklıdır","Bağlantı","Yeni sekmede aç","Tam ekran editör","Stili temizle","Dolgu ve yazı rengi seç","İleri Al","Geri Al","Kalın","İtalik","Sırasız Liste Ekle","Sıralı Liste Ekle","Ortala","Kenarlara Yasla","Sola Yasla","Sağa Yasla","Yatay Çizgi Ekle","Resim Ekle","Dosya Ekle","Youtube/vimeo Videosu Ekle","Bağlantı Ekle","Font Boyutu","Font Ailesi","Blok Ekle","Normal","Başlık 1","Başlık 2","Başlık 3","Başlık 4","Alıntı","Code","Ekle","Tablo Ekle","Girintiyi Azalt","Girintiyi Arttır","Özel Karakter Seç","Özel Karakter Ekle","Resim Biçimi","Mod Değiştir","MEsafeler","Üst","Sağ","Alt","Sol","CSS Stilleri","CSS Sınıfları","Hizalama","Sağ","Ortalı","Sol","Belirlenmedi","Kaynak","Başlık","Alternatif Yazı","Link","Bağlantıyı yeni sekmede aç","Resim","Dosya","Gelişmiş","Resim özellikleri","İptal","Tamam","Dosya Gezgini","Liste yüklenirken hata oluştu","Klasörler yüklenirken hata oluştur","Emin misiniz?","Dizin yolu giriniz","Dizin oluştur","Typname","Resim bırak","Dosya bırak","veya tıkla","Alternatif yazı","Yükle","Ekle","Arka plan","Yazı","Üst","Orta","Aşağı","Öncesine kolon ekle","Sonrasına kolon ekle","Üstüne satır ekle","Altına satır ekle","Tabloyu sil","Satır sil","Kolon sil","Hücreyi boşalt","Harfler: %d","Kelimeler: %d","Durchschlagen","Alt çizgi","Üst yazı","Alt yazı","Seçilimi kes","Tümünü seç","Durdur","Ara","Şununla değiştir","Değiştir","Yapıştır","Yapıştırılacak içerik seç","Kaynak","Kalın","italik","Fırça","Bağlantı","Geri al","İleri al","Tablo","Resim","Silgi","Paragraf","Font boyutu","Video","Font","Hakkında","Yazdır","Sembol","Alt çizgi","Üstü çizili","Girinti","Çıkıntı","Tam ekran","Küçült","Kopyalama Biçimi","Ayraç","Sırasız liste","Sıralı liste","Kes","Tümünü seç","Kod ekle","Bağlantıyı aç","Bağlantıyı düzenle","Nofollow özelliği","Bağlantıyı kaldır","Güncelle","Düzenlemek için","Yorumu","URL","Düzenle","Yatay hizalama","Filtre","Değişime göre sırala","İsme göre sırala","Boyuta göre sırala","Klasör ekle","Sıfırla","Kaydet","Farklı kaydet","Boyutlandır","Kırp","Genişlik","Yükseklik","En boy oranını koru","Evet","Hayır","Sil","Seç","Seç: %s","Dikey hizalama","Ayır","Birleştir","Kolon ekle","Satır ekle",null,"Sil","Dikey ayır","Yatay ayır","Kenarlık","Kodunuz HTML koduna benziyor. HTML olarak devam etmek ister misiniz?","HTML olarak yapıştır","Sakla","Yazı olarak ekle","Nur Text einfügen","Sadece kendi resimlerinizi düzenleyebilirsiniz. Bu görseli kendi hostunuza indirmek ister misiniz?","Görsel başarıyla hostunuza yüklendi","Palette","Bu dizinde dosya yok.","Macarca","Yeni isim girin","Ön izleme","İndir","Panodan yapıştır ","Tarayıcınız pano doğrudan erişim desteklemiyor.","Kopya seçimi","kopya","Sınır yarıçapı"]
+module.exports.default = ["הקלד משהו...","מתקדם","About Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","Jodit User's Guide","contains detailed help for using.","For information about the license, please go to our website:","Buy full version","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","מקום עיגון","פתח בכרטיסיה חדשה","פתח את העורך בחלון חדש","נקה עיצוב","שנה צבע טקסט או רקע","בצע שוב","בטל","מודגש","נטוי","הכנס רשימת תבליטים","הכנס רשימה ממוספרת","מרכז","ישר ","ישר לשמאל","ישר לימין","הכנס קו אופקי","הכנס תמונה","הכנס קובץ","הכנס סרטון וידאו מYouTube/Vimeo","הכנס קישור","גודל גופן","גופן","מעוצב מראש","רגיל","כותרת 1","כותרת 2","כותרת 3","כותרת 4","ציטוט","קוד","הכנס","הכנס טבלה","הקטן כניסה","הגדל כניסה","בחר תו מיוחד","הכנס תו מיוחד","העתק עיצוב","החלף מצב","ריווח","עליון","ימין","תחתון","שמאל","עיצוב CSS","מחלקת CSS","יישור","ימין","מרכז","שמאל","--לא נקבע--","מקור","כותרת","כיתוב חלופי","קישור","פתח בכרטיסיה חדשה","תמונה","קובץ","מתקדם","מאפייני תמונה","ביטול","אישור","הקוד דומה לHTML, האם להשאיר כHTML","הדבק כHTML","השאר","נקה","הכנס כטקסט","זוהתה הדבקה מ\"וורד\"","התוכן המודבק מגיע ממסמך וורד/אקסל. האם ברצונך להשאיר את העיצוב או לנקותו","הכנס טקסט בלבד","סייר הקבצים","שגיאה  בזמן טעינת רשימה","שגיאה בזמן טעינת תקיות","האם אתה בטוח?","הכנס שם תקיה","צור תקיה","סוג הקובץ","הסר תמונה","הסר קובץ","או לחץ","כיתוב חלופי","סייר","העלה","רקע","טקסט","עליון","מרכז","תחתון","הכנס עמודה לפני","הכנס עמודה אחרי","הכנס שורה מעל","הכנס שורה מתחת","מחק טבלה","מחק שורה","מחק עמודה","רוקן תא","מחק","קו חוצה","קו תחתון","שבירת שורה","חפש","החלף ב","החלף","ערוך","יישור אנכי","יישור אופקי","סנן","מין לפי שינוי","מיין לפי שם","מיין לפי גודל","הוסף תקייה","פיצול אנכי","פיצול אופקי","פיצול","מזג","הוסף עמודה","הוסף שורה","מסגרת","הוסף קוד","עדכן","superscript","subscript","גזור בחירה","הדבק","בחר תוכן להדבקה","תווים: %d","מילים: %d","הכל","נבחר: %s","בחר הכל","HTML","מודגש","נטוי","מברשת","קישור","בטל","בצע שוב","טבלה","תמונה","מחק","פסקה","גודל גופן","וידאו","גופן","עלינו","הדפס","תו מיוחד","קו תחתון","קו חוצה","הגדל כניסה","הקטן כניסה","גודל מלא","כווץ","העתק עיצוב","קו אופקי","רשימת תבליטים","רשימה ממוספרת","חתוך","בחר הכל","פתח קישור","ערוך קישור","ללא מעקב","בטל קישור","הצג","כדי לערוך","כתובת","אפס","שמור","שמור בשם...","שנה גודל","חתוך","רוחב","גובה","שמור יחס","כן","לא","הסר","בחר","רק קבצים המשוייכים שלך ניתנים לעריכה. האם להוריד את הקובץ?","התמונה עלתה בהצלחה!","לוח","אין קבצים בספריה זו.","הונגרית","הזן שם חדש","תצוגה מקדימה","הורד","להדביק מהלוח","הדפדפן שלך לא תומך גישה ישירה ללוח.","העתק בחירה","העתק","רדיוס הגבול"]
 
 /***/ }),
 /* 137 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["输入一些内容","关于Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","开发者指南","使用帮助","有关许可证的信息，请访问我们的网站：","购买完整版本","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","在新窗口打开","全屏编辑","清除样式","颜色","重做","撤销","粗体","斜体","符号列表","编号","居中","对齐文本","左对齐","右对齐","分割线","图片","文件","youtube/vimeo 视频","链接","字号","字体","格式块","文本","标题1","标题2","标题3","标题4","引用","代码","插入","表格","减少缩进","增加缩进","选择特殊符号","特殊符号","格式复制","改变模式","外边距（Margins）","top","right","bottom","left","样式","Classes","对齐方式","居右","居中","居左","无","Src","Title","Alternative","Link","在新窗口打开链接","图片","file","高级","图片属性","取消","确定","文件管理","加载list错误","加载folders错误","你确定吗？","输入路径","创建路径","type name","拖动图片到此","拖动文件到此","或点击","Alternative text","上传","浏览","背景色","文字","顶部","中间","底部","在之前插入列","在之后插入列","在之前插入行","在之后插入行","删除表格","删除行","删除列","清除内容","字符数: %d","单词数: %d","删除线","下划线","上标","下标","剪切","全选","Pause","查找","替换为","替换","粘贴","选择内容并粘贴","源码","粗体","斜体","颜色","链接","撤销","重做","表格","图片","橡皮擦","段落","字号","视频","字体","关于","打印","符号","下划线","上出现","增加缩进","减少缩进","全屏","收缩","复制格式","分割线","无序列表","顺序列表","剪切","全选","嵌入代码","打开链接","编辑链接","No follow","Unlink","更新","铅笔","回顧","URL",null,"水平对齐","筛选","修改时间排序","名称排序","大小排序","新建文件夹","重置","保存","保存为","调整大小","Crop","宽","高","保存长宽比","是","不","移除","选择","选择: %s","垂直对齐","拆分","合并","添加列","添加行",null,"删除","垂直拆分","水平拆分","边框","你粘贴的文本是一段html代码，是否保留源格式","html粘贴","保留源格式","把html代码视为普通文本","只保留文本","你只能编辑你自己的图片。Download this image on the host?","图片上传成功","调色板","此目录中沒有文件。","重命名","输入新名称","预览","下载","粘贴从剪贴板","你浏览器不支持直接访问的剪贴板。","复制的选择","复制","边界半径"]
+module.exports.default = ["Írjon be valamit","Haladó","Joditról","Jodit Editor","Ingyenes változat","GNU General Public License, Verzió 2 vagy későbbi","Jodit útmutató","további segítséget tartalmaz","További licence információkért látogassa meg a weboldalunkat:","Teljes verzió megvásárlása","Copyright © XDSoft.net - Chupurnov Valeriy. Minden jog fenntartva.","Horgony","Megnyitás új lapon","Megnyitás teljes méretben","Formázás törlése","Háttér/szöveg szín","Újra","Visszavon","Félkövér","Dőlt","Pontozott lista","Számozott lista","Középre zárt","Sorkizárt","Balra zárt","Jobbra zárt","Vízszintes vonal beszúrása","Kép beszúrás","Fájl beszúrás","Youtube videó beszúrása","Link beszúrás","Betűméret","Betűtípus","Formázott blokk beszúrása","Normál","Fejléc 1","Fejléc 2","Fejléc 3","Fejléc 4","Idézet","Kód","Beszúr","Táblázat beszúrása","Behúzás csökkentése","Behúzás növelése","Speciális karakter kiválasztása","Speciális karakter beszúrása","Kép formázása","Nézet váltása","Szegélyek","felső","jobb","alsó","bal","CSS stílusok","CSS osztályok","Igazítás","Jobbra","Középre","Balra","Nincs","Forrás","Cím","Helyettesítő szöveg","Link","Link megnyitása új lapon","Kép","Fájl","További beállítás","Kép tulajdonságai","Mégsem","OK","A beillesztett szöveg HTML-nek tűnik. Megtartsuk HTML-ként?","Beszúrás HTML-ként","Megtartás","Elvetés","Beszúrás szövegként","Word-ből másolt szöveg","A beillesztett tartalom Microsoft Word/Excel dokumentumból származik. Meg szeretné tartani a formátumát?","Csak szöveg beillesztése","Fájl tallózó","Hiba a lista betöltése közben","Hiba a mappák betöltése közben","Biztosan ezt szeretné?","Írjon be egy mappanevet","Mappa létrehozása","írjon be bevet","Húzza ide a képet","Húzza ide a fájlt","vagy kattintson","Helyettesítő szöveg","Tallóz","Feltölt","Háttér","Szöveg","Fent","Középen","Lent","Oszlop beszúrás elé","Oszlop beszúrás utána","Sor beszúrás fölé","Sor beszúrás alá","Táblázat törlése","Sor törlése","Oszlop törlése","Cella tartalmának törlése","Törlés","Áthúzott","Aláhúzott","Szünet","Keresés","Csere erre","Csere","Szerkeszt","Függőleges igazítás","Vízszintes igazítás","Szűrő","Rendezés módosítás szerint","Rendezés név szerint","Rendezés méret szerint","Mappa hozzáadás","Függőleges felosztás","Vízszintes felosztás","Felosztás","Összevonás","Oszlop hozzáadás","Sor hozzáadás","Szegély","Beágyazott kód","Frissít","Felső index","Alsó index","Kivágás","Beillesztés","Válasszon tartalmat a beillesztéshez","Karakterek száma: %d","Szavak száma: %d","Összes","Kijelöl: %s","Összes kijelölése","HTML","Félkövér","Dőlt","Ecset","Link","Visszavon","Újra","Táblázat","Kép","Törlés","Paragráfus","Betűméret","Videó","Betű","Rólunk","Nyomtat","Szimbólum","Aláhúzott","Áthúzott","Behúzás","Aussenseiter","Teljes méret","Összenyom","Formátum másolás","Egyenes vonal","Lista","Számozott lista","Kivág","Összes kijelölése","Link megnyitása","Link szerkesztése","Nincs követés","Link leválasztása","felülvizsgálat","Szerkesztés","URL","Visszaállít","Mentés","Mentés másként...","Átméretezés","Kivág","Szélesség","Magasság","Képarány megtartása","Igen","Nem","Eltávolít","Kijelöl","Csak a saját képeit tudja szerkeszteni. Letölti ezt a képet?","Kép sikeresen feltöltve!","Palette","Er zijn geen bestanden in deze map.","átnevezés","Adja meg az új nevet","előnézet","Letöltés","Illessze be a vágólap","A böngésző nem támogatja a közvetlen hozzáférést biztosít a vágólapra.","Másolás kiválasztása","másolás","Határ sugár"]
 
 /***/ }),
 /* 138 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["輸入一些內容","關於Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","開發者指南","使用幫助","有關許可證的信息，請訪問我們的網站：","購買完整版本","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","在新窗口打開","全屏編輯","清除樣式","顏色","重做","撤銷","粗體","斜體","符號列表","編號","居中","對齊文本","左對齊","右對齊","分割線","圖片","文件","youtube/vimeo 影片","鏈接","字號","字體","格式塊","文本","標題1","標題2","標題3","標題4","引用","代碼","插入","表格","減少縮進","增加縮進","選擇特殊符號","特殊符號","格式複製","改變模式","外邊距（Margins）","top","right","bottom","left","樣式","Classes","對齊方式","居右","居中","居左","無","Src","Title","Alternative","Link","在新窗口打開鏈接","圖片","file","高級","圖片屬性","取消","確定","文件管理","加載list錯誤","加載folders錯誤","你確定嗎？","輸入路徑","創建路徑","type name","拖動圖片到此","拖動文件到此","或點擊","Alternative text","上傳","瀏覽","背景色","文字","頂部","中間","底部","在之前插入列","在之後插入列","在之前插入行","在之後插入行","刪除表格","刪除行","刪除列","清除內容","字符數: %d","單詞數: %d","刪除線","下劃線","上標","下標","剪切","全選","Pause","查找","替換為","替換","黏貼","選擇內容並黏貼","源碼","粗體","斜體","顏色","鏈接","撤銷","重做","表格","圖片","橡皮擦","段落","字號","影片","字體","關於","打印","符號","下劃線","上出現","增加縮進","減少縮進","全屏","收縮","複製格式","分割線","無序列表","順序列表","剪切","全選","嵌入代碼","打開鏈接","編輯鏈接","No follow","Unlink","更新","鉛筆","回顧","URL",null,"水平對齊","篩選","修改時間排序","名稱排序","大小排序","新建文件夾","重置","保存","保存為","調整大小","Crop","寬","高","保存長寬比","是","不","移除","選擇","選擇: %s","垂直對齊","拆分","合併","添加列","添加行",null,"刪除","垂直拆分","水平拆分","邊框","你黏貼的文本是一段html代碼，是否保留源格式","html黏貼","保留源格式","把html代碼視為普通文本","只保留文本","妳只能編輯妳自己的圖片。Download this image on the host?","圖片上傳成功","調色板","此目錄中沒有文件。","重命名","輸入新名稱","預覽","下載","วางจากคลิปบอร์ด","ของเบราว์เซอร์ไม่สนับสนุนโดยตรงเข้าไปยังคลิปบอร์ด","คัดลอกส่วนที่เลือก","คัดลอก","เส้นขอบรัศมี"]
+module.exports.default = ["Ketik sesuatu","Lanjutan","Tentang Jodit","Editor Jodit","Versi Bebas Non-komersil","Lisensi Publik Umum (GPL), versi 2 atau terbaru","Panduan Pengguna Jodit","mencakup detail bantuan penggunaan","Untuk informasi tentang lisensi, silakan kunjungi website:","Beli versi lengkap","Hak Cipta © XDSoft.net - Chupurnov Valeriy. Hak cipta dilindungi undang-undang.","Tautan","Buka di tab baru","Buka editor dalam ukuran penuh","Hapus Pemformatan","Isi warna atau atur warna teks","Ulangi","Batalkan","Tebal","Miring","Sisipkan Daftar Tidak Berurut","Sisipkan Daftar Berurut","Tengah","Penuh","Kiri","Kanan","Sisipkan Garis Horizontal","Sisipkan Gambar","Sisipkan Berkas","Sisipkan video youtube/vimeo","Sisipkan tautan","Ukuran font","Keluarga font","Sisipkan blok format","Normal","Heading 1","Heading 2","Heading 3","Heading 4","Kutip","Kode","Sisipkan","Sisipkan tabel","Kurangi Indentasi","Tambah Indentasi","Pilih Karakter Spesial","Sisipkan Karakter Spesial","Formar warna","Ubah mode","Batas","atas","kanan","bawah","kiri","Gaya","Class","Rata","Kanan","Tengah","Kiri","--Tidak diset--","Src","Judul","Teks alternatif","Tautan","Buka tautan di tab baru","Gambar","berkas",null,"Properti gambar","Batal","Ya","Kode Anda cenderung ke HTML. Biarkan sebagai HTML?","Paste sebagai HTML","Jaga","Bersih","Sisipkan sebagai teks","Terdeteksi paste dari Word","Konten dipaste dari dokumen Microsoft Word/Excel. Apakah Anda ingin tetap menjaga format atau membersihkannya?","Sisipkan hanya teks","Penjelajah Berkas","Error ketika memuat list","Error ketika memuat folder","Apakah Anda yakin?","Masukkan nama Direktori","Buat direktori","ketik nama","Letakkan gambar","Letakkan berkas","atau klik","Teks alternatif","Jelajahi","Unggah","Latar Belakang","Teks","Atas","Tengah","Bawah","Sisipkan kolom sebelumnya","Sisipkan kolom setelahnya","Sisipkan baris di atasnya","Sisipkan baris di bawahnya","Hapus tabel","Hapus baris","Hapus kolom","Kosongkan cell","Hapus","Coret","Garis Bawah","Berhenti","Mencari","Ganti dengan","Ganti","Edit","Rata vertikal","Perataan horizontal","Filter","Urutkan berdasarkan perubahan","Urutkan berdasarkan nama","Urutkan berdasarkan ukuran","Tambah folder","Bagi secara vertikal","Bagi secara horizontal","Bagi","Gabungkan","Tambah kolom","tambah baris","Bingkai","Kode embed","Perbarui","Superskrip","Subskrip","Potong pilihan","Paste","Pilih konten untuk dipaste","Karakter: %d","Kata: %d","Semua","Pilih %s","Pilih semua","sumber","tebal","miring","sikat","tautan","batalkan","ulangi","tabel","gambar","penghapus","paragraf","ukuran font","video","font","tentang","cetak","simbol","garis bawah","coret","menjorok ke dalam","menjorok ke luar","ukuran penuh","menyusut","salin format","hr","ul","ol","potong","Pilih semua","Buka tautan","Edit tautan","No follow","Hapus tautan","Mata","pensil","URL","Reset","Simpan","Simpan sebagai...","Ubah ukuran","Crop","Lebar","Tinggi","Jaga aspek rasio","Ya","Tidak","Copot","Pilih","Anda hanya dapat mengedit gambar Anda sendiri. Unduh gambar ini di host?","Gambar telah sukses diunggah ke host!","palet","Tidak ada berkas","ganti nama","Masukkan nama baru","pratinjau","Unduh","Paste dari clipboard","Browser anda tidak mendukung akses langsung ke clipboard.","Copy seleksi","copy","Border radius"]
 
 /***/ }),
 /* 139 */
 /***/ (function(module, exports) {
 
-module.exports.default = ["Type something","About Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","Jodit User's Guide","contains detailed help for using","For information about the license, please go to our website:","Buy full version","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","Open in new tab","Open editor in fullsize","Clear Formatting","Fill color or set the text color","Redo","Undo","Bold","Italic","Insert Unordered List","Insert Ordered List","Align Center","Align Justify","Align Left","Align Right","Insert Horizontal Line","Insert Image","Insert file","Insert youtube/vimeo video","Insert link","Font size","Font family","Insert format block","Normal","Heading 1","Heading 2","Heading 3","Heading 4","Quote","Code","Insert","Insert table","Decrease Indent","Increase Indent","Select Special Character","Insert Special Character","Paint format","Change mode","Margins","top","right","bottom","left","Styles","Classes","Align","Right","Center","Left","--Not Set--","Src","Title","Alternative","Link","Open link in new tab","Image","file","Advanced","Image properties","Cancel","Ok","File Browser","Error on load list","Error on load folders","Are you sure?","Enter Directory name","Create directory","type name","Drop image","Drop file","or click","Alternative text","Upload","Browse","Background","Text","Top","Middle","Bottom","Insert column before","Insert column after","Insert row above","Insert row below","Delete table","Delete row","Delete column","Empty cell","Chars: %d","Words: %d","Strike through","Underline","superscript","subscript","Cut selection","Select all","Break","Search for","Replace with","Replace","Paste","Choose Content to Paste","source","bold","italic","brush","link","undo","redo","table","image","eraser","paragraph","fontsize","video","font","about","print","symbol","underline","strikethrough","indent","outdent","fullsize","shrink","copyformat","hr","ul","ol","cut","selectall","Embed code","Open link","Edit link","No follow","Unlink","Update","pencil","Eye"," URL","Edit","Horizontal align","Filter","Sort by changed","Sort by name","Sort by size","Add folder","Reset","Save","Save as ...","Resize","Crop","Width","Height","Keep Aspect Ratio","Yes","No","Remove","Select","Select %s","Vertical align","Split","Merge","Add column","Add row","License: %s","Delete","Split vertical","Split horizontal","Border","Your code is similar to HTML. Keep as HTML?","Paste as HTML","Keep","Insert as Text","Insert only Text","You can only edit your own images. Download this image on the host?","The image has been successfully uploaded to the host!","palette","There are no files","rename","Enter new name","preview","download","Paste from clipboard","Your browser doesn't support direct access to the clipboard.","Copy selection","copy","Border radius"]
+module.exports.default = ["Scrivi qualcosa...","Avanzato","A proposito di Jodit","Jodit Editor","Versione gratuita non commerciale","Licenza pubblica generale GNU, versione 2 o successiva","Guida utente di Jodit","contiene una guida dettagliata per l'uso.","Per informazioni sulla licenza, si prega di visitare il nostro sito:","Acquista la versione completa","Copyright © XDSoft.net - Chupurnov Valeriy. Alle Rechte vorbehalten.","Ancora","Apri in una nuova scheda","Apri l'editor a schermo intero","Formato chiaro","Riempi colore o lettera","Ripristina","Annulla","Grassetto","Corsivo","Inserisci lista non ordinata","Inserisci l'elenco ordinato","Allinea Centra","Allineare Giustificato","Allinea a Sinistra","Allinea a Destra","Inserisci la linea orizzontale","Inserisci immagine","Inserisci un file","Inserisci video Youtube/Vimeo","Inserisci il link","Dimensione del carattere","Tipo di font","Inserisci blocco","Normale","Heading 1","Heading 2","Heading 3","Heading 4","Citazione","Codice","Inserisci","Inserisci tabella","Riduci il rientro","Aumenta il rientro","Seleziona una funzione speciale","Inserisci un carattere speciale","Copia formato","Cambia modo","Margini","su","destra","giù","sinistra","Stili CSS","Classi CSS","Allinea","Destra","Centro","Sinistra","--Non Impostato--","Fonte","Titolo","Testo Alternativo","Link","Apri il link in una nuova scheda","Immagine","Archivio","Avanzato","Proprietà dell'immagine","Annulla","Accetta","Il codice è simile all'HTML. Mantieni come HTML?","Incolla come HTML?","Mantieni","Pulisci","Inserisci come testo","Incollato da Word rilevato","Il contenuto incollato proviene da un documento Microsoft Word / Excel. Vuoi mantenere il formato o pulirlo?","Inserisci solo il testo","Cerca il file","Errore durante il caricamento dell'elenco","Errore durante il caricamento delle cartelle","Sei sicuro?","Inserisci il nome della cartella","Crea cartella","Entre el nombre","Rilascia l'immagine","Rilascia file","o click","Testo alternativo","Sfoglia","Carica","Sfondo","Testo","Su","Centro","Sotto","Inserisci prima la colonna","Inserisci colonna dopo","Inserisci la riga sopra","Inserisci la riga sotto","Elimina tabella","Elimina riga","Elimina colonna","Cella vuota","Cancella","Barrato","Sottolineato","Pausa","Cerca","Sostituisci con","Sostituisci","Modifica","Allineamento verticala","Allineamento orizzontale","Filtro","Ordina per data di modifica","Ordina per nome","Ordina per dimensione","Aggiungi cartella","Dividere verticalmente","Diviso orizzontale","Dividere","Fondi","Aggiungi colonna","Aggiungi riga","Bordo","Includi codice","Aggiornare","indice","deponente","Taglia la selezione","Incolla","Seleziona il contenuto da incollare","Caratteri: %d","Parole: %d","Tutto","Seleziona: %s","Seleziona tutto","HTML","Grassetto","Corsivo","Pennello","Link","Annulla","Ripristina","Tabella","Immagine","Gomma","Paragrafo","Dimensione del carattere","Video","Font","Approposito di","Stampa","Simbolo","Sottolineato","Barrato","trattino","annulla rientro","A grandezza normale","comprimere","Copia il formato","linea orizzontale","lista non ordinata","lista ordinata","Taglia","Seleziona tutto","Apri link","Modifica link","Non seguire","Togli link","Recensione","Per modificare"," URL","Reset","Salva","Salva con nome...","Ridimensiona","Tagliare","Larghezza","Altezza","Mantenere le proporzioni","Si","No","Rimuovere","Seleziona","Puoi modificare solo le tue immagini. Scarica questa immagine sul server?","L'immagine è stata caricata con successo sul server!","tavolozza","Non ci sono file in questa directory.","ungherese","Inserisci un nuovo nome","anteprima","Scaricare","Incolla dagli appunti","Il tuo browser non supporta l'accesso diretto agli appunti.","Selezione di copia","copia","Border radius"]
 
 /***/ }),
 /* 140 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["なにかタイプしてください","高度な設定","Joditについて","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","Jodit ユーザーズ・ガイド","詳しい使い方","ライセンス詳細についてはJodit Webサイトを確認ください：","フルバージョンを購入","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","新しいタブで開く","エディターのサイズ（フル/ノーマル）","書式をクリア","テキストの色","やり直し","元に戻す","太字","斜体","箇条書き","番号付きリスト","中央揃え","両端揃え","左揃え","右揃え","区切り線を挿入","画像を挿入","ファイルを挿入","Youtube/Vimeo 動画","リンクを挿入","フォントサイズ","フォント","テキストのスタイル","指定なし","タイトル1","タイトル2","タイトル3","タイトル4","引用","コード","挿入","表を挿入","インデント減","インデント増","特殊文字を選択","特殊文字を挿入","書式を貼付け","編集モード切替え","マージン","上","右","下","左","スタイル","クラス","配置","右寄せ","中央寄せ","左寄せ","指定なし","ソース","タイトル","代替テキスト","リンク","新しいタブで開く","画像","ファイル","Advansed","画像のプロパティー","キャンセル","確定","HTMLコードを保持しますか？","HTMLで貼付け","HTMLを保持","Clean","HTMLをテキストにする","Word Paste Detected","The pasted content is coming from a Microsoft Word/Excel document. Do you want to keep the format or clean it up?","テキストだけ","File Browser","Error on load list","Error on load folders","Are you sure?","Enter Directory name","Create directory","type name","ここに画像をドロップ","ここにファイルをドロップ","or クリック","代替テキスト","ブラウズ","アップロード","背景","文字","上","中央","下","左に列を挿入","右に列を挿入","上に行を挿入","下に行を挿入","表を削除","行を削除","列を削除","セルを空にする","削除","取り消し線","下線","Pause","検索","置換","置換","編集","垂直方向の配置","水平方向の配置","Filter","Sort by changed","Sort by name","Sort by size","Add folder","セルの分割（垂直方向）","セルの分割（水平方向）","分割","セルの結合","列を追加","行を追加","境界線","埋め込みコード","更新","上付き文字","下付き文字","切り取り","貼付け","選択した内容を貼付け","文字数: %d","単語数: %d","全部","選択: %s","すべて選択","source","bold","italic","brush","link","undo","redo","table","image","eraser","paragraph","fontsize","video","font","about","print","symbol","underline","strikethrough","indent","outdent","fullsize","shrink","copyformat","分割線","箇条書き","番号付きリスト","切り取り","すべて選択","リンクを開く","リンクを編集","No follow","リンク解除","サイトを確認","鉛筆","URL","リセット","保存","Save as ...","リサイズ","Crop","幅","高さ","縦横比を保持","はい","いいえ","移除","選択","You can only edit your own images. Download this image on the host?","The image has been successfully uploaded to the host!","パレット","There are no files","rename","Enter new name","プレビュー","ダウンロード","貼り付け","お使いのブラウザはクリップボードを使用できません","コピー","copy","角の丸み"]
+
+/***/ }),
+/* 141 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["Begin met typen..","Geavanceerd","Over Jodit","Jodit Editor","Gratis niet-commerciële versie","GNU General Public License, versie 2 of hoger","Jodit gebruikershandleiding","bevat gedetailleerde informatie voor gebruik.","Voor informatie over de licentie, ga naar onze website:","Volledige versie kopen","Copyright © XDSoft.net - Chupurnov Valeriy. Alle rechten voorbehouden.","Anker","Open in nieuwe tab","Editor in volledig scherm openen","Opmaak verwijderen","Vulkleur of tekstkleur aanpassen","Opnieuw","Ongedaan maken","Vet","Cursief","Geordende list invoegen","Ongeordende lijst invoegen","Centreren","Uitlijnen op volledige breedte","Links uitlijnen","Rechts uitlijnen","Horizontale lijn invoegen","Afbeelding invoegen","Bestand invoegen","Youtube/Vimeo video invoegen","Link toevoegen","Tekstgrootte","Lettertype","Format blok invoegen","Normaal","Koptekst 1","Koptekst 2","Koptekst 3","Koptekst 4","Citaat","Code","Invoegen","Tabel invoegen","Inspringing verkleinen","Inspringing vergroten","Symbool selecteren","Symbool invoegen","Opmaak kopieren","Modus veranderen","Marges","Boven","Rechts","Onder","Links","CSS styles","CSS classes","Uitlijning","Rechts","Gecentreerd","Links","--Leeg--","Src","Titel","Alternatieve tekst","Link","Link in nieuwe tab openen","Afbeelding","Bestand","Geavanceerd","Afbeeldingseigenschappen","Annuleren","OK","Deze code lijkt op HTML. Als HTML behouden?","Invoegen als HTML","Origineel behouden","Opschonen","Als tekst invoegen","Word-tekst gedetecteerd","De geplakte tekst is afkomstig van een Microsoft Word/Excel document. Wil je de opmaak behouden of opschonen?","Als onopgemaakte tekst invoegen","Bestandsbrowser","Fout bij het laden van de lijst","Fout bij het laden van de mappenlijst","Weet je het zeker?","Geef de map een naam","Map aanmaken","Type naam","Sleep hier een afbeelding naartoe","Sleep hier een bestand naartoe","of klik","Alternatieve tekst","Bladeren","Uploaden","Achtergrond","Tekst","Boven","Midden","Onder","Kolom invoegen (voor)","Kolom invoegen (na)","Rij invoegen (boven)","Rij invoegen (onder)","Tabel verwijderen","Rij verwijderen","Kolom verwijderen","Cel leegmaken","Verwijderen","Doorstrepen","Onderstrepen","Enter","Zoek naar","Vervangen door","Vervangen","Bewerken","Verticaal uitlijnen","Horizontaal uitlijnen","Filteren","Sorteren op wijzigingsdatum","Sorteren op naam","Sorteren op grootte","Map toevoegen","Verticaal splitsen","Horizontaal splitsen","Splitsen","Samenvoegen","Kolom toevoegen","Rij toevoegen","Rand","Embed code","Updaten","Superscript","Subscript","Selectie knippen","Plakken","Kies content om te plakken","Tekens: %d","Woorden: %d","Alles","Selecteer: %s","Selecteer alles","Broncode","vet","cursief","kwast","link","ongedaan maken","opnieuw","tabel","afbeelding","gum","paragraaf","lettergrootte","video","lettertype","over","afdrukken","symbool","onderstreept","doorgestreept","inspringen","minder inspringen","volledige grootte","kleiner maken","opmaak kopiëren","horizontale lijn","lijst","genummerde lijst","knip","alles selecteren","link openen","link aanpassen","niet volgen","link verwijderen","Recensie","Om te bewerken"," URL","Herstellen","Opslaan","Opslaan als ...","Grootte aanpassen","Bijknippen","Breedte","Hoogte","Verhouding behouden","Ja","Nee","Verwijderen","Selecteren","Je kunt alleen je eigen afbeeldingen aanpassen. Deze afbeelding downloaden?","De afbeelding is succesvol geüploadet!","Palette","Er zijn geen bestanden in deze map.","Hongaars","Voer een nieuwe naam in","voorvertoning","Download","Plakken van klembord","Uw browser ondersteunt geen directe toegang tot het klembord.","Selectie kopiëren","kopiëren","Border radius"]
+
+/***/ }),
+/* 142 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["Napisz coś","Zaawansowane","O Jodit","Edytor Jodit","Darmowa wersja nie komercyjna","GNU General Public License, wersja 2 lub późniejsza","Instrukcja Jodit","zawiera szczegółowe informacje dotyczące użytkowania.","Odwiedź naszą stronę, aby uzyskać więcej informacji na temat licencji:","Zakup pełnej wersji","Copyright © XDSoft.net - Chupurnov Valeriy. Wszystkie prawa zastrzeżone.","Kotwica","Otwórz w nowej zakładce","Otwórz edytor w pełnym rozmiarze","Wyczyść formatowanie","Kolor wypełnienia lub ustaw kolor tekstu","Ponów","Cofnij","Pogrubienie","Kursywa","Wstaw listę wypunktowaną","Wstaw listę numeryczną","Wyśrodkuj","Wyjustuj","Wyrównaj do lewej","Wyrównaj do prawej","Wstaw linię poziomą","Wstaw grafikę","Wstaw plik","Wstaw film Youtube/vimeo","Wstaw link","Rozmiar tekstu","Krój czcionki","Wstaw formatowanie","Normalne","Nagłówek 1","Nagłówek 2","Nagłówek 3","Nagłówek 4","Cytat","Kod","Wstaw","Wstaw tabelę","Zmniejsz wcięcie","Zwiększ wcięcie","Wybierz znak specjalny","Wstaw znak specjalny","Malarz formatów","Zmień tryb","Marginesy","Górny","Prawy","Dolny","Levy","Style CSS","Klasy CSS","Wyrównanie","Prawa","środek","Lewa","brak","Źródło","Tytuł","Tekst alternatywny","Link","Otwórz w nowej zakładce","Grafika","Plik","Zaawansowne","Właściwości grafiki","Anuluj","OK","Twój kod wygląda jak HTML. Zachować HTML?","Wkleić jako HTML?","Oryginalny tekst","Wyczyść","Wstaw jako tekst","Wykryto tekst w formacie Word","Wklejany tekst pochodzi z dokumentu Microsoft Word/Excel. Chcesz zachować ten format czy wyczyścić go? ","Wstaw tylko treść","Przeglądarka plików","Błąd ładowania listy plików","Błąd ładowania folderów","Czy jesteś pewien?","Wprowadź nazwę folderu","Utwórz folder","wprowadź nazwę","Upuść plik graficzny","Upuść plik","lub kliknij tu","Tekst alternatywny","Przeglądaj","Wczytaj","Tło","Treść","Góra","Środek","Dół","Wstaw kolumnę przed","Wstaw kolumnę po","Wstaw wiersz przed","Wstaw wiersz po","Usuń tabelę","Usuń wiersz","Usuń kolumnę","Wyczyść komórkę","Usuń","Przekreślenie","Podkreślenie","Przerwa","Szukaj","Zamień na","Zamień","Edytuj","Wyrównywanie w pionie","Wyrównywanie w poziomie","Filtruj","Sortuj wg zmiany","Sortuj wg nazwy","Sortuj wg rozmiaru","Dodaj folder","Podziel w pionie","Podziel w poziomie","Podziel","Scal","Dodaj kolumnę","Dodaj wiersz","Obramowanie","Wstaw kod","Aktualizuj","indeks górny","index dolny","Wytnij zaznaczenie","Wklej","Wybierz zawartość do wklejenia","Znaki: %d","Słowa: %d","Wszystko","Wybierz: %s","Wybierz wszystko","HTML","pogrubienie","kursywa","pędzel","link","cofnij","ponów","tabela","grafika","wyczyść","akapit","rozmiar czcionki","wideo","czcionka","O programie","drukuj","symbol","podkreślenie","przekreślenie","wcięcie","wycięcie","pełen rozmiar","przytnij","format kopii","linia pozioma","lista","lista numerowana","wytnij","zaznacz wszystko","otwórz link","edytuj link","Atrybut no-follow","Usuń link","szukaj","edytuj","URL","wyczyść","zapisz","zapisz jako","Zmień rozmiar","Przytnij","Szerokość","Wysokość","Zachowaj proporcje","Tak","Nie","Usuń","Wybierz","Możesz edytować tylko swoje grafiki. Czy chcesz pobrać tą grafikę?","Grafika została pomyślnienie dodana na serwer","Paleta","Brak plików.","zmień nazwę","Wprowadź nową nazwę","podgląd","pobierz","Wklej ze schowka","Twoja przeglądarka nie obsługuje schowka","Kopiuj zaznaczenie","kopiuj","Zaokrąglenie krawędzi"]
+
+/***/ }),
+/* 143 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["Escreva algo...","Avançado","Sobre o Jodit","Editor Jodit","Versão Gratuita não-comercial","Licença Pública GNU General, Versão 2 ou posterior","Guia de usuário Jodit","contém ajuda detalhada para o uso.","Para informação sobre a licença, por favor visite nosso site:","Compre a versão completa","Copyright © XDSoft.net - Chupurnov Valeriy. Todos os direitos reservados.","Link","Abrir em nova aba","Abrir editor em tela cheia","Limpar formatação","Cor de preenchimento ou cor do texto","Refazer","Desfazer","Negrito","Itálico","Inserir lista não ordenada","Inserir lista ordenada","Centralizar","Justificar","Alinhar à Esquerda","Alinhar à Direita","Inserir linha horizontal","Inserir imagem","Inserir arquivo","Inserir vídeo do Youtube/vimeo","Inserir link","Tamanho da letra","Fonte","Inserir bloco","Normal","Cabeçalho 1","Cabeçalho 2","Cabeçalho 3","Cabeçalho 4","Citação","Código","Inserir","Inserir tabela","Diminuir recuo","Aumentar recuo","Selecionar caractere especial","Inserir caractere especial","Copiar formato","Mudar modo","Margens","cima","direta","baixo","esquerda","Estilos CSS","Classes CSS","Alinhamento","Direita","Centro","Esquerda","--Não Estabelecido--","Fonte","Título","Texto Alternativo","Link","Abrir link em nova aba","Imagem","Arquivo","Avançado","Propriedades da imagem","Cancelar","Ok","Seu código é simular ao HTML. Manter como HTML?","Colar como HTML?","Manter","Limpar","Inserir como Texto","Colado do Word Detectado","O conteúdo colado veio de um documento Microsoft Word/Excel. Você deseja manter o formato ou limpa-lo?","Inserir somente o Texto","Procurar arquivo","Erro ao carregar a lista","Erro ao carregar as pastas","Você tem certeza?","Escreva o nome da pasta","Criar pasta","Escreva seu nome","Soltar imagem","Soltar arquivo","ou clique","Texto alternativo","Explorar","Upload","Fundo","Texto","Cima","Meio","Baixo","Inserir coluna antes","Inserir coluna depois","Inserir linha acima","Inserir linha abaixo","Excluir tabela","Excluir linha","Excluir coluna","Limpar célula","Excluir","Tachado","Sublinhar","Pausa","Procurar por","Substituir com","Substituir","Editar","Alinhamento vertical","Alinhamento horizontal","filtrar","Ordenar por modificação","Ordenar por nome","Ordenar por tamanho","Adicionar pasta","Dividir vertical","Dividir horizontal","Dividir","Mesclar","Adicionar coluna","Adicionar linha","Borda","Incluir código","Atualizar","sobrescrito","subscrito","Cortar seleção","Colar","Escolher conteúdo para colar","Caracteres: %d","Palavras: %d","Tudo","Selecionar: %s","Selecionar tudo","HTML","negrito","itálico","pincel","link","desfazer","refazer","tabela","imagem","apagar","parágrafo","tamanho da letra","vídeo","fonte","Sobre de","Imprimir","Símbolo","sublinhar","tachado","recuar","diminuir recuo","Tamanho completo","diminuir","Copiar formato","linha horizontal","lista não ordenada","lista ordenada","Cortar","Selecionar tudo","Abrir link","Editar link","Não siga","Remover link","Visualizar","Editar","URL","Resetar","Salvar","Salvar como...","Redimensionar","Recortar","Largura","Altura","Manter a proporção","Sim","Não","Remover","Selecionar","Você só pode editar suas próprias imagens. Baixar essa imagem pro servidor?","A imagem foi enviada com sucesso para o servidor!","Palette","Não há arquivos nesse diretório.","Húngara","Digite um novo nome","preview","Baixar","Colar da área de transferência","O seu navegador não oferece suporte a acesso direto para a área de transferência.","Selecção de cópia","cópia","Border radius"]
+
+/***/ }),
+/* 144 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["Напишите что-либо","Расширенные","О Jodit","Редактор Jodit","Версия для не коммерческого использования","Стандартная общественная лицензия GNU (GPL), версия 2 или выше","Jodit Руководство пользователя","содержит детальную информацию по использованию","Для получения сведений о лицензии , пожалуйста, перейдите на наш сайт:","Купить полную версию","Авторские права © XDSoft.net - Чупурнов Валерий. Все права защищены.","Анкор","Открывать ссылку в новой вкладке","Открыть редактор в полном размере","Очистить форматирование","Цвет заливки или цвет текста","Повтор","Отмена","Жирный","Наклонный","Вставка маркированного списка","Вставить нумерованный список","Выровнять по центру","Выровнять по ширине","Выровнять по левому краю","Выровнять по правому краю","Вставить горизонтальную линию","Вставить изображение","Вставить файл","Вставьте видео","Вставить ссылку","Размер шрифта","Шрифт","Вставить блочный элемент","Нормальный текст","Заголовок 1","Заголовок 2","Заголовок 3","Заголовок 4","Цитата","Код","Вставить","Вставить таблицу","Уменьшить отступ","Увеличить отступ","Выберите специальный символ","Вставить специальный символ","Формат краски","Источник","Отступы","сверху","справа","снизу","слева","Стили","Классы","Выравнивание","По правому краю","По центру","По левому краю","--не устанавливать--","src","Заголовок","Альтернативный текст (alt)","Ссылка","Открывать ссылку в новом окне",null,"Файл",null,"Свойства изображения","Отмена","Ок","Ваш текст, который вы пытаетесь вставить похож на HTML. Вставить его как HTML?","Вставить как HTML?","Сохранить оригинал","Почистить","Вставить как текст","Возможно это фрагмент Word или Excel","Контент который вы вставляете поступает из документа Microsoft Word / Excel. Вы хотите сохранить формат или очистить его?","Вставить только текст","Браузер файлов","Ошибка при загрузке списка изображений","Ошибка при загрузке списка директорий","Вы уверены?","Введите название директории","Создать директорию","введите название","Перетащите сюда изображение","Перетащите сюда файл","или нажмите","Альтернативный текст","Сервер","Загрузка","Фон","Текст"," К верху","По середине","К низу","Вставить столбец до","Вставить столбец после","Вставить ряд выше","Вставить ряд ниже","Удалить таблицу","Удалять ряд","Удалить столбец","Отчистить ячейку","Удалить","Перечеркнуть","Подчеркивание","Разделитель","Найти","Заменить на","Заменить","Редактировать","Вертикальное выравнивание","Горизонтальное выравнивание","Фильтр","По изменению","По имени","По размеру","Добавить папку","Разделить по вертикали","Разделить по горизонтали","Разделить","Объеденить в одну","Добавить столбец","Добавить строку","Рамка","Код","Обновить","верхний индекс","индекс","Вырезать","Вставить","Выбрать контент для вставки","Символов: %d","Слов: %d","Выделить все","Выделить: %s","Выделить все","HTML","жирный","курсив","заливка","ссылка","отменить","повторить","таблица","Изображение","очистить","параграф","размер шрифта","видео","шрифт","о редакторе","печать","символ","подчеркнутый","перечеркнутый","отступ","выступ","во весь экран","обычный размер","Копировать формат","линия","Список","Нумерованный список","Вырезать","Выделить все","Открыть ссылку","Редактировать ссылку","Атрибут nofollow","Убрать ссылку","Просмотр","Редактировать","URL","Восстановить","Сохранить","Сохранить как","Изменить размер","Обрезать размер","Ширина","Высота","Сохранять пропорции","Да","Нет","Удалить","Выделить","Вы можете редактировать только свои собственные изображения. Загрузить это изображение на ваш сервер?","Изображение успешно загружено на сервер!","палитра","В данном каталоге нет файлов","Переименовать","Введите новое имя","Предпросмотр","Скачать","Вставить из буфера обмена","Ваш браузер не поддерживает прямой доступ к буферу обмена.","Скопировать выделенное","копия","Радиус границы"]
+
+/***/ }),
+/* 145 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["Bir şey yazın.","Gelişmiş","Jodit Hakkında","Jodit Editor","Ücretsiz, ticari olmayan versiyon","GNU General Public License, Versiyon 2 ve sonrası için","Jodit Kullanım Kılavuzu","kullanım için detaylı bilgiler içerir","Lisans hakkında bilgi için lütfen web sitemize gidin:","Tam versiyon satın al","Copyright © XDSoft.net - Chupurnov Valeriy. Tüm Hakları Saklıdır","Bağlantı","Yeni sekmede aç","Tam ekran editör","Stili temizle","Dolgu ve yazı rengi seç","İleri Al","Geri Al","Kalın","İtalik","Sırasız Liste Ekle","Sıralı Liste Ekle","Ortala","Kenarlara Yasla","Sola Yasla","Sağa Yasla","Yatay Çizgi Ekle","Resim Ekle","Dosya Ekle","Youtube/vimeo Videosu Ekle","Bağlantı Ekle","Font Boyutu","Font Ailesi","Blok Ekle","Normal","Başlık 1","Başlık 2","Başlık 3","Başlık 4","Alıntı","Code","Ekle","Tablo Ekle","Girintiyi Azalt","Girintiyi Arttır","Özel Karakter Seç","Özel Karakter Ekle","Resim Biçimi","Mod Değiştir","MEsafeler","Üst","Sağ","Alt","Sol","CSS Stilleri","CSS Sınıfları","Hizalama","Sağ","Ortalı","Sol","Belirlenmedi","Kaynak","Başlık","Alternatif Yazı","Link","Bağlantıyı yeni sekmede aç","Resim","Dosya","Gelişmiş","Resim özellikleri","İptal","Tamam","Kodunuz HTML koduna benziyor. HTML olarak devam etmek ister misiniz?","HTML olarak yapıştır","Sakla","Temizle","Yazı olarak ekle","Word biçiminde yapıştırma algılandı","Der Inhalt, den Sie einfügen, stammt aus einem Microsoft Word / Excel-Dokument. Möchten Sie das Format erhalten oder löschen?","Nur Text einfügen","Dosya Gezgini","Liste yüklenirken hata oluştu","Klasörler yüklenirken hata oluştur","Emin misiniz?","Dizin yolu giriniz","Dizin oluştur","Typname","Resim bırak","Dosya bırak","veya tıkla","Alternatif yazı","Ekle","Yükle","Arka plan","Yazı","Üst","Orta","Aşağı","Öncesine kolon ekle","Sonrasına kolon ekle","Üstüne satır ekle","Altına satır ekle","Tabloyu sil","Satır sil","Kolon sil","Hücreyi boşalt","Sil","Durchschlagen","Alt çizgi","Durdur","Ara","Şununla değiştir","Değiştir","Düzenle","Dikey hizalama","Yatay hizalama","Filtre","Değişime göre sırala","İsme göre sırala","Boyuta göre sırala","Klasör ekle","Dikey ayır","Yatay ayır","Ayır","Birleştir","Kolon ekle","Satır ekle","Kenarlık","Kod ekle","Güncelle","Üst yazı","Alt yazı","Seçilimi kes","Yapıştır","Yapıştırılacak içerik seç","Harfler: %d","Kelimeler: %d","Tümü","Seç: %s","Tümünü seç","Kaynak","Kalın","italik","Fırça","Bağlantı","Geri al","İleri al","Tablo","Resim","Silgi","Paragraf","Font boyutu","Video","Font","Hakkında","Yazdır","Sembol","Alt çizgi","Üstü çizili","Girinti","Çıkıntı","Tam ekran","Küçült","Kopyalama Biçimi","Ayraç","Sırasız liste","Sıralı liste","Kes","Tümünü seç","Bağlantıyı aç","Bağlantıyı düzenle","Nofollow özelliği","Bağlantıyı kaldır","Yorumu","Düzenlemek için","URL","Sıfırla","Kaydet","Farklı kaydet","Boyutlandır","Kırp","Genişlik","Yükseklik","En boy oranını koru","Evet","Hayır","Sil","Seç","Sadece kendi resimlerinizi düzenleyebilirsiniz. Bu görseli kendi hostunuza indirmek ister misiniz?","Görsel başarıyla hostunuza yüklendi","Palette","Bu dizinde dosya yok.","Macarca","Yeni isim girin","Ön izleme","İndir","Panodan yapıştır ","Tarayıcınız pano doğrudan erişim desteklemiyor.","Kopya seçimi","kopya","Sınır yarıçapı"]
+
+/***/ }),
+/* 146 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["输入一些内容","高级","关于Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","开发者指南","使用帮助","有关许可证的信息，请访问我们的网站：","购买完整版本","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","在新窗口打开","全屏编辑","清除样式","颜色","重做","撤销","粗体","斜体","符号列表","编号","居中","对齐文本","左对齐","右对齐","分割线","图片","文件","youtube/vimeo 视频","链接","字号","字体","格式块","文本","标题1","标题2","标题3","标题4","引用","代码","插入","表格","减少缩进","增加缩进","选择特殊符号","特殊符号","格式复制","改变模式","外边距（Margins）","top","right","bottom","left","样式","Classes","对齐方式","居右","居中","居左","无","Src","Title","Alternative","Link","在新窗口打开链接","图片","file","高级","图片属性","取消","确定","你粘贴的文本是一段html代码，是否保留源格式","html粘贴","保留源格式","匹配目标格式","把html代码视为普通文本","文本粘贴","正在粘贴 Word/Excel 的文本，是否保留源格式？","只保留文本","文件管理","加载list错误","加载folders错误","你确定吗？","输入路径","创建路径","type name","拖动图片到此","拖动文件到此","或点击","Alternative text","浏览","上传","背景色","文字","顶部","中间","底部","在之前插入列","在之后插入列","在之前插入行","在之后插入行","删除表格","删除行","删除列","清除内容","删除","删除线","下划线","Pause","查找","替换为","替换",null,"垂直对齐","水平对齐","筛选","修改时间排序","名称排序","大小排序","新建文件夹","垂直拆分","水平拆分","拆分","合并","添加列","添加行","边框","嵌入代码","更新","上标","下标","剪切","粘贴","选择内容并粘贴","字符数: %d","单词数: %d","全部","选择: %s","全选","源码","粗体","斜体","颜色","链接","撤销","重做","表格","图片","橡皮擦","段落","字号","视频","字体","关于","打印","符号","下划线","上出现","增加缩进","减少缩进","全屏","收缩","复制格式","分割线","无序列表","顺序列表","剪切","全选","打开链接","编辑链接","No follow","Unlink","回顧","铅笔","URL","重置","保存","保存为","调整大小","Crop","宽","高","保存长宽比","是","不","移除","选择","你只能编辑你自己的图片。Download this image on the host?","图片上传成功","调色板","此目录中沒有文件。","重命名","输入新名称","预览","下载","粘贴从剪贴板","你浏览器不支持直接访问的剪贴板。","复制的选择","复制","边界半径"]
+
+/***/ }),
+/* 147 */
+/***/ (function(module, exports) {
+
+module.exports.default = ["輸入一些內容","高級","關於Jodit","Jodit Editor","Free Non-commercial Version","GNU General Public License, version 2 or later","開發者指南","使用幫助","有關許可證的信息，請訪問我們的網站：","購買完整版本","Copyright © XDSoft.net - Chupurnov Valeriy. All rights reserved.","Anchor","在新窗口打開","全屏編輯","清除樣式","顏色","重做","撤銷","粗體","斜體","符號列表","編號","居中","對齊文本","左對齊","右對齊","分割線","圖片","文件","youtube/vimeo 影片","鏈接","字號","字體","格式塊","文本","標題1","標題2","標題3","標題4","引用","代碼","插入","表格","減少縮進","增加縮進","選擇特殊符號","特殊符號","格式複製","改變模式","外邊距（Margins）","top","right","bottom","left","樣式","Classes","對齊方式","居右","居中","居左","無","Src","Title","Alternative","Link","在新窗口打開鏈接","圖片","file","高級","圖片屬性","取消","確定","你黏貼的文本是一段html代碼，是否保留源格式","html黏貼","保留源格式","匹配目標格式","把html代碼視為普通文本","文本黏貼","正在黏貼 Word/Excel 的文本，是否保留源格式？","只保留文本","文件管理","加載list錯誤","加載folders錯誤","你確定嗎？","輸入路徑","創建路徑","type name","拖動圖片到此","拖動文件到此","或點擊","Alternative text","瀏覽","上傳","背景色","文字","頂部","中間","底部","在之前插入列","在之後插入列","在之前插入行","在之後插入行","刪除表格","刪除行","刪除列","清除內容","刪除","刪除線","下劃線","Pause","查找","替換為","替換",null,"垂直對齊","水平對齊","篩選","修改時間排序","名稱排序","大小排序","新建文件夾","垂直拆分","水平拆分","拆分","合併","添加列","添加行","邊框","嵌入代碼","更新","上標","下標","剪切","黏貼","選擇內容並黏貼","字符數: %d","單詞數: %d","全部","選擇: %s","全選","源碼","粗體","斜體","顏色","鏈接","撤銷","重做","表格","圖片","橡皮擦","段落","字號","影片","字體","關於","打印","符號","下劃線","上出現","增加縮進","減少縮進","全屏","收縮","複製格式","分割線","無序列表","順序列表","剪切","全選","打開鏈接","編輯鏈接","No follow","Unlink","回顧","鉛筆","URL","重置","保存","保存為","調整大小","Crop","寬","高","保存長寬比","是","不","移除","選擇","妳只能編輯妳自己的圖片。Download this image on the host?","圖片上傳成功","調色板","此目錄中沒有文件。","重命名","輸入新名稱","預覽","下載","วางจากคลิปบอร์ด","ของเบราว์เซอร์ไม่สนับสนุนโดยตรงเข้าไปยังคลิปบอร์ด","คัดลอกส่วนที่เลือก","คัดลอก","เส้นขอบรัศมี"]
+
+/***/ }),
+/* 148 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var async_1 = __webpack_require__(5);
+var size_1 = __webpack_require__(23);
+var icon_1 = __webpack_require__(6);
+Config_1.Config.prototype.addNewLine = true;
+Config_1.Config.prototype.addNewLineOnDBLClick = true;
+Config_1.Config.prototype.addNewLineTagsTriggers = [
+    'table',
+    'iframe',
+    'img',
+    'hr',
+    'jodit'
+];
+function addNewLine(editor) {
+    if (!editor.options.addNewLine) {
+        return;
+    }
+    var line = editor.create.fromHTML('<div role="button" tabIndex="-1" title="' +
+        editor.i18n('Break') +
+        '" class="jodit-add-new-line"><span>' +
+        icon_1.ToolbarIcon.getIcon('enter') +
+        '</span></div>');
+    var delta = 10;
+    var isMatchedTag = new RegExp('^(' + editor.options.addNewLineTagsTriggers.join('|') + ')$', 'i');
+    var timeout;
+    var hidden = false;
+    var preview = false;
+    var current;
+    var lineInFocus = false;
+    var show = function () {
+        if (editor.options.readonly || editor.isLocked()) {
+            return;
+        }
+        if (editor.container.classList.contains('jodit_popup_active')) {
+            return;
+        }
+        clearTimeout(timeout);
+        line.classList.toggle('jodit-add-new-line_after', !preview);
+        line.style.display = 'block';
+        line.style.width = editor.editor.clientWidth + 'px';
+        hidden = false;
+    };
+    var hideForce = function () {
+        clearTimeout(timeout);
+        lineInFocus = false;
+        line.style.display = 'none';
+        hidden = true;
+    };
+    var canGetFocus = function (elm) {
+        return (elm !== null &&
+            Dom_1.Dom.isBlock(elm, editor.editorWindow) &&
+            !/^(img|table|iframe|hr)$/i.test(elm.nodeName));
+    };
+    var hide = function () {
+        if (hidden || lineInFocus) {
+            return;
+        }
+        clearTimeout(timeout);
+        timeout = async_1.setTimeout(hideForce, 500);
+    };
+    editor.events
+        .on('beforeDestruct', function () {
+        Dom_1.Dom.safeRemove(line);
+    })
+        .on('afterInit', function () {
+        editor.container.appendChild(line);
+        editor.events
+            .on(line, 'mousemove', function (e) {
+            e.stopPropagation();
+        })
+            .on(line, 'mousedown touchstart', function (e) {
+            var p = editor.editorDocument.createElement(editor.options.enter);
+            if (preview && current && current.parentNode) {
+                current.parentNode.insertBefore(p, current);
+            }
+            else {
+                editor.editor.appendChild(p);
+            }
+            editor.selection.setCursorIn(p);
+            editor.events.fire('synchro');
+            hideForce();
+            e.preventDefault();
+        });
+    })
+        .on('afterInit', function () {
+        editor.events
+            .on(editor.editor, 'scroll', function () {
+            hideForce();
+        })
+            .on(editor.container, 'mouseleave', hide)
+            .on(line, 'mouseenter', function () {
+            clearTimeout(timeout);
+            lineInFocus = true;
+        })
+            .on(line, 'mouseleave', function () {
+            lineInFocus = false;
+        })
+            .on(editor.editor, 'dblclick', function (e) {
+            if (!editor.options.readonly &&
+                editor.options.addNewLineOnDBLClick &&
+                e.target === editor.editor &&
+                editor.selection.isCollapsed()) {
+                var editorBound = size_1.offset(editor.editor, editor, editor.editorDocument);
+                var top_1 = e.pageY - editor.editorWindow.pageYOffset;
+                var p = editor.editorDocument.createElement(editor.options.enter);
+                if (Math.abs(top_1 - editorBound.top) <
+                    Math.abs(top_1 - (editorBound.height + editorBound.top)) &&
+                    editor.editor.firstChild) {
+                    editor.editor.insertBefore(p, editor.editor.firstChild);
+                }
+                else {
+                    editor.editor.appendChild(p);
+                }
+                editor.selection.setCursorIn(p);
+                editor.setEditorValue();
+                hideForce();
+                e.preventDefault();
+            }
+        })
+            .on(editor.editor, 'mousemove', async_1.debounce(function (e) {
+            var currentElement = editor.editorDocument.elementFromPoint(e.pageX - editor.editorWindow.pageXOffset, e.pageY - editor.editorWindow.pageYOffset);
+            if (currentElement &&
+                Dom_1.Dom.isOrContains(line, currentElement)) {
+                return;
+            }
+            if (!currentElement ||
+                !Dom_1.Dom.isOrContains(editor.editor, currentElement)) {
+                return;
+            }
+            if (!currentElement ||
+                !currentElement.nodeName.match(isMatchedTag) ||
+                !Dom_1.Dom.isOrContains(editor.editor, currentElement)) {
+                currentElement = Dom_1.Dom.closest(currentElement, isMatchedTag, editor.editor);
+                if (!currentElement) {
+                    hide();
+                    return;
+                }
+            }
+            if (isMatchedTag.test(currentElement.nodeName)) {
+                var parentBox = Dom_1.Dom.up(currentElement, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+                if (parentBox && parentBox !== editor.editor) {
+                    currentElement = parentBox;
+                }
+            }
+            var editorBound = size_1.offset(editor.editor, editor, editor.editorDocument);
+            var position = size_1.offset(currentElement, editor, editor.editorDocument);
+            var top = false;
+            if (Math.abs(e.pageY - position.top) < delta) {
+                top = position.top;
+                if (top - editorBound.top >= 20) {
+                    top -= 15;
+                }
+                preview = true;
+            }
+            if (Math.abs(e.pageY - (position.top + position.height)) < delta) {
+                top = position.top + position.height;
+                if (editorBound.top + editorBound.height - top >=
+                    25) {
+                    top += 15;
+                }
+                preview = false;
+            }
+            if (top !== false &&
+                ((preview &&
+                    !Dom_1.Dom.prev(currentElement, canGetFocus, editor.editor)) ||
+                    (!preview &&
+                        !Dom_1.Dom.next(currentElement, canGetFocus, editor.editor)))) {
+                line.style.top = top + 'px';
+                current = currentElement;
+                show();
+            }
+            else {
+                current = false;
+                hide();
+            }
+        }, editor.defaultTimeout));
+    });
+}
+exports.addNewLine = addNewLine;
+
+
+/***/ }),
+/* 149 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var async_1 = __webpack_require__(5);
+Config_1.Config.prototype.autofocus = false;
+function autofocus(editor) {
+    var timeout;
+    editor.events
+        .on('afterInit', function () {
+        if (editor.options.autofocus) {
+            if (editor.defaultTimeout) {
+                timeout = async_1.setTimeout(editor.selection.focus, 300);
+            }
+            else {
+                editor.selection.focus();
+            }
+        }
+    })
+        .on('mousedown', function (e) {
+        if (editor.isEditorMode() &&
+            e.target &&
+            Dom_1.Dom.isBlock(e.target, editor.editorWindow) &&
+            !e.target.childNodes.length) {
+            if (editor.editor === e.target) {
+                editor.selection.focus();
+            }
+            else {
+                editor.selection.setCursorIn(e.target);
+            }
+        }
+    })
+        .on('beforeDestruct', function () {
+        clearTimeout(timeout);
+    });
+}
+exports.autofocus = autofocus;
+
+
+/***/ }),
+/* 150 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+function backspace(editor) {
+    var removeEmptyBlocks = function (container) {
+        var box = container, parent;
+        helpers_1.normalizeNode(container);
+        do {
+            var html = box.innerHTML.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
+            if ((!html.length || html === '<br>') &&
+                !Dom_1.Dom.isCell(box, editor.editorWindow) &&
+                box.parentNode &&
+                container !== editor.editor) {
+                parent = box.parentNode;
+                Dom_1.Dom.safeRemove(box);
+            }
+            else {
+                break;
+            }
+            box = parent;
+        } while (box && box !== editor.editor);
+    };
+    var removeChar = function (box, toLeft, range) {
+        if (box.node &&
+            box.node.nodeType === Node.TEXT_NODE &&
+            typeof box.node.nodeValue === 'string') {
+            var value = box.node.nodeValue, startOffset = toLeft ? value.length : 0;
+            var increment = toLeft ? -1 : 1, startOffsetInRange = startOffset;
+            while (startOffset >= 0 &&
+                startOffset <= value.length &&
+                value[startOffset + (toLeft ? -1 : 0)] ===
+                    consts.INVISIBLE_SPACE) {
+                startOffset += increment;
+            }
+            if (startOffset !== startOffsetInRange) {
+                if (toLeft) {
+                    value =
+                        value.substr(0, startOffset) +
+                            value.substr(startOffsetInRange);
+                }
+                else {
+                    value =
+                        value.substr(0, startOffsetInRange) +
+                            value.substr(startOffset);
+                    startOffset = startOffsetInRange;
+                }
+                box.node.nodeValue = value;
+            }
+            range.setStart(box.node, startOffset);
+            range.collapse(true);
+            editor.selection.selectRange(range);
+            var nextElement = Dom_1.Dom.findInline(box.node, toLeft, editor.editor);
+            if (value.length) {
+                var setRange = false;
+                if (toLeft) {
+                    if (startOffset) {
+                        setRange = true;
+                    }
+                }
+                else {
+                    if (startOffset < value.length) {
+                        setRange = true;
+                    }
+                }
+                if (setRange) {
+                    return true;
+                }
+            }
+            else {
+                range.setStartBefore(box.node);
+                range.collapse(true);
+                editor.selection.selectRange(range);
+                Dom_1.Dom.safeRemove(box.node);
+                box.node = nextElement;
+            }
+            if (nextElement) {
+                if (Dom_1.Dom.isInlineBlock(nextElement)) {
+                    nextElement = toLeft
+                        ? nextElement.lastChild
+                        : nextElement.firstChild;
+                }
+                if (nextElement && nextElement.nodeType === Node.TEXT_NODE) {
+                    box.node = nextElement;
+                    return removeChar(box, toLeft, range);
+                }
+            }
+        }
+    };
+    var potentialRemovable = constants_1.MAY_BE_REMOVED_WITH_KEY;
+    var removePotential = function (node) {
+        if (node && potentialRemovable.test(node.nodeName)) {
+            Dom_1.Dom.safeRemove(node);
+            return false;
+        }
+    };
+    var removeInline = function (box, toLeft, range) {
+        if (box.node) {
+            var workElement = box.node;
+            var removeCharFlag = removeChar(box, toLeft, range);
+            if (removeCharFlag !== undefined) {
+                return true;
+            }
+            if (!box.node) {
+                box.node = workElement.parentNode;
+            }
+            if (box.node === editor.editor) {
+                return false;
+            }
+            var node = box.node;
+            if (removePotential(node) === false) {
+                return false;
+            }
+            if (node) {
+                node = toLeft ? node.previousSibling : node.nextSibling;
+            }
+            while (node &&
+                node.nodeType === Node.TEXT_NODE &&
+                node.nodeValue &&
+                node.nodeValue.match(/^[\n\r]+$/)) {
+                node = toLeft ? node.previousSibling : node.nextSibling;
+            }
+            return removePotential(node);
+        }
+    };
+    var isEmpty = function (node) {
+        if (node.nodeName.match(/^(TD|TH|TR|TABLE|LI)$/) !== null) {
+            return false;
+        }
+        if (Dom_1.Dom.isEmpty(node) ||
+            node.nodeName.match(potentialRemovable) !== null) {
+            return true;
+        }
+        if (node.nodeType === Node.TEXT_NODE && !Dom_1.Dom.isEmptyTextNode(node)) {
+            return false;
+        }
+        return node.childNodes.length
+            ? Array.from(node.childNodes).every(isEmpty)
+            : true;
+    };
+    editor.events
+        .on('afterCommand', function (command) {
+        if (command === 'delete') {
+            var current = editor.selection.current();
+            if (current &&
+                current.firstChild &&
+                current.firstChild.nodeName === 'BR') {
+                Dom_1.Dom.safeRemove(current.firstChild);
+            }
+            if (!helpers_1.trim(editor.editor.textContent || '') &&
+                !editor.editor.querySelector('img') &&
+                (!current || !Dom_1.Dom.closest(current, 'table', editor.editor))) {
+                editor.editor.innerHTML = '';
+                var node = editor.selection.setCursorIn(editor.editor);
+                Dom_1.Dom.safeRemove(node);
+            }
+        }
+    })
+        .on('keydown', function (event) {
+        if (event.which === consts.KEY_BACKSPACE ||
+            event.which === consts.KEY_DELETE) {
+            var toLeft = event.which === consts.KEY_BACKSPACE;
+            if (!editor.selection.isFocused()) {
+                editor.selection.focus();
+            }
+            if (!editor.selection.isCollapsed()) {
+                editor.execCommand('Delete');
+                return false;
+            }
+            var sel = editor.selection.sel, range = sel && sel.rangeCount ? sel.getRangeAt(0) : false;
+            if (!range) {
+                return false;
+            }
+            var fakeNode = editor.create.inside.text(consts.INVISIBLE_SPACE);
+            var marker = editor.create.inside.span();
+            try {
+                range.insertNode(fakeNode);
+                if (!Dom_1.Dom.isOrContains(editor.editor, fakeNode)) {
+                    return false;
+                }
+                var container = Dom_1.Dom.up(fakeNode, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+                var workElement = Dom_1.Dom.findInline(fakeNode, toLeft, editor.editor);
+                var box = {
+                    node: workElement
+                };
+                var tryRemoveInline = void 0;
+                if (workElement) {
+                    tryRemoveInline = removeInline(box, toLeft, range);
+                }
+                else if (fakeNode.parentNode) {
+                    tryRemoveInline = removeInline({
+                        node: toLeft
+                            ? fakeNode.parentNode.previousSibling
+                            : fakeNode.parentNode.nextSibling
+                    }, toLeft, range);
+                }
+                if (tryRemoveInline !== undefined) {
+                    return tryRemoveInline ? undefined : false;
+                }
+                if (container && container.nodeName.match(/^(TD)$/)) {
+                    return false;
+                }
+                var prevBox = toLeft
+                    ? Dom_1.Dom.prev(box.node || fakeNode, function (node) {
+                        return Dom_1.Dom.isBlock(node, editor.editorWindow);
+                    }, editor.editor)
+                    : Dom_1.Dom.next(box.node || fakeNode, function (node) {
+                        return Dom_1.Dom.isBlock(node, editor.editorWindow);
+                    }, editor.editor);
+                if (!prevBox && container && container.parentNode) {
+                    prevBox = editor.create.inside.element(editor.options.enter);
+                    var boxNode = container;
+                    while (boxNode &&
+                        boxNode.parentNode &&
+                        boxNode.parentNode !== editor.editor) {
+                        boxNode = boxNode.parentNode;
+                    }
+                    boxNode.parentNode &&
+                        boxNode.parentNode.insertBefore(prevBox, boxNode);
+                }
+                else {
+                    if (prevBox && isEmpty(prevBox)) {
+                        Dom_1.Dom.safeRemove(prevBox);
+                        return false;
+                    }
+                }
+                if (prevBox) {
+                    var tmpNode = editor.selection.setCursorIn(prevBox, !toLeft);
+                    editor.selection.insertNode(marker, false, false);
+                    if (tmpNode.nodeType === Node.TEXT_NODE &&
+                        tmpNode.nodeValue === consts.INVISIBLE_SPACE) {
+                        Dom_1.Dom.safeRemove(tmpNode);
+                    }
+                }
+                if (container) {
+                    removeEmptyBlocks(container);
+                    if (prevBox && container.parentNode) {
+                        if (container.nodeName === prevBox.nodeName &&
+                            container.parentNode &&
+                            prevBox.parentNode &&
+                            container.parentNode !== editor.editor &&
+                            prevBox.parentNode !== editor.editor &&
+                            container.parentNode !==
+                                prevBox.parentNode &&
+                            container.parentNode.nodeName ===
+                                prevBox.parentNode.nodeName) {
+                            container = container.parentNode;
+                            prevBox = prevBox.parentNode;
+                        }
+                        Dom_1.Dom.moveContent(container, prevBox, !toLeft);
+                        helpers_1.normalizeNode(prevBox);
+                    }
+                    if (prevBox && prevBox.nodeName === 'LI') {
+                        var UL = Dom_1.Dom.closest(prevBox, 'Ul|OL', editor.editor);
+                        if (UL) {
+                            var nextBox = UL.nextSibling;
+                            if (nextBox &&
+                                nextBox.nodeName === UL.nodeName &&
+                                UL !== nextBox) {
+                                Dom_1.Dom.moveContent(nextBox, UL, !toLeft);
+                                Dom_1.Dom.safeRemove(nextBox);
+                            }
+                        }
+                    }
+                    removeEmptyBlocks(container);
+                    return false;
+                }
+            }
+            finally {
+                if (fakeNode.parentNode &&
+                    fakeNode.nodeValue === consts.INVISIBLE_SPACE) {
+                    var parent_1 = fakeNode.parentNode;
+                    Dom_1.Dom.safeRemove(fakeNode);
+                    if (!parent_1.firstChild &&
+                        parent_1.parentNode &&
+                        parent_1 !== editor.editor) {
+                        Dom_1.Dom.safeRemove(parent_1);
+                    }
+                }
+                if (marker &&
+                    Dom_1.Dom.isOrContains(editor.editor, marker, true)) {
+                    var tmpNode = editor.selection.setCursorBefore(marker);
+                    Dom_1.Dom.safeRemove(marker);
+                    if (tmpNode &&
+                        tmpNode.parentNode &&
+                        (Dom_1.Dom.findInline(tmpNode, true, tmpNode.parentNode) ||
+                            Dom_1.Dom.findInline(tmpNode, true, tmpNode.parentNode))) {
+                        Dom_1.Dom.safeRemove(tmpNode);
+                    }
+                }
+                editor.setEditorValue();
+            }
+            return false;
+        }
+    });
+}
+exports.backspace = backspace;
+
+
+/***/ }),
+/* 151 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+Config_1.Config.prototype.controls.subscript = {
+    tags: ['sub'],
+    tooltip: 'subscript'
+};
+Config_1.Config.prototype.controls.superscript = {
+    tags: ['sup'],
+    tooltip: 'superscript'
+};
+Config_1.Config.prototype.controls.bold = {
+    tagRegExp: /^(strong|b)$/i,
+    tags: ['strong', 'b'],
+    css: {
+        'font-weight': ['bold', '700']
+    },
+    tooltip: 'Bold'
+};
+Config_1.Config.prototype.controls.italic = {
+    tagRegExp: /^(em|i)$/i,
+    tags: ['em', 'i'],
+    css: {
+        'font-style': 'italic'
+    },
+    tooltip: 'Italic'
+};
+Config_1.Config.prototype.controls.underline = {
+    tagRegExp: /^(u)$/i,
+    tags: ['u'],
+    css: {
+        'text-decoration': 'underline'
+    },
+    tooltip: 'Underline'
+};
+Config_1.Config.prototype.controls.strikethrough = {
+    tagRegExp: /^(s)$/i,
+    tags: ['s'],
+    css: {
+        'text-decoration': 'line-through'
+    },
+    tooltip: 'Strike through'
+};
+function bold(editor) {
+    var callBack = function (command) {
+        var control = Config_1.Config.defaultOptions.controls[command], cssOptions = tslib_1.__assign({}, control.css), cssRules = {};
+        Object.keys(cssOptions).forEach(function (key) {
+            cssRules[key] = Array.isArray(cssOptions[key])
+                ? cssOptions[key][0]
+                : cssOptions[key];
+        });
+        editor.selection.applyCSS(cssRules, control.tags ? control.tags[0] : undefined, control.css);
+        editor.events.fire('synchro');
+        return false;
+    };
+    editor
+        .registerCommand('bold', {
+        exec: callBack,
+        hotkeys: ['ctrl+b', 'cmd+b']
+    })
+        .registerCommand('italic', {
+        exec: callBack,
+        hotkeys: ['ctrl+i', 'cmd+i']
+    })
+        .registerCommand('underline', {
+        exec: callBack,
+        hotkeys: ['ctrl+u', 'cmd+u']
+    })
+        .registerCommand('strikethrough', {
+        exec: callBack
+    });
+}
+exports.bold = bold;
+
+
+/***/ }),
+/* 152 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.cleanHTML = {
+    timeout: 300,
+    removeEmptyElements: true,
+    fillEmptyParagraph: true,
+    replaceNBSP: true,
+    cleanOnPaste: true,
+    replaceOldTags: {
+        i: 'em',
+        b: 'strong'
+    },
+    allowTags: false,
+    denyTags: false
+};
+Config_1.Config.prototype.controls.eraser = {
+    command: 'removeFormat',
+    tooltip: 'Clear Formatting'
+};
+function cleanHtml(editor) {
+    if (editor.options.cleanHTML.cleanOnPaste) {
+        editor.events.on('processPaste', function (event, html) {
+            return helpers_1.cleanFromWord(html);
+        });
+    }
+    var attributesReg = /([^\[]*)\[([^\]]+)]/, seperator = /[\s]*,[\s]*/, attrReg = /^(.*)[\s]*=[\s]*(.*)$/;
+    var getHash = function (tags) {
+        var tagsHash = {};
+        if (typeof tags === 'string') {
+            tags.split(seperator).map(function (elm) {
+                elm = helpers_1.trim(elm);
+                var attr = attributesReg.exec(elm), allowAttributes = {}, attributeMap = function (attrName) {
+                    attrName = helpers_1.trim(attrName);
+                    var val = attrReg.exec(attrName);
+                    if (val) {
+                        allowAttributes[val[1]] = val[2];
+                    }
+                    else {
+                        allowAttributes[attrName] = true;
+                    }
+                };
+                if (attr) {
+                    var attr2 = attr[2].split(seperator);
+                    if (attr[1]) {
+                        attr2.forEach(attributeMap);
+                        tagsHash[attr[1].toUpperCase()] = allowAttributes;
+                    }
+                }
+                else {
+                    tagsHash[elm.toUpperCase()] = true;
+                }
+            });
+            return tagsHash;
+        }
+        if (tags) {
+            Object.keys(tags).forEach(function (tagName) {
+                tagsHash[tagName.toUpperCase()] = tags[tagName];
+            });
+            return tagsHash;
+        }
+        return false;
+    };
+    var current;
+    var allowTagsHash = getHash(editor.options.cleanHTML.allowTags), denyTagsHash = getHash(editor.options.cleanHTML.denyTags);
+    var hasNotEmptyTextSibling = function (node, next) {
+        if (next === void 0) { next = false; }
+        var prev = next ? node.nextSibling : node.previousSibling;
+        while (prev) {
+            if (prev.nodeType === Node.ELEMENT_NODE ||
+                !Dom_1.Dom.isEmptyTextNode(prev)) {
+                return true;
+            }
+            prev = next ? prev.nextSibling : prev.previousSibling;
+        }
+        return false;
+    };
+    var isRemovableNode = function (node) {
+        if (node.nodeType !== Node.TEXT_NODE &&
+            ((allowTagsHash && !allowTagsHash[node.nodeName]) ||
+                (denyTagsHash && denyTagsHash[node.nodeName]))) {
+            return true;
+        }
+        if (current &&
+            node.nodeName === 'BR' &&
+            hasNotEmptyTextSibling(node) &&
+            !hasNotEmptyTextSibling(node, true) &&
+            Dom_1.Dom.up(node, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) !==
+                Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)) {
+            return true;
+        }
+        return (editor.options.cleanHTML.removeEmptyElements &&
+            current !== false &&
+            node.nodeType === Node.ELEMENT_NODE &&
+            node.nodeName.match(constants_1.IS_INLINE) !== null &&
+            !editor.selection.isMarker(node) &&
+            helpers_1.trim(node.innerHTML).length === 0 &&
+            !Dom_1.Dom.isOrContains(node, current));
+    };
+    editor.events
+        .on('change afterSetMode afterInit mousedown keydown', helpers_1.debounce(function () {
+        if (!editor.isDestructed &&
+            editor.isEditorMode() &&
+            editor.selection) {
+            current = editor.selection.current();
+            var node = null, work_1 = false, i_1 = 0;
+            var remove_1 = [], replaceOldTags = editor.options.cleanHTML.replaceOldTags;
+            if (replaceOldTags && current) {
+                var tags = Object.keys(replaceOldTags).join('|');
+                if (editor.selection.isCollapsed()) {
+                    var oldParent = Dom_1.Dom.closest(current, tags, editor.editor);
+                    if (oldParent) {
+                        var selInfo = editor.selection.save(), tagName = replaceOldTags[oldParent.nodeName.toLowerCase()] || replaceOldTags[oldParent.nodeName];
+                        Dom_1.Dom.replace(oldParent, tagName, true, false, editor.editorDocument);
+                        editor.selection.restore(selInfo);
+                    }
+                }
+            }
+            var checkNode_1 = function (nodeElm) {
+                if (nodeElm) {
+                    if (isRemovableNode(nodeElm)) {
+                        remove_1.push(nodeElm);
+                        return checkNode_1(nodeElm.nextSibling);
+                    }
+                    if (editor.options.cleanHTML.fillEmptyParagraph &&
+                        Dom_1.Dom.isBlock(nodeElm, editor.editorWindow) &&
+                        Dom_1.Dom.isEmpty(nodeElm, /^(img|svg|canvas|input|textarea|form|br)$/)) {
+                        var br = editor.create.inside.element('br');
+                        nodeElm.appendChild(br);
+                    }
+                    if (allowTagsHash &&
+                        allowTagsHash[nodeElm.nodeName] !== true) {
+                        var attributes = nodeElm
+                            .attributes;
+                        if (attributes && attributes.length) {
+                            var removeAttrs = [];
+                            for (i_1 = 0; i_1 < attributes.length; i_1 += 1) {
+                                if (!allowTagsHash[nodeElm.nodeName][attributes[i_1].name] ||
+                                    (allowTagsHash[nodeElm.nodeName][attributes[i_1].name] !== true &&
+                                        allowTagsHash[nodeElm.nodeName][attributes[i_1].name] !== attributes[i_1].value)) {
+                                    removeAttrs.push(attributes[i_1].name);
+                                }
+                            }
+                            if (removeAttrs.length) {
+                                work_1 = true;
+                            }
+                            removeAttrs.forEach(function (attr) {
+                                nodeElm.removeAttribute(attr);
+                            });
+                        }
+                    }
+                    checkNode_1(nodeElm.firstChild);
+                    checkNode_1(nodeElm.nextSibling);
+                }
+            };
+            if (editor.editor.firstChild) {
+                node = editor.editor.firstChild;
+            }
+            checkNode_1(node);
+            remove_1.forEach(Dom_1.Dom.safeRemove);
+            if (remove_1.length || work_1) {
+                editor.events && editor.events.fire('syncho');
+            }
+        }
+    }, editor.options.cleanHTML.timeout))
+        .on('keyup', function () {
+        if (editor.options.readonly) {
+            return;
+        }
+        var currentNode = editor.selection.current();
+        if (currentNode) {
+            var currentParagraph = Dom_1.Dom.up(currentNode, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+            if (currentParagraph) {
+                Dom_1.Dom.all(currentParagraph, function (node) {
+                    if (node && node.nodeType === Node.TEXT_NODE) {
+                        if (node.nodeValue !== null &&
+                            consts.INVISIBLE_SPACE_REG_EXP.test(node.nodeValue) &&
+                            node.nodeValue.replace(consts.INVISIBLE_SPACE_REG_EXP, '').length !== 0) {
+                            node.nodeValue = node.nodeValue.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
+                            if (node === currentNode &&
+                                editor.selection.isCollapsed()) {
+                                editor.selection.setCursorAfter(node);
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    })
+        .on('afterCommand', function (command) {
+        var sel = editor.selection;
+        var hr, node;
+        switch (command.toLowerCase()) {
+            case 'inserthorizontalrule':
+                hr = editor.editor.querySelector('hr[id=null]');
+                if (hr) {
+                    node = Dom_1.Dom.next(hr, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor, false);
+                    if (!node) {
+                        node = editor.create.inside.element(editor.options.enter);
+                        if (node) {
+                            Dom_1.Dom.after(hr, node);
+                        }
+                    }
+                    sel.setCursorIn(node);
+                }
+                break;
+            case 'removeformat':
+                node = sel.current();
+                var clean_1 = function (elm) {
+                    switch (elm.nodeType) {
+                        case Node.ELEMENT_NODE:
+                            Dom_1.Dom.each(elm, clean_1);
+                            if (elm.nodeName === 'FONT') {
+                                Dom_1.Dom.unwrap(elm);
+                            }
+                            else {
+                                [].slice
+                                    .call(elm.attributes)
+                                    .forEach(function (attr) {
+                                    if ([
+                                        'src',
+                                        'href',
+                                        'rel',
+                                        'content'
+                                    ].indexOf(attr.name.toLowerCase()) === -1) {
+                                        elm.removeAttribute(attr.name);
+                                    }
+                                });
+                                helpers_1.normalizeNode(elm);
+                            }
+                            break;
+                        case Node.TEXT_NODE:
+                            if (editor.options.cleanHTML.replaceNBSP &&
+                                elm.nodeType === Node.TEXT_NODE &&
+                                elm.nodeValue !== null &&
+                                elm.nodeValue.match(consts.SPACE_REG_EXP)) {
+                                elm.nodeValue = elm.nodeValue.replace(consts.SPACE_REG_EXP, ' ');
+                            }
+                            break;
+                        default:
+                            Dom_1.Dom.safeRemove(elm);
+                    }
+                };
+                if (!sel.isCollapsed()) {
+                    editor.selection.eachSelection(function (currentNode) {
+                        clean_1(currentNode);
+                    });
+                }
+                else {
+                    while (node &&
+                        node.nodeType !== Node.ELEMENT_NODE &&
+                        node !== editor.editor) {
+                        clean_1(node);
+                        if (node) {
+                            node = node.parentNode;
+                        }
+                    }
+                }
+                break;
+        }
+    });
+}
+exports.cleanHtml = cleanHtml;
+
+
+/***/ }),
+/* 153 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.nl2br = function (html) {
+    return html.replace(/([^>])([\n\r]+)/g, '$1<br/>$2');
+};
+
+
+/***/ }),
+/* 154 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
+var dialog_1 = __webpack_require__(17);
+var Plugin_1 = __webpack_require__(7);
+var Dom_1 = __webpack_require__(0);
+var setTimeout_1 = __webpack_require__(19);
+var pasteStorage = (function (_super) {
+    tslib_1.__extends(pasteStorage, _super);
+    function pasteStorage() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.currentIndex = 0;
+        _this.list = [];
+        _this.container = null;
+        _this.listBox = null;
+        _this.previewBox = null;
+        _this.dialog = null;
+        _this.paste = function () {
+            _this.jodit.selection.focus();
+            _this.jodit.selection.insertHTML(_this.list[_this.currentIndex]);
+            if (_this.currentIndex !== 0) {
+                var buffer = _this.list[0];
+                _this.list[0] = _this.list[_this.currentIndex];
+                _this.list[_this.currentIndex] = buffer;
+            }
+            _this.dialog && _this.dialog.close();
+            _this.jodit.setEditorValue();
+        };
+        _this.onKeyDown = function (e) {
+            var index = _this.currentIndex;
+            if ([constants_1.KEY_UP, constants_1.KEY_DOWN, constants_1.KEY_ENTER].indexOf(e.which) === -1) {
+                return;
+            }
+            if (e.which === constants_1.KEY_UP) {
+                if (index === 0) {
+                    index = _this.list.length - 1;
+                }
+                else {
+                    index -= 1;
+                }
+            }
+            if (e.which === constants_1.KEY_DOWN) {
+                if (index === _this.list.length - 1) {
+                    index = 0;
+                }
+                else {
+                    index += 1;
+                }
+            }
+            if (e.which === constants_1.KEY_ENTER) {
+                _this.paste();
+                return;
+            }
+            if (index !== _this.currentIndex) {
+                _this.selectIndex(index);
+            }
+            e.stopImmediatePropagation();
+            e.preventDefault();
+        };
+        _this.selectIndex = function (index) {
+            if (_this.listBox) {
+                Array.from((_this.listBox.childNodes)).forEach(function (a, i) {
+                    a.classList.remove('jodit_active');
+                    if (index === i && _this.previewBox) {
+                        a.classList.add('jodit_active');
+                        _this.previewBox.innerHTML = _this.list[index];
+                        a.focus();
+                    }
+                });
+            }
+            _this.currentIndex = index;
+        };
+        _this.showDialog = function () {
+            if (_this.list.length < 2) {
+                return;
+            }
+            _this.dialog || _this.createDialog();
+            if (_this.listBox) {
+                _this.listBox.innerHTML = '';
+            }
+            if (_this.previewBox) {
+                _this.previewBox.innerHTML = '';
+            }
+            _this.list.forEach(function (html, index) {
+                var a = _this.jodit.ownerDocument.createElement('a');
+                a.textContent = index + 1 + '. ' + html.replace(constants_1.SPACE_REG_EXP, '');
+                a.addEventListener('keydown', _this.onKeyDown);
+                a.setAttribute('href', 'javascript:void(0)');
+                a.setAttribute('data-index', index.toString());
+                a.setAttribute('tab-index', '-1');
+                _this.listBox && _this.listBox.appendChild(a);
+            });
+            _this.dialog && _this.dialog.open();
+            setTimeout_1.setTimeout(function () {
+                _this.selectIndex(0);
+            }, 100);
+        };
+        return _this;
+    }
+    pasteStorage.prototype.createDialog = function () {
+        var _this = this;
+        this.dialog = new dialog_1.Dialog(this.jodit);
+        var pasteButton = this.jodit.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
+            '<span>' +
+            this.jodit.i18n('Paste') +
+            '</span>' +
+            '</a>');
+        pasteButton.addEventListener('click', this.paste);
+        var cancelButton = this.jodit.create.fromHTML('<a href="javascript:void(0)" style="float:right; margin-right: 10px;" class="jodit_button">' +
+            '<span>' +
+            this.jodit.i18n('Cancel') +
+            '</span>' +
+            '</a>');
+        cancelButton.addEventListener('click', this.dialog.close);
+        this.container = this.jodit.ownerDocument.createElement('div');
+        this.container.classList.add('jodit_paste_storage');
+        this.listBox = this.jodit.ownerDocument.createElement('div');
+        this.previewBox = this.jodit.ownerDocument.createElement('div');
+        this.container.appendChild(this.listBox);
+        this.container.appendChild(this.previewBox);
+        this.dialog.setTitle(this.jodit.i18n('Choose Content to Paste'));
+        this.dialog.setContent(this.container);
+        this.dialog.setFooter([pasteButton, cancelButton]);
+        this.jodit.events.on(this.listBox, 'click dblclick', function (e) {
+            var a = e.target;
+            if (a && a.nodeName === 'A' && a.hasAttribute('data-index')) {
+                _this.selectIndex(parseInt(a.getAttribute('data-index') || '0', 10));
+            }
+            if (e.type === 'dblclick') {
+                _this.paste();
+            }
+            return false;
+        }, 'a');
+    };
+    pasteStorage.prototype.afterInit = function () {
+        var _this = this;
+        this.jodit.events.on('afterCopy', function (html) {
+            if (_this.list.indexOf(html) !== -1) {
+                _this.list.splice(_this.list.indexOf(html), 1);
+            }
+            _this.list.unshift(html);
+            if (_this.list.length > 5) {
+                _this.list.length = 5;
+            }
+        });
+        this.jodit.registerCommand('showPasteStorage', {
+            exec: this.showDialog,
+            hotkeys: ['ctrl+shift+v', 'cmd+shift+v']
+        });
+    };
+    pasteStorage.prototype.beforeDestruct = function () {
+        this.dialog && this.dialog.destruct();
+        Dom_1.Dom.safeRemove(this.previewBox);
+        Dom_1.Dom.safeRemove(this.listBox);
+        Dom_1.Dom.safeRemove(this.container);
+        this.container = null;
+        this.listBox = null;
+        this.previewBox = null;
+        this.dialog = null;
+        this.list = [];
+    };
+    return pasteStorage;
+}(Plugin_1.Plugin));
+exports.pasteStorage = pasteStorage;
+
+
+/***/ }),
+/* 155 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+var pluginKey = 'copyformat';
+var copyStyles = [
+    'fontWeight',
+    'fontStyle',
+    'fontSize',
+    'color',
+    'margin',
+    'padding',
+    'borderWidth',
+    'borderStyle',
+    'borderColor',
+    'borderRadius',
+    'backgroundColor',
+    'textDecorationLine',
+    'fontFamily'
+];
+var getStyle = function (editor, key, box, defaultStyles) {
+    var result = helpers_1.css(box, key);
+    if (result === defaultStyles[key]) {
+        if (box.parentNode &&
+            box !== editor.editor &&
+            box.parentNode !== editor.editor) {
+            result = getStyle(editor, key, box.parentNode, defaultStyles);
+        }
+        else {
+            result = undefined;
+        }
+    }
+    return result;
+};
+var getStyles = function (editor, box, defaultStyles) {
+    var result = {};
+    if (box) {
+        copyStyles.forEach(function (key) {
+            result[key] = getStyle(editor, key, box, defaultStyles);
+            if (key.match(/border(Style|Color)/) && !result.borderWidth) {
+                result[key] = undefined;
+            }
+        });
+    }
+    return result;
+};
+Config_1.Config.prototype.controls.copyformat = {
+    exec: function (editor, current) {
+        if (current) {
+            if (editor.buffer.exists(pluginKey)) {
+                editor.buffer.set(pluginKey, false);
+                editor.events.off(editor.editor, 'mouseup.' + pluginKey);
+            }
+            else {
+                var defaultStyles_1 = {}, box = Dom_1.Dom.up(current, function (elm) {
+                    return elm && elm.nodeType !== Node.TEXT_NODE;
+                }, editor.editor) || editor.editor;
+                var ideal_1 = editor.create.inside.span();
+                editor.editor.appendChild(ideal_1);
+                copyStyles.forEach(function (key) {
+                    defaultStyles_1[key] = helpers_1.css(ideal_1, key);
+                });
+                if (ideal_1 !== editor.editor) {
+                    Dom_1.Dom.safeRemove(ideal_1);
+                }
+                var format_1 = getStyles(editor, box, defaultStyles_1);
+                var onMouseDown = function () {
+                    editor.buffer.set(pluginKey, false);
+                    var currentNode = editor.selection.current();
+                    if (currentNode) {
+                        if (currentNode.nodeName === 'IMG') {
+                            helpers_1.css(currentNode, format_1);
+                        }
+                        else {
+                            editor.selection.applyCSS(format_1);
+                        }
+                    }
+                    editor.events.off(editor.editor, 'mouseup.' + pluginKey);
+                };
+                editor.events.on(editor.editor, 'mouseup.' + pluginKey, onMouseDown);
+                editor.buffer.set(pluginKey, true);
+            }
+        }
+    },
+    isActive: function (editor) { return !!editor.buffer.get(pluginKey); },
+    tooltip: 'Paint format'
+};
+
+
+/***/ }),
+/* 156 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Widget_1 = __webpack_require__(18);
+var TabsWidget = Widget_1.Widget.TabsWidget;
+var ColorPickerWidget = Widget_1.Widget.ColorPickerWidget;
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.controls.brush = {
+    isActive: function (editor, control, button) {
+        if (!button) {
+            return true;
+        }
+        var current = editor.selection.current(), icon = button.container.querySelector('svg');
+        if (icon && icon.style.fill) {
+            icon.style.removeProperty('fill');
+        }
+        if (current && !button.isDisable()) {
+            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
+                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                    (elm &&
+                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
+                        elm.nodeType === Node.ELEMENT_NODE));
+            }, editor.editor) || editor.editor;
+            var colorHEX = helpers_1.css(currentBpx, 'color').toString(), bgHEX = helpers_1.css(currentBpx, 'background-color').toString();
+            if (colorHEX !== helpers_1.css(editor.editor, 'color').toString()) {
+                icon && (icon.style.fill = colorHEX);
+                return true;
+            }
+            if (bgHEX !== helpers_1.css(editor.editor, 'background-color').toString()) {
+                icon && (icon.style.fill = bgHEX);
+                return true;
+            }
+        }
+        return false;
+    },
+    popup: function (editor, current, self, close) {
+        var colorHEX = '', bg_color = '', tabs, currentElement = null;
+        if (current &&
+            current !== editor.editor &&
+            Dom_1.Dom.isNode(current, editor.editorWindow) &&
+            current.nodeType === Node.ELEMENT_NODE) {
+            colorHEX = helpers_1.css(current, 'color').toString();
+            bg_color = helpers_1.css(current, 'background-color').toString();
+            currentElement = current;
+        }
+        var backgroundTag = ColorPickerWidget(editor, function (value) {
+            if (!currentElement) {
+                editor.execCommand('background', false, value);
+            }
+            else {
+                currentElement.style.backgroundColor = value;
+            }
+            close();
+        }, bg_color);
+        var colorTab = ColorPickerWidget(editor, function (value) {
+            if (!currentElement) {
+                editor.execCommand('forecolor', false, value);
+            }
+            else {
+                currentElement.style.color = value;
+            }
+            close();
+        }, colorHEX);
+        if (editor.options.colorPickerDefaultTab === 'background') {
+            tabs = {
+                Background: backgroundTag,
+                Text: colorTab
+            };
+        }
+        else {
+            tabs = {
+                Text: colorTab,
+                Background: backgroundTag
+            };
+        }
+        return TabsWidget(editor, tabs, currentElement);
+    },
+    tooltip: 'Fill color or set the text color'
+};
+function color(editor) {
+    var callback = function (command, second, third) {
+        var colorHEX = helpers_1.normalizeColor(third);
+        switch (command) {
+            case 'background':
+                editor.selection.applyCSS({
+                    backgroundColor: !colorHEX ? '' : colorHEX
+                });
+                break;
+            case 'forecolor':
+                editor.selection.applyCSS({
+                    color: !colorHEX ? '' : colorHEX
+                });
+                break;
+        }
+        editor.setEditorValue();
+        return false;
+    };
+    editor
+        .registerCommand('forecolor', callback)
+        .registerCommand('background', callback);
+}
+exports.color = color;
+
+
+/***/ }),
+/* 157 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+var Plugin_1 = __webpack_require__(7);
+var clipboard_1 = __webpack_require__(70);
+var DragAndDrop = (function (_super) {
+    tslib_1.__extends(DragAndDrop, _super);
+    function DragAndDrop() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.isFragmentFromEditor = false;
+        _this.isCopyMode = false;
+        _this.startDragPoint = { x: 0, y: 0 };
+        _this.draggable = null;
+        _this.bufferRange = null;
+        _this.onDragEnd = function () {
+            if (_this.draggable) {
+                Dom_1.Dom.safeRemove(_this.draggable);
+                _this.draggable = null;
+            }
+            _this.isCopyMode = false;
+        };
+        _this.onDrag = function (event) {
+            if (_this.draggable) {
+                if (!_this.draggable.parentNode) {
+                    _this.jodit.ownerDocument.body.appendChild(_this.draggable);
+                }
+                _this.jodit.events.fire('hidePopup');
+                helpers_1.css(_this.draggable, {
+                    left: event.clientX + 20,
+                    top: event.clientY + 20
+                });
+                _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
+                event.preventDefault();
+                event.stopPropagation();
+            }
+        };
+        _this.onDrop = function (event) {
+            if (!event.dataTransfer ||
+                !event.dataTransfer.files ||
+                !event.dataTransfer.files.length) {
+                if (!_this.isFragmentFromEditor && !_this.draggable) {
+                    _this.jodit.events.fire('paste', event);
+                    event.preventDefault();
+                    event.stopPropagation();
+                    return false;
+                }
+                var sel = _this.jodit.selection.sel;
+                var range = _this.bufferRange ||
+                    (sel && sel.rangeCount ? sel.getRangeAt(0) : null);
+                var fragment = null;
+                if (!_this.draggable && range) {
+                    fragment = _this.isCopyMode
+                        ? range.cloneContents()
+                        : range.extractContents();
+                }
+                else if (_this.draggable) {
+                    if (_this.isCopyMode) {
+                        var _a = _this.draggable.getAttribute('data-is-file') === '1'
+                            ? ['a', 'href']
+                            : ['img', 'src'], tagName = _a[0], attr = _a[1];
+                        fragment = _this.jodit.editorDocument.createElement(tagName);
+                        fragment.setAttribute(attr, _this.draggable.getAttribute('data-src') ||
+                            _this.draggable.getAttribute('src') ||
+                            '');
+                        if (tagName === 'a') {
+                            fragment.textContent = fragment.getAttribute(attr) || '';
+                        }
+                    }
+                    else {
+                        fragment = helpers_1.dataBind(_this.draggable, 'target');
+                    }
+                }
+                else if (_this.getText(event)) {
+                    fragment = _this.jodit.create.inside.fromHTML(_this.getText(event));
+                }
+                sel && sel.removeAllRanges();
+                _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
+                if (fragment) {
+                    _this.jodit.selection.insertNode(fragment, false, false);
+                    if (range && fragment.firstChild && fragment.lastChild) {
+                        range.setStartBefore(fragment.firstChild);
+                        range.setEndAfter(fragment.lastChild);
+                        _this.jodit.selection.selectRange(range);
+                        _this.jodit.events.fire('synchro');
+                    }
+                    if (fragment.nodeName === 'IMG' && _this.jodit.events) {
+                        _this.jodit.events.fire('afterInsertImage', fragment);
+                    }
+                }
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            _this.isFragmentFromEditor = false;
+        };
+        _this.onDragStart = function (event) {
+            var target = event.target;
+            _this.onDragEnd();
+            _this.isFragmentFromEditor = Dom_1.Dom.isOrContains(_this.jodit.editor, target, true);
+            _this.isCopyMode = _this.isFragmentFromEditor ? helpers_1.ctrlKey(event) : true;
+            if (_this.isFragmentFromEditor) {
+                var sel = _this.jodit.selection.sel;
+                var range = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
+                if (range) {
+                    _this.bufferRange = range.cloneRange();
+                }
+            }
+            else {
+                _this.bufferRange = null;
+            }
+            _this.startDragPoint.x = event.clientX;
+            _this.startDragPoint.y = event.clientY;
+            if (target.nodeType === Node.ELEMENT_NODE &&
+                target.matches('.jodit_filebrowser_files_item')) {
+                target = target.querySelector('img');
+            }
+            if (target.nodeName === 'IMG') {
+                _this.draggable = target.cloneNode(true);
+                helpers_1.dataBind(_this.draggable, 'target', target);
+                helpers_1.css(_this.draggable, {
+                    'z-index': 100000000000000,
+                    'pointer-events': 'none',
+                    position: 'fixed',
+                    display: 'inlin-block',
+                    left: _this.startDragPoint.x,
+                    top: _this.startDragPoint.y,
+                    width: target.offsetWidth,
+                    height: target.offsetHeight
+                });
+            }
+        };
+        _this.getText = function (event) {
+            var dt = clipboard_1.getDataTransfer(event);
+            return dt ? dt.getData(constants_1.TEXT_HTML) || dt.getData(constants_1.TEXT_PLAIN) : null;
+        };
+        return _this;
+    }
+    DragAndDrop.prototype.afterInit = function () {
+        this.jodit.events
+            .on(window, 'dragover', this.onDrag)
+            .on([window, this.jodit.editorDocument, this.jodit.editor], 'dragstart', this.onDragStart)
+            .on('drop', this.onDrop)
+            .on(window, 'dragend drop mouseup', this.onDragEnd);
+    };
+    DragAndDrop.prototype.beforeDestruct = function () {
+        this.onDragEnd();
+    };
+    return DragAndDrop;
+}(Plugin_1.Plugin));
+exports.DragAndDrop = DragAndDrop;
+
+
+/***/ }),
+/* 158 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var helpers_1 = __webpack_require__(4);
+var Plugin_1 = __webpack_require__(7);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.draggableTags = ['img', 'a', 'jodit-media', 'jodit'];
+var DragAndDropElement = (function (_super) {
+    tslib_1.__extends(DragAndDropElement, _super);
+    function DragAndDropElement() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.dragList = [];
+        _this.isCopyMode = false;
+        _this.draggable = null;
+        _this.wasMoved = false;
+        _this.timeout = 0;
+        _this.onDrag = helpers_1.throttle(function (event) {
+            if (!_this.draggable) {
+                return;
+            }
+            _this.wasMoved = true;
+            _this.jodit.events.fire('hidePopup hideResizer');
+            if (!_this.draggable.parentNode) {
+                _this.jodit.ownerDocument.body.appendChild(_this.draggable);
+            }
+            helpers_1.css(_this.draggable, {
+                left: event.clientX + 20,
+                top: event.clientY + 20
+            });
+            _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
+        }, _this.jodit.defaultTimeout);
+        _this.onDragStart = function (event) {
+            var target = event.target, last = null;
+            if (!_this.dragList.length) {
+                return;
+            }
+            do {
+                if (_this.dragList.indexOf(target.nodeName.toLowerCase()) !== -1) {
+                    if (!last ||
+                        (target.firstChild === last && target.lastChild === last)) {
+                        last = target;
+                    }
+                }
+                target = target.parentNode;
+            } while (target && target !== _this.jodit.editor);
+            if (!last) {
+                return;
+            }
+            _this.isCopyMode = helpers_1.ctrlKey(event);
+            _this.onDragEnd();
+            _this.timeout = helpers_1.setTimeout(function (lastNode) {
+                if (!lastNode) {
+                    return;
+                }
+                _this.draggable = lastNode.cloneNode(true);
+                helpers_1.dataBind(_this.draggable, 'target', lastNode);
+                helpers_1.css(_this.draggable, {
+                    'z-index': 100000000000000,
+                    'pointer-events': 'none',
+                    position: 'fixed',
+                    display: 'inlin-block',
+                    left: event.clientX,
+                    top: event.clientY,
+                    width: lastNode.offsetWidth,
+                    height: lastNode.offsetHeight
+                });
+            }, _this.jodit.defaultTimeout, last);
+            event.preventDefault();
+        };
+        _this.onDragEnd = function () {
+            window.clearTimeout(_this.timeout);
+            if (_this.draggable) {
+                Dom_1.Dom.safeRemove(_this.draggable);
+                _this.draggable = null;
+                _this.wasMoved = false;
+            }
+        };
+        _this.onDrop = function () {
+            if (!_this.draggable || !_this.wasMoved) {
+                _this.onDragEnd();
+                return;
+            }
+            var fragment = helpers_1.dataBind(_this.draggable, 'target');
+            _this.onDragEnd();
+            if (_this.isCopyMode) {
+                fragment = fragment.cloneNode(true);
+            }
+            _this.jodit.selection.insertNode(fragment, true, false);
+            if (fragment.nodeName === 'IMG' && _this.jodit.events) {
+                _this.jodit.events.fire('afterInsertImage', fragment);
+            }
+            _this.jodit.events.fire('synchro');
+        };
+        return _this;
+    }
+    DragAndDropElement.prototype.afterInit = function () {
+        this.dragList = this.jodit.options.draggableTags
+            ? helpers_1.splitArray(this.jodit.options.draggableTags)
+                .filter(function (item) { return item; })
+                .map(function (item) { return item.toLowerCase(); })
+            : [];
+        if (!this.dragList.length) {
+            return;
+        }
+        this.jodit.events
+            .on(this.jodit.editor, 'mousemove touchmove', this.onDrag)
+            .on(this.jodit.editor, 'mousedown touchstart dragstart', this.onDragStart)
+            .on('mouseup touchend', this.onDrop)
+            .on(window, 'mouseup touchend', this.onDragEnd);
+    };
+    DragAndDropElement.prototype.beforeDestruct = function () {
+        this.onDragEnd();
+    };
+    return DragAndDropElement;
+}(Plugin_1.Plugin));
+exports.DragAndDropElement = DragAndDropElement;
+
+
+/***/ }),
+/* 159 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var consts = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+exports.insertParagraph = function (editor, fake, wrapperTag, style) {
+    var p = editor.create.inside.element(wrapperTag), helper_node = editor.create.inside.element('br');
+    p.appendChild(helper_node);
+    if (style && style.cssText) {
+        p.setAttribute('style', style.cssText);
+    }
+    editor.selection.insertNode(p, false, false);
+    editor.selection.setCursorBefore(helper_node);
+    var range = editor.editorDocument.createRange();
+    range.setStartBefore(wrapperTag.toLowerCase() !== 'br' ? helper_node : p);
+    range.collapse(true);
+    editor.selection.selectRange(range);
+    Dom_1.Dom.safeRemove(fake);
+    helpers_1.scrollIntoView(p, editor.editor, editor.editorDocument);
+    editor.events && editor.events.fire('synchro');
+    return p;
+};
+function enter(editor) {
+    if (!editor.options.enterBlock) {
+        editor.options.enterBlock =
+            editor.options.enter.toLowerCase() === 'br'
+                ? consts.PARAGRAPH
+                : editor.options.enter.toLowerCase();
+    }
+    editor.events.on('keydown', function (event) {
+        if (event.which === consts.KEY_ENTER) {
+            var beforeEnter = editor.events.fire('beforeEnter', event);
+            if (beforeEnter !== undefined) {
+                return beforeEnter;
+            }
+            if (!editor.selection.isCollapsed()) {
+                editor.execCommand('Delete');
+            }
+            editor.selection.focus();
+            var current = editor.selection.current(false);
+            var sel = editor.selection.sel;
+            var range = editor.selection.range;
+            if (!current || current === editor.editor) {
+                editor.selection.current();
+                current = editor.create.inside.text(consts.INVISIBLE_SPACE);
+                if (sel && sel.rangeCount) {
+                    range.insertNode(current);
+                }
+                else {
+                    editor.editor.appendChild(current);
+                }
+                range.selectNode(current);
+                range.collapse(false);
+                if (sel) {
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                }
+            }
+            var currentBox = current
+                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
+                : false;
+            var isLi = currentBox && currentBox.nodeName === 'LI';
+            if (!isLi &&
+                (editor.options.enter.toLowerCase() ===
+                    consts.BR.toLowerCase() ||
+                    event.shiftKey ||
+                    Dom_1.Dom.closest(current, 'PRE|BLOCKQUOTE', editor.editor))) {
+                var br = editor.create.inside.element('br');
+                editor.selection.insertNode(br, true);
+                helpers_1.scrollIntoView(br, editor.editor, editor.editorDocument);
+                return false;
+            }
+            if (!currentBox &&
+                current &&
+                !Dom_1.Dom.prev(current, function (elm) {
+                    return Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                        (!!elm && Dom_1.Dom.isImage(elm, editor.editorWindow));
+                }, editor.editor)) {
+                var needWrap_1 = current;
+                Dom_1.Dom.up(needWrap_1, function (node) {
+                    if (node &&
+                        node.hasChildNodes() &&
+                        node !== editor.editor) {
+                        needWrap_1 = node;
+                    }
+                }, editor.editor);
+                currentBox = Dom_1.Dom.wrapInline(needWrap_1, editor.options.enter, editor);
+                if (Dom_1.Dom.isEmpty(currentBox)) {
+                    var helper_node = editor.editorDocument.createElement('br');
+                    currentBox.appendChild(helper_node);
+                    editor.selection.setCursorBefore(helper_node);
+                }
+                range =
+                    sel && sel.rangeCount
+                        ? sel.getRangeAt(0)
+                        : editor.editorDocument.createRange();
+            }
+            var fake = false, insertNew = false;
+            if (currentBox) {
+                if (!Dom_1.Dom.canSplitBlock(currentBox, editor.editorWindow)) {
+                    var br = editor.create.inside.element('br');
+                    editor.selection.insertNode(br, false);
+                    editor.selection.setCursorAfter(br);
+                    return false;
+                }
+                if (isLi) {
+                    if (Dom_1.Dom.isEmpty(currentBox)) {
+                        var fakeTextNode = false;
+                        var ul = Dom_1.Dom.closest(currentBox, 'ol|ul', editor.editor);
+                        if (!Dom_1.Dom.prev(currentBox, function (elm) {
+                            return elm && elm.nodeName === 'LI';
+                        }, ul)) {
+                            fakeTextNode = editor.selection.setCursorBefore(ul);
+                        }
+                        else if (!Dom_1.Dom.next(currentBox, function (elm) {
+                            return elm && elm.nodeName === 'LI';
+                        }, ul)) {
+                            fakeTextNode = editor.selection.setCursorAfter(ul);
+                        }
+                        else {
+                            var leftRange = editor.editorDocument.createRange();
+                            leftRange.setStartBefore(ul);
+                            leftRange.setEndAfter(currentBox);
+                            var fragment = leftRange.extractContents();
+                            if (ul.parentNode) {
+                                ul.parentNode.insertBefore(fragment, ul);
+                            }
+                            fakeTextNode = editor.selection.setCursorBefore(ul);
+                        }
+                        Dom_1.Dom.safeRemove(currentBox);
+                        exports.insertParagraph(editor, fakeTextNode, editor.options.enter);
+                        if (!helpers_1.$$('li', ul).length) {
+                            Dom_1.Dom.safeRemove(ul);
+                        }
+                        return false;
+                    }
+                }
+                if (editor.selection.cursorInTheEdge(true, currentBox)) {
+                    fake = editor.selection.setCursorBefore(currentBox);
+                    exports.insertParagraph(editor, fake, isLi ? 'li' : editor.options.enter, currentBox.style);
+                    currentBox &&
+                        editor.selection.setCursorIn(currentBox, true);
+                    return false;
+                }
+                if (editor.selection.cursorInTheEdge(false, currentBox) ===
+                    false) {
+                    var leftRange = editor.editorDocument.createRange();
+                    leftRange.setStartBefore(currentBox);
+                    leftRange.setEnd(range.startContainer, range.startOffset);
+                    var fragment = leftRange.extractContents();
+                    if (currentBox.parentNode) {
+                        currentBox.parentNode.insertBefore(fragment, currentBox);
+                    }
+                    editor.selection.setCursorIn(currentBox, true);
+                }
+                else {
+                    fake = editor.selection.setCursorAfter(currentBox);
+                }
+            }
+            else {
+                insertNew = true;
+            }
+            if (insertNew || fake) {
+                exports.insertParagraph(editor, fake, isLi ? 'li' : editor.options.enter, currentBox ? currentBox.style : void 0);
+            }
+            return false;
+        }
+    });
+}
+exports.enter = enter;
+
+
+/***/ }),
+/* 160 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var async_1 = __webpack_require__(5);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.showMessageErrors = true;
+Config_1.Config.prototype.showMessageErrorTime = 3000;
+Config_1.Config.prototype.showMessageErrorOffsetPx = 3;
+function errorMessages(editor) {
+    if (editor.options.showMessageErrors) {
+        var height_1;
+        var messagesBox_1 = editor.create.div('jodit_error_box_for_messages'), recalcOffsets_1 = function () {
+            height_1 = 5;
+            Array.from((messagesBox_1.childNodes)).forEach(function (elm) {
+                helpers_1.css(messagesBox_1, 'bottom', height_1 + 'px');
+                height_1 +=
+                    elm.offsetWidth +
+                        editor.options.showMessageErrorOffsetPx;
+            });
+        };
+        editor.workplace.appendChild(messagesBox_1);
+        editor.events
+            .on('beforeDestruct', function () {
+            Dom_1.Dom.safeRemove(messagesBox_1);
+        })
+            .on('errorMessage', function (message, className, timeout) {
+            var newmessage = editor.create.div('active ' + (className || ''), message);
+            messagesBox_1.appendChild(newmessage);
+            recalcOffsets_1();
+            async_1.setTimeout(function () {
+                newmessage.classList.remove('active');
+                async_1.setTimeout(function () {
+                    Dom_1.Dom.safeRemove(newmessage);
+                    recalcOffsets_1();
+                }, 300);
+            }, timeout || editor.options.showMessageErrorTime);
+        });
+    }
+}
+exports.errorMessages = errorMessages;
+
+
+/***/ }),
+/* 161 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.controls.fontsize = {
+    command: 'fontSize',
+    list: [
+        '8',
+        '9',
+        '10',
+        '11',
+        '12',
+        '14',
+        '16',
+        '18',
+        '24',
+        '30',
+        '36',
+        '48',
+        '60',
+        '72',
+        '96'
+    ],
+    template: function (editor, key, value) { return value; },
+    tooltip: 'Font size',
+    isActiveChild: function (editor, control) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
+                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                    (elm &&
+                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
+                        elm.nodeType === Node.ELEMENT_NODE));
+            }, editor.editor) || editor.editor;
+            var fontSize = helpers_1.css(currentBpx, 'font-size');
+            return Boolean(fontSize &&
+                control.args &&
+                control.args[1].toString() === fontSize.toString());
+        }
+        return false;
+    },
+    isActive: function (editor) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
+                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                    (elm &&
+                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
+                        elm.nodeType === Node.ELEMENT_NODE));
+            }, editor.editor) || editor.editor;
+            return (helpers_1.css(currentBpx, 'font-size').toString() !==
+                helpers_1.css(editor.editor, 'font-size').toString());
+        }
+        return false;
+    }
+};
+Config_1.Config.prototype.controls.font = {
+    command: 'fontname',
+    exec: function (editor, event, control) {
+        editor.execCommand(control.command, false, control.args ? control.args[0] : undefined);
+    },
+    list: {
+        'Helvetica,sans-serif': 'Helvetica',
+        'Arial,Helvetica,sans-serif': 'Arial',
+        'Georgia,serif': 'Georgia',
+        'Impact,Charcoal,sans-serif': 'Impact',
+        'Tahoma,Geneva,sans-serif': 'Tahoma',
+        "'Times New Roman',Times,serif": 'Times New Roman',
+        'Verdana,Geneva,sans-serif': 'Verdana'
+    },
+    template: function (editor, key, value) {
+        return "<span style=\"font-family: " + key + "\">" + value + "</span>";
+    },
+    isActiveChild: function (editor, control) {
+        var current = editor.selection.current(), normFonts = function (fontValue) {
+            return fontValue
+                .toLowerCase()
+                .replace(/['"]+/g, '')
+                .replace(/[^a-z0-9]+/g, ',');
+        };
+        if (current) {
+            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
+                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                    (elm &&
+                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
+                        elm.nodeType === Node.ELEMENT_NODE));
+            }, editor.editor) || editor.editor;
+            var fontFamily = helpers_1.css(currentBpx, 'font-family').toString();
+            return Boolean(fontFamily &&
+                control.args &&
+                normFonts(control.args[0].toString()) ===
+                    normFonts(fontFamily));
+        }
+        return false;
+    },
+    isActive: function (editor) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
+                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
+                    (Dom_1.Dom.isNode(elm, editor.editorWindow) &&
+                        elm &&
+                        elm.nodeType === Node.ELEMENT_NODE));
+            }, editor.editor) || editor.editor;
+            return (helpers_1.css(currentBpx, 'font-family').toString() !==
+                helpers_1.css(editor.editor, 'font-family').toString());
+        }
+        return false;
+    },
+    tooltip: 'Font family'
+};
+function font(editor) {
+    var callback = function (command, second, third) {
+        switch (command) {
+            case 'fontsize':
+                editor.selection.applyCSS({
+                    fontSize: helpers_1.normalizeSize(third)
+                });
+                break;
+            case 'fontname':
+                editor.selection.applyCSS({
+                    fontFamily: third
+                });
+                break;
+        }
+        editor.events.fire('synchro');
+        return false;
+    };
+    editor
+        .registerCommand('fontsize', callback)
+        .registerCommand('fontname', callback);
+}
+exports.font = font;
+
+
+/***/ }),
+/* 162 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.controls.paragraph = {
+    command: 'formatBlock',
+    getLabel: function (editor, btn, button) {
+        var current = editor.selection.current();
+        if (current && editor.options.textIcons) {
+            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor, currentValue = currentBox.nodeName.toLowerCase(), list = btn.list;
+            if (button &&
+                btn.data &&
+                btn.data.currentValue !== currentValue &&
+                btn.list &&
+                list[currentValue]) {
+                button.textBox.innerHTML = "<span>" + editor.i18n(list[currentValue]) + "</span>";
+                button.textBox.firstChild.classList.add('jodit_icon');
+                btn.data.currentValue = currentValue;
+            }
+        }
+        return false;
+    },
+    exec: function (editor, event, control) {
+        editor.execCommand(control.command, false, control.args ? control.args[0] : undefined);
+    },
+    data: {
+        currentValue: 'left'
+    },
+    list: {
+        p: 'Normal',
+        h1: 'Heading 1',
+        h2: 'Heading 2',
+        h3: 'Heading 3',
+        h4: 'Heading 4',
+        blockquote: 'Quote'
+    },
+    isActiveChild: function (editor, control) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+            return (currentBox &&
+                currentBox !== editor.editor &&
+                control.args !== undefined &&
+                currentBox.nodeName.toLowerCase() === control.args[0]);
+        }
+        return false;
+    },
+    isActive: function (editor, control) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBpx = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+            return (currentBpx &&
+                currentBpx !== editor.editor &&
+                control.list !== undefined &&
+                currentBpx.nodeName.toLowerCase() !== 'p' &&
+                control.list[currentBpx.nodeName.toLowerCase()] !== undefined);
+        }
+        return false;
+    },
+    template: function (editor, key, value) {
+        return ('<' +
+            key +
+            ' class="jodit_list_element"><span>' +
+            editor.i18n(value) +
+            '</span></' +
+            key +
+            '></li>');
+    },
+    tooltip: 'Insert format block'
+};
+function formatBlock(editor) {
+    editor.registerCommand('formatblock', function (command, second, third) {
+        editor.selection.focus();
+        var work = false;
+        editor.selection.eachSelection(function (current) {
+            var selectionInfo = editor.selection.save();
+            var currentBox = current
+                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
+                : false;
+            if ((!currentBox || currentBox.nodeName === 'LI') && current) {
+                currentBox = Dom_1.Dom.wrapInline(current, editor.options.enter, editor);
+            }
+            if (!currentBox) {
+                editor.selection.restore(selectionInfo);
+                return;
+            }
+            if (!currentBox.tagName.match(/TD|TH|TBODY|TABLE|THEAD/i)) {
+                if (third === editor.options.enterBlock.toLowerCase() &&
+                    currentBox.parentNode &&
+                    currentBox.parentNode.nodeName === 'LI') {
+                    Dom_1.Dom.unwrap(currentBox);
+                }
+                else {
+                    Dom_1.Dom.replace(currentBox, third, true, false, editor.editorDocument);
+                }
+            }
+            else {
+                if (!editor.selection.isCollapsed()) {
+                    editor.selection.applyCSS({}, third);
+                }
+                else {
+                    Dom_1.Dom.wrapInline(current, third, editor);
+                }
+            }
+            work = true;
+            editor.selection.restore(selectionInfo);
+        });
+        if (!work) {
+            var currentBox = editor.editorDocument.createElement(third);
+            currentBox.innerHTML = consts.INVISIBLE_SPACE;
+            editor.selection.insertNode(currentBox, false);
+            editor.selection.setCursorIn(currentBox);
+        }
+        editor.setEditorValue();
+        return false;
+    });
+}
+exports.formatBlock = formatBlock;
+
+
+/***/ }),
+/* 163 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var helpers_1 = __webpack_require__(4);
+var icon_1 = __webpack_require__(6);
+Config_1.Config.prototype.fullsize = false;
+Config_1.Config.prototype.globalFullsize = true;
+Config_1.Config.prototype.controls.fullsize = {
+    exec: function (editor) {
+        editor.toggleFullSize();
+    },
+    isActive: function (editor) { return editor.isFullSize(); },
+    getLabel: function (editor, btn, button) {
+        var mode = editor.isFullSize() ? 'shrink' : 'fullsize';
+        if (button) {
+            button.textBox.innerHTML = !editor.options.textIcons
+                ? icon_1.ToolbarIcon.getIcon(mode)
+                : "<span>" + editor.i18n(mode) + "</span>";
+            button.textBox.firstChild.classList.add('jodit_icon');
+        }
+    },
+    tooltip: 'Open editor in fullsize',
+    mode: consts.MODE_SOURCE + consts.MODE_WYSIWYG
+};
+function fullsize(editor) {
+    var shown = false, oldHeight = 0, oldWidth = 0, wasToggled = false;
+    var resize = function () {
+        if (editor.events) {
+            if (shown) {
+                oldHeight = helpers_1.css(editor.container, 'height');
+                oldWidth = helpers_1.css(editor.container, 'width');
+                helpers_1.css(editor.container, {
+                    height: editor.ownerWindow.innerHeight,
+                    width: editor.ownerWindow.innerWidth
+                });
+                wasToggled = true;
+            }
+            else if (wasToggled) {
+                helpers_1.css(editor.container, {
+                    height: oldHeight || 'auto',
+                    width: oldWidth || 'auto'
+                });
+            }
+        }
+    }, toggle = function (enable) {
+        var _a, _b;
+        if (!editor.container) {
+            return;
+        }
+        if (enable === undefined) {
+            enable = !editor.container.classList.contains('jodit_fullsize');
+        }
+        editor.options.fullsize = enable;
+        shown = enable;
+        editor.container.classList.toggle('jodit_fullsize', enable);
+        if (editor.toolbar) {
+            if (!enable) {
+                (_a = editor.toolbar.getParentContainer()) === null || _a === void 0 ? void 0 : _a.appendChild(editor.toolbar.container);
+            }
+            else {
+                (_b = editor.container.querySelector('.jodit_toolbar_container')) === null || _b === void 0 ? void 0 : _b.appendChild(editor.toolbar.container);
+            }
+            helpers_1.css(editor.toolbar.container, 'width', 'auto');
+        }
+        if (editor.options.globalFullsize) {
+            var node = editor.container.parentNode;
+            while (node && node.nodeType !== Node.DOCUMENT_NODE) {
+                node.classList.toggle('jodit_fullsize_box', enable);
+                node = node.parentNode;
+            }
+            resize();
+        }
+        editor.events.fire('afterResize');
+    };
+    if (editor.options.globalFullsize) {
+        editor.events.on(editor.ownerWindow, 'resize', resize);
+    }
+    editor.events
+        .on('afterInit afterOpen', function () {
+        var _a, _b;
+        editor.toggleFullSize((_b = (_a = editor) === null || _a === void 0 ? void 0 : _a.options) === null || _b === void 0 ? void 0 : _b.fullsize);
+    })
+        .on('toggleFullSize', toggle)
+        .on('beforeDestruct beforeClose', function () {
+        toggle(false);
+    })
+        .on('beforeDestruct', function () {
+        editor.events &&
+            editor.events.off(editor.ownerWindow, 'resize', resize);
+    });
+}
+exports.fullsize = fullsize;
+
+
+/***/ }),
+/* 164 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var Plugin_1 = __webpack_require__(7);
+var normalize_1 = __webpack_require__(20);
+Config_1.Config.prototype.commandToHotkeys = {
+    removeFormat: ['ctrl+shift+m', 'cmd+shift+m'],
+    insertOrderedList: ['ctrl+shift+7', 'cmd+shift+7'],
+    insertUnorderedList: ['ctrl+shift+8, cmd+shift+8'],
+    selectall: ['ctrl+a', 'cmd+a']
+};
+var hotkeys = (function (_super) {
+    tslib_1.__extends(hotkeys, _super);
+    function hotkeys() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.onKeyPress = function (event) {
+            var special = _this.specialKeys[event.which], character = (event.key || String.fromCharCode(event.which)).toLowerCase();
+            var modif = [special || character];
+            ['alt', 'ctrl', 'shift', 'meta'].forEach(function (specialKey) {
+                if (event[specialKey + 'Key'] && special !== specialKey) {
+                    modif.push(specialKey);
+                }
+            });
+            return normalize_1.normalizeKeyAliases(modif.join('+'));
+        };
+        _this.specialKeys = {
+            8: 'backspace',
+            9: 'tab',
+            10: 'return',
+            13: 'return',
+            16: 'shift',
+            17: 'ctrl',
+            18: 'alt',
+            19: 'pause',
+            20: 'capslock',
+            27: 'esc',
+            32: 'space',
+            33: 'pageup',
+            34: 'pagedown',
+            35: 'end',
+            36: 'home',
+            37: 'left',
+            38: 'up',
+            39: 'right',
+            40: 'down',
+            45: 'insert',
+            46: 'del',
+            59: ';',
+            61: '=',
+            91: 'meta',
+            96: '0',
+            97: '1',
+            98: '2',
+            99: '3',
+            100: '4',
+            101: '5',
+            102: '6',
+            103: '7',
+            104: '8',
+            105: '9',
+            106: '*',
+            107: '+',
+            109: '-',
+            110: '.',
+            111: '/',
+            112: 'f1',
+            113: 'f2',
+            114: 'f3',
+            115: 'f4',
+            116: 'f5',
+            117: 'f6',
+            118: 'f7',
+            119: 'f8',
+            120: 'f9',
+            121: 'f10',
+            122: 'f11',
+            123: 'f12',
+            144: 'numlock',
+            145: 'scroll',
+            173: '-',
+            186: ';',
+            187: '=',
+            188: ',',
+            189: '-',
+            190: '.',
+            191: '/',
+            192: '`',
+            219: '[',
+            220: '\\',
+            221: ']',
+            222: "'"
+        };
+        return _this;
+    }
+    hotkeys.prototype.afterInit = function (editor) {
+        var _this = this;
+        var commands = Object.keys(editor.options.commandToHotkeys);
+        commands.forEach(function (commandName) {
+            var shortcuts = editor.options.commandToHotkeys[commandName];
+            if (shortcuts) {
+                editor.registerHotkeyToCommand(shortcuts, commandName);
+            }
+        });
+        var itIsHotkey = false;
+        editor.events
+            .on('keydown.hotkeys', function (event) {
+            var shortcut = _this.onKeyPress(event);
+            var resultOfFire = _this.jodit.events.fire(shortcut + '.hotkey', event.type);
+            if (resultOfFire === false) {
+                itIsHotkey = true;
+                editor.events.stopPropagation('keydown');
+                return false;
+            }
+        }, void 0, void 0, true)
+            .on('keyup.hotkeys', function () {
+            if (itIsHotkey) {
+                itIsHotkey = false;
+                editor.events.stopPropagation('keyup');
+                return false;
+            }
+        }, void 0, void 0, true);
+    };
+    hotkeys.prototype.beforeDestruct = function (jodit) {
+        if (jodit.events) {
+            jodit.events.off('.hotkeys');
+        }
+    };
+    return hotkeys;
+}(Plugin_1.Plugin));
+exports.hotkeys = hotkeys;
+
+
+/***/ }),
+/* 165 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var defaultLanguage_1 = __webpack_require__(37);
+var async_1 = __webpack_require__(5);
+var css_1 = __webpack_require__(10);
+Config_1.Config.prototype.iframeBaseUrl = '';
+Config_1.Config.prototype.iframeDefaultSrc = 'about:blank';
+Config_1.Config.prototype.iframeStyle =
+    'html{' +
+        'margin: 0px;' +
+        'min-height: 100%;' +
+        '}' +
+        'body{' +
+        'box-sizing: border-box;' +
+        'font-size: 13px;' +
+        '    line-height: 1.6;' +
+        'padding:10px;' +
+        'background:transparent;' +
+        'color:#000;' +
+        'position:' +
+        'relative;' +
+        'z-index: 2;' +
+        'user-select:auto;' +
+        'margin:0px;' +
+        'overflow:auto;' +
+        '}' +
+        'table{' +
+        'width:100%;' +
+        'border: none;' +
+        'border-collapse:collapse;' +
+        'empty-cells: show;' +
+        'max-width: 100%;' +
+        '}' +
+        'th,td{' +
+        'padding: 2px 5px;' +
+        'border:1px solid #ccc;' +
+        '-webkit-user-select:text;' +
+        '-moz-user-select:text;' +
+        '-ms-user-select:text;' +
+        'user-select:text' +
+        '}' +
+        'td[data-jodit-selected-cell],' +
+        'th[data-jodit-selected-cell]{' +
+        'border: 1px double #1e88e5' +
+        '}' +
+        'p{' +
+        'margin-top:0;' +
+        '}' +
+        '.jodit_editor .jodit_iframe_wrapper{' +
+        'display: block;' +
+        'clear: both;' +
+        'user-select: none;' +
+        'position: relative;' +
+        '}' +
+        '.jodit_editor .jodit_iframe_wrapper:after {' +
+        'position:absolute;' +
+        'content:"";' +
+        'z-index:1;' +
+        'top:0;' +
+        'left:0;' +
+        'right: 0;' +
+        'bottom: 0;' +
+        'cursor: pointer;' +
+        'display: block;' +
+        'background: rgba(0, 0, 0, 0);' +
+        '} ' +
+        '.jodit_disabled{' +
+        'user-select: none;' +
+        '-o-user-select: none;' +
+        '-moz-user-select: none;' +
+        '-khtml-user-select: none;' +
+        '-webkit-user-select: none;' +
+        '-ms-user-select: none' +
+        '}';
+Config_1.Config.prototype.iframeCSSLinks = [];
+function iframe(editor) {
+    var _this = this;
+    editor.events
+        .on('afterSetMode', function () {
+        if (editor.isEditorMode()) {
+            editor.selection.focus();
+        }
+    })
+        .on('generateDocumentStructure.iframe', function (__doc, jodit) {
+        var doc = __doc || jodit.iframe.contentWindow.document;
+        doc.open();
+        doc.write('<!DOCTYPE html>' +
+            '<html dir="' +
+            jodit.options.direction +
+            '" class="jodit" ' +
+            'lang="' +
+            defaultLanguage_1.defaultLanguage(jodit.options.language) +
+            '">' +
+            '<head>' +
+            '<title>Jodit Editor</title>' +
+            (jodit.options.iframeBaseUrl
+                ? '<base href="' +
+                    jodit.options.iframeBaseUrl +
+                    '"/>'
+                : '') +
+            '</head>' +
+            '<body class="jodit_wysiwyg" style="outline:none" contenteditable="true"></body>' +
+            '</html>');
+        doc.close();
+        if (jodit.options.iframeCSSLinks) {
+            jodit.options.iframeCSSLinks.forEach(function (href) {
+                var link = doc.createElement('link');
+                link.setAttribute('rel', 'stylesheet');
+                link.setAttribute('href', href);
+                doc.head && doc.head.appendChild(link);
+            });
+        }
+        if (jodit.options.iframeStyle) {
+            var style = doc.createElement('style');
+            style.innerHTML = jodit.options.iframeStyle;
+            doc.head && doc.head.appendChild(style);
+        }
+    })
+        .on('createEditor', function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
+        var iframe, doc, resizeIframe;
+        return tslib_1.__generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!editor.options.iframe) {
+                        return [2];
+                    }
+                    delete editor.editor;
+                    iframe = editor.create.element('iframe');
+                    iframe.style.display = 'block';
+                    iframe.src = 'about:blank';
+                    iframe.className = 'jodit_wysiwyg_iframe';
+                    iframe.setAttribute('allowtransparency', 'true');
+                    iframe.setAttribute('tabindex', editor.options.tabIndex.toString());
+                    iframe.setAttribute('frameborder', '0');
+                    editor.workplace.appendChild(iframe);
+                    editor.iframe = iframe;
+                    return [4, editor.events.fire('generateDocumentStructure.iframe', null, editor)];
+                case 1:
+                    _a.sent();
+                    doc = editor.iframe.contentWindow.document;
+                    editor.editorDocument = doc;
+                    editor.editorWindow = editor.iframe.contentWindow;
+                    editor.create.inside.setDocument(doc);
+                    editor.editor = doc.body;
+                    if (editor.options.height === 'auto') {
+                        doc.documentElement &&
+                            (doc.documentElement.style.overflowY = 'hidden');
+                        resizeIframe = async_1.throttle(function () {
+                            if (editor.editor &&
+                                editor.iframe &&
+                                editor.options.height === 'auto') {
+                                css_1.css(editor.iframe, 'height', editor.editor.offsetHeight);
+                            }
+                        }, editor.defaultTimeout / 2);
+                        editor.events
+                            .on('change afterInit afterSetMode resize', resizeIframe)
+                            .on([
+                            editor.iframe,
+                            editor.editorWindow,
+                            doc.documentElement
+                        ], 'load', resizeIframe)
+                            .on(doc, 'readystatechange DOMContentLoaded', resizeIframe);
+                    }
+                    (function (e) {
+                        e.matches || (e.matches = Element.prototype.matches);
+                    })(editor.editorWindow.Element.prototype);
+                    if (editor.editorDocument.documentElement) {
+                        editor.events
+                            .on(editor.editorDocument.documentElement, 'mousedown touchend', function () {
+                            if (!editor.selection.isFocused()) {
+                                editor.selection.focus();
+                                editor.selection.setCursorIn(editor.editor);
+                            }
+                        })
+                            .on(editor.editorWindow, 'mousedown touchstart keydown keyup touchend click mouseup mousemove scroll', function (e) {
+                            editor.events &&
+                                editor.events.fire &&
+                                editor.events.fire(editor.ownerWindow, e);
+                        });
+                    }
+                    return [2, false];
+            }
+        });
+    }); });
+}
+exports.iframe = iframe;
+
+
+/***/ }),
+/* 166 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var helpers_1 = __webpack_require__(4);
+var JODIT_IMAGE_PROCESSOR_BINDED = '__jodit_imageprocessor_binded';
+function imageProcessor(editor) {
+    editor.events.on('change afterInit', helpers_1.debounce(function () {
+        if (editor.editor) {
+            helpers_1.$$('img', editor.editor).forEach(function (elm) {
+                if (!elm[JODIT_IMAGE_PROCESSOR_BINDED]) {
+                    elm[JODIT_IMAGE_PROCESSOR_BINDED] = true;
+                    if (!elm.complete) {
+                        elm.addEventListener('load', function ElementOnLoad() {
+                            editor.events &&
+                                editor.events.fire &&
+                                editor.events.fire('resize');
+                            elm.removeEventListener('load', ElementOnLoad);
+                        });
+                    }
+                    editor.events.on(elm, 'mousedown touchstart', function () {
+                        editor.selection.select(elm);
+                    });
+                }
+            });
+        }
+    }, editor.defaultTimeout));
+}
+exports.imageProcessor = imageProcessor;
+
+
+/***/ }),
+/* 167 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var dialog_1 = __webpack_require__(14);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+var icon_1 = __webpack_require__(6);
+var Widget_1 = __webpack_require__(18);
+var TabsWidget = Widget_1.Widget.TabsWidget;
+var FileSelectorWidget = Widget_1.Widget.FileSelectorWidget;
+var popup_1 = __webpack_require__(28);
+Config_1.Config.prototype.image = {
+    openOnDblClick: true,
+    editSrc: true,
+    useImageEditor: true,
+    editTitle: true,
+    editAlt: true,
+    editLink: true,
+    editSize: true,
+    editBorderRadius: true,
+    editMargins: true,
+    editClass: true,
+    editStyle: true,
+    editId: true,
+    editAlign: true,
+    showPreview: true,
+    selectImageAfterClose: true
+};
+function imageProperties(editor) {
+    var i18n = editor.i18n, gi = icon_1.ToolbarIcon.getIcon.bind(icon_1.ToolbarIcon), opt = editor.options, dom = editor.create.fromHTML.bind(editor.create);
+    var open = function (e) {
+        var _this = this;
+        if (opt.readonly) {
+            return;
+        }
+        e && e.stopImmediatePropagation();
+        var image = this, dialog = new dialog_1.Dialog(editor), buttons = {
+            check: dom("<a href=\"javascript:void(0)\" class=\"jodit_button  jodit_status_success\">" + gi('check') + "<span>" + i18n('Ok') + "</span></a>"),
+            cancel: dom("<a href=\"javascript:void(0)\" class=\"jodit_button  jodit_status_primary\">" + gi('cancel') + "<span>" + i18n('Cancel') + "</span></a>"),
+            remove: dom("<a href=\"javascript:void(0)\" class=\"jodit_button\">" + gi('bin') + "<span>" + i18n('Delete') + "</span></a>")
+        }, prop = dom("<form class=\"jodit_properties\">\n\t\t\t\t\t\t\t\t<div class=\"jodit_grid\">\n\t\t\t\t\t\t\t\t\t<div class=\"jodit_col-lg-2-5\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"jodit_properties_view_box\">\n\t\t\t\t\t\t\t\t\t\t\t<div style=\"" + (!opt.image.showPreview
+            ? 'display:none'
+            : '') + "\" class=\"jodit_properties_image_view\">\n\t\t\t\t\t\t\t\t\t\t\t\t<img class=\"imageViewSrc\" src=\"\" alt=\"\"/>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editSize
+            ? 'display:none'
+            : '') + "\" class=\"jodit_form_group jodit_properties_image_sizes\">\n\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"number\" class=\"imageWidth jodit_input\"/>\n\t\t\t\t\t\t\t\t\t\t\t\t<a class=\"jodit_lock_helper jodit_lock_size\" href=\"javascript:void(0)\">" + gi('lock') + "</a>\n\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"number\" class=\"imageHeight jodit_input\"/>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<div class=\"jodit_col-lg-3-5 tabsbox\"></div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</form>"), positionTab = dom("<div style=\"" + (!opt.image.editMargins ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Margins') + "</label>\n\t\t\t\t\t\t\t\t<div class=\"jodit_grid jodit_vertical_middle\">\n\t\t\t\t\t\t\t\t\t<input class=\"jodit_col-lg-1-5 margins marginTop jodit_input\" data-id=\"marginTop\" type=\"text\" placeholder=\"" + i18n('top') + "\"/>\n\t\t\t\t\t\t\t\t\t<a style=\"text-align: center;\" class=\"jodit_lock_helper jodit_lock_margin jodit_col-lg-1-5\" href=\"javascript:void(0)\">" + gi('lock') + "</a>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginRight jodit_input\" data-id=\"marginRight\" type=\"text\" placeholder=\"" + i18n('right') + "\"/>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginBottom jodit_input\" data-id=\"marginBottom\" type=\"text\" placeholder=\"" + i18n('bottom') + "\"/>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginLeft jodit_input\" data-id=\"marginLeft\" type=\"text\" placeholder=\"" + i18n('left') + "\"/>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editStyle ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Styles') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"style jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editClass ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"classes\">" + i18n('Classes') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"classes jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editId ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"id\">Id</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"id jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\tstyle=\"" + (!opt.image.editBorderRadius ? 'display:none' : '') + "\"\n\t\t\t\t\t\t\t\tclass=\"jodit_form_group\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t<label for=\"border_radius\">" + i18n('Border radius') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"number\" class=\"border_radius jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\tstyle=\"" + (!opt.image.editAlign ? 'display:none' : '') + "\"\n\t\t\t\t\t\t\t\tclass=\"jodit_form_group\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t<label for=\"align\">" + i18n('Align') + "</label>\n\t\t\t\t\t\t\t\t<select class=\"select align jodit_select\">\n\t\t\t\t\t\t\t\t\t<option value=\"\">" + i18n('--Not Set--') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"left\">" + i18n('Left') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"center\">" + i18n('Center') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"right\">" + i18n('Right') + "</option>\n\t\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t\t</div>"), hasFbUrl = opt.filebrowser.ajax.url || opt.uploader.url, hasEditor = opt.image.useImageEditor, mainTab = dom("<div style=\"" + (!opt.image.editSrc ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Src') + "</label>\n\t\t\t\t\t\t\t\t<div class=\"jodit_input_group\">\n\t\t\t\t\t\t\t\t\t<input class=\"jodit_input imageSrc\" type=\"text\"/>\n\t\t\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\t\t\tclass=\"jodit_input_group-buttons\"\n\t\t\t\t\t\t\t\t\t\tstyle=\"" + (hasFbUrl ? '' : 'display: none') + "\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t\t<a class=\"jodit_button jodit_rechange\" href=\"javascript:void(0)\">" + gi('image') + "</a>\n\t\t\t\t\t\t\t\t\t\t\t<a\n\t\t\t\t\t\t\t\t\t\t\t\tclass=\"jodit_button jodit_use_image_editor\" href=\"javascript:void(0)\"\n\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"" + (hasEditor ? '' : 'display: none') + "\"\n\t\t\t\t\t\t\t\t\t\t\t>" + gi('crop') + "</a>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editTitle ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageTitle\">" + i18n('Title') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageTitle jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editAlt ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageAlt\">" + i18n('Alternative') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageAlt jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editLink ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageLink\">" + i18n('Link') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageLink jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editLink ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<div class=\"jodit_vertical_middle\">\n\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" class=\"imageLinkOpenInNewTab jodit_checkbox\"/>\n\t\t\t\t\t\t\t\t\t" + i18n('Open link in new tab') + "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>"), ratio = image.naturalWidth / image.naturalHeight || 1, $w = prop.querySelector('.imageWidth'), $h = prop.querySelector('.imageHeight'), updateAlign = function () {
+            if (image.style.cssFloat &&
+                ['left', 'right'].indexOf(image.style.cssFloat.toLowerCase()) !== -1) {
+                helpers_1.val(prop, '.align', helpers_1.css(image, 'float'));
+            }
+            else {
+                if (helpers_1.css(image, 'display') === 'block' &&
+                    image.style.marginLeft === 'auto' &&
+                    image.style.marginRight === 'auto') {
+                    helpers_1.val(prop, '.align', 'center');
+                }
+            }
+        }, updateBorderRadius = function () {
+            helpers_1.val(prop, '.border_radius', (parseInt(image.style.borderRadius || '0', 10) || '0').toString());
+        }, updateId = function () {
+            helpers_1.val(prop, '.id', image.getAttribute('id') || '');
+        }, updateStyle = function () {
+            helpers_1.val(prop, '.style', image.getAttribute('style') || '');
+        }, updateClasses = function () {
+            helpers_1.val(prop, '.classes', (image.getAttribute('class') || '').replace(/jodit_focused_image[\s]*/, ''));
+        }, updateMargins = function () {
+            if (!opt.image.editMargins) {
+                return;
+            }
+            var notequal = false;
+            helpers_1.$$('.margins', prop).forEach(function (elm) {
+                var id = elm.getAttribute('data-id') || '';
+                var value = image.style[id];
+                if (!value) {
+                    return;
+                }
+                if (/^[0-9]+(px)?$/.test(value)) {
+                    value = parseInt(value, 10);
+                }
+                elm.value = value.toString() || '';
+                if (!notequal &&
+                    id !== 'marginTop' &&
+                    elm.value !==
+                        helpers_1.val(prop, '.marginTop')) {
+                    notequal = true;
+                }
+            });
+            lockMargin = !notequal;
+            var lock_margin = prop.querySelector('.jodit_lock_margin');
+            if (lock_margin) {
+                lock_margin.innerHTML = gi(lockMargin ? 'lock' : 'unlock');
+            }
+            helpers_1.$$('.margins:not(.marginTop)', prop).forEach(function (elm) {
+                return !lockMargin
+                    ? elm.removeAttribute('disabled')
+                    : elm.setAttribute('disabled', 'true');
+            });
+        }, updateSizes = function () {
+            $w.value = image.offsetWidth.toString();
+            $h.value = image.offsetHeight.toString();
+        }, updateText = function () {
+            if (image.hasAttribute('title')) {
+                helpers_1.val(prop, '.imageTitle', image.getAttribute('title') || '');
+            }
+            if (image.hasAttribute('alt')) {
+                helpers_1.val(prop, '.imageAlt', image.getAttribute('alt') || '');
+            }
+            var a = Dom_1.Dom.closest(image, 'a', editor.editor);
+            if (a) {
+                helpers_1.val(prop, '.imageLink', a.getAttribute('href') || '');
+                prop.querySelector('.imageLinkOpenInNewTab').checked =
+                    a.getAttribute('target') === '_blank';
+            }
+        }, updateSrc = function () {
+            helpers_1.val(prop, '.imageSrc', image.getAttribute('src') || '');
+            var imageViewSrc = prop.querySelector('.imageViewSrc');
+            if (imageViewSrc) {
+                imageViewSrc.setAttribute('src', image.getAttribute('src') || '');
+            }
+        }, update = function () {
+            updateSrc();
+            updateText();
+            updateSizes();
+            updateMargins();
+            updateClasses();
+            updateId();
+            updateBorderRadius();
+            updateAlign();
+            updateStyle();
+        };
+        var timer, lockSize = true, lockMargin = true;
+        var tabs = {}, tabsbox = prop.querySelector('.tabsbox');
+        tabs['Image'] = mainTab;
+        tabs['Advanced'] = positionTab;
+        if (tabsbox) {
+            tabsbox.appendChild(TabsWidget(editor, tabs));
+        }
+        update();
+        editor.events.on(dialog, 'afterClose', function () {
+            dialog.destruct();
+            if (image.parentNode && opt.image.selectImageAfterClose) {
+                editor.selection.select(image);
+            }
+        });
+        buttons.remove.addEventListener('click', function () {
+            Dom_1.Dom.safeRemove(image);
+            dialog.close();
+        });
+        if (opt.image.useImageEditor) {
+            helpers_1.$$('.jodit_use_image_editor', mainTab).forEach(function (btn) {
+                editor.events.on(btn, 'mousedown touchstart', function () {
+                    var url = image.getAttribute('src') || '', a = editor.create.element('a'), loadExternal = function () {
+                        if (a.host !== location.host) {
+                            dialog_1.Confirm(i18n('You can only edit your own images. Download this image on the host?'), function (yes) {
+                                if (yes && editor.uploader) {
+                                    editor.uploader.uploadRemoteImage(a.href.toString(), function (resp) {
+                                        dialog_1.Alert(i18n('The image has been successfully uploaded to the host!'), function () {
+                                            if (typeof resp.newfilename ===
+                                                'string') {
+                                                image.setAttribute('src', resp.baseurl +
+                                                    resp.newfilename);
+                                                updateSrc();
+                                            }
+                                        });
+                                    }, function (error) {
+                                        dialog_1.Alert(i18n('There was an error loading %s', error.message));
+                                    });
+                                }
+                            });
+                            return;
+                        }
+                    };
+                    a.href = url;
+                    editor.getInstance('FileBrowser').dataProvider.getPathByUrl(a.href.toString(), function (path, name, source) {
+                        editor.getInstance('FileBrowser').openImageEditor(a.href, name, path, source, function () {
+                            var timestamp = new Date().getTime();
+                            image.setAttribute('src', url +
+                                (url.indexOf('?') !== -1
+                                    ? ''
+                                    : '?') +
+                                '&_tmp=' +
+                                timestamp.toString());
+                            updateSrc();
+                        }, function (error) {
+                            dialog_1.Alert(error.message);
+                        });
+                    }, function (error) {
+                        dialog_1.Alert(error.message, loadExternal);
+                    });
+                });
+            });
+        }
+        helpers_1.$$('.jodit_rechange', mainTab).forEach(function (imagebtn) {
+            imagebtn.addEventListener('mousedown', function (event) {
+                imagebtn.classList.toggle('active');
+                var popup = new popup_1.Popup(editor, imagebtn);
+                popup.open(FileSelectorWidget(editor, {
+                    upload: function (data) {
+                        if (data.files && data.files.length) {
+                            image.setAttribute('src', data.baseurl + data.files[0]);
+                        }
+                        update();
+                        popup.close();
+                    },
+                    filebrowser: function (data) {
+                        if (data &&
+                            data.files &&
+                            Array.isArray(data.files) &&
+                            data.files.length) {
+                            image.setAttribute('src', data.files[0]);
+                            popup.close();
+                            update();
+                        }
+                    }
+                }, image, popup.close), true);
+                event.stopPropagation();
+            });
+        });
+        var jodit_lock_size = prop.querySelector('.jodit_lock_helper.jodit_lock_size'), jodit_lock_margin = prop.querySelector('.jodit_lock_helper.jodit_lock_margin');
+        if (jodit_lock_size) {
+            jodit_lock_size.addEventListener('click', function () {
+                lockSize = !lockSize;
+                this.innerHTML = gi(lockSize ? 'lock' : 'unlock');
+                editor.events.fire($w, 'change');
+            });
+        }
+        if (jodit_lock_margin) {
+            jodit_lock_margin.addEventListener('click', function () {
+                lockMargin = !lockMargin;
+                this.innerHTML = gi(lockMargin ? 'lock' : 'unlock');
+                if (!lockMargin) {
+                    helpers_1.$$('.margins', prop).forEach(function (elm) {
+                        if (!elm.matches('.marginTop')) {
+                            elm.removeAttribute('disabled');
+                        }
+                    });
+                }
+                else {
+                    helpers_1.$$('.margins', prop).forEach(function (elm) {
+                        if (!elm.matches('.marginTop')) {
+                            elm.setAttribute('disabled', 'true');
+                        }
+                    });
+                }
+            });
+        }
+        var changeSizes = function (event) {
+            var w = parseInt($w.value, 10), h = parseInt($h.value, 10);
+            if (event.target === $w) {
+                $h.value = Math.round(w / ratio).toString();
+            }
+            else {
+                $w.value = Math.round(h * ratio).toString();
+            }
+        };
+        editor.events.on([$w, $h], 'change keydown mousedown paste', function (event) {
+            if (!lockSize) {
+                return;
+            }
+            if (editor.defaultTimeout) {
+                clearTimeout(timer);
+                timer = helpers_1.setTimeout(changeSizes.bind(_this, event), editor.defaultTimeout);
+            }
+            else {
+                changeSizes(event);
+            }
+        });
+        dialog.setTitle(i18n('Image properties'));
+        dialog.setContent(prop);
+        buttons.check.addEventListener('click', function () {
+            if (opt.image.editStyle) {
+                if (helpers_1.val(prop, '.style')) {
+                    image.setAttribute('style', helpers_1.val(prop, '.style'));
+                }
+                else {
+                    image.removeAttribute('style');
+                }
+            }
+            if (helpers_1.val(prop, '.imageSrc')) {
+                image.setAttribute('src', helpers_1.val(prop, '.imageSrc'));
+            }
+            else {
+                Dom_1.Dom.safeRemove(image);
+                dialog.close();
+                return;
+            }
+            if (helpers_1.val(prop, '.border_radius') !== '0' &&
+                /^[0-9]+$/.test(helpers_1.val(prop, '.border_radius'))) {
+                image.style.borderRadius = helpers_1.val(prop, '.border_radius') + 'px';
+            }
+            else {
+                image.style.borderRadius = '';
+            }
+            if (helpers_1.val(prop, '.imageTitle')) {
+                image.setAttribute('title', helpers_1.val(prop, '.imageTitle'));
+            }
+            else {
+                image.removeAttribute('title');
+            }
+            if (helpers_1.val(prop, '.imageAlt')) {
+                image.setAttribute('alt', helpers_1.val(prop, '.imageAlt'));
+            }
+            else {
+                image.removeAttribute('alt');
+            }
+            var link = Dom_1.Dom.closest(image, 'a', editor.editor);
+            if (helpers_1.val(prop, '.imageLink')) {
+                if (!link) {
+                    link = Dom_1.Dom.wrap(image, 'a', editor);
+                }
+                link.setAttribute('href', helpers_1.val(prop, '.imageLink'));
+                if (prop.querySelector('.imageLinkOpenInNewTab').checked) {
+                    link.setAttribute('target', '_blank');
+                }
+                else {
+                    link.removeAttribute('target');
+                }
+            }
+            else {
+                if (link && link.parentNode) {
+                    link.parentNode.replaceChild(image, link);
+                }
+            }
+            var normalSize = function (value) {
+                value = helpers_1.trim(value);
+                return /^[0-9]+$/.test(value) ? value + 'px' : value;
+            };
+            if ($w.value !== image.offsetWidth.toString() ||
+                $h.value !== image.offsetHeight.toString()) {
+                helpers_1.css(image, {
+                    width: helpers_1.trim($w.value) ? normalSize($w.value) : null,
+                    height: helpers_1.trim($h.value) ? normalSize($h.value) : null
+                });
+            }
+            if (opt.image.editMargins) {
+                if (!lockMargin) {
+                    helpers_1.$$('.margins', prop).forEach(function (margin) {
+                        var id = margin.getAttribute('data-id') || '';
+                        helpers_1.css(image, id, normalSize(margin.value));
+                    });
+                }
+                else {
+                    helpers_1.css(image, 'margin', normalSize(helpers_1.val(prop, '.marginTop')));
+                }
+            }
+            if (opt.image.editClass) {
+                if (helpers_1.val(prop, '.classes')) {
+                    image.setAttribute('class', helpers_1.val(prop, '.classes'));
+                }
+                else {
+                    image.removeAttribute('class');
+                }
+            }
+            if (opt.image.editId) {
+                if (helpers_1.val(prop, '.id')) {
+                    image.setAttribute('id', helpers_1.val(prop, '.id'));
+                }
+                else {
+                    image.removeAttribute('id');
+                }
+            }
+            if (opt.image.editAlign) {
+                if (helpers_1.val(prop, '.align')) {
+                    if (['right', 'left'].indexOf(helpers_1.val(prop, '.align').toLowerCase()) !== -1) {
+                        helpers_1.css(image, 'float', helpers_1.val(prop, '.align'));
+                        helpers_1.clearCenterAlign(image);
+                    }
+                    else {
+                        helpers_1.css(image, 'float', '');
+                        helpers_1.css(image, {
+                            display: 'block',
+                            'margin-left': 'auto',
+                            'margin-right': 'auto'
+                        });
+                    }
+                }
+                else {
+                    if (helpers_1.css(image, 'float') &&
+                        ['right', 'left'].indexOf(helpers_1.css(image, 'float')
+                            .toString()
+                            .toLowerCase()) !== -1) {
+                        helpers_1.css(image, 'float', '');
+                    }
+                    helpers_1.clearCenterAlign(image);
+                }
+            }
+            if (!image.getAttribute('style')) {
+                image.removeAttribute('style');
+            }
+            editor.setEditorValue();
+            dialog.close();
+        });
+        buttons.cancel.addEventListener('click', function () { return dialog.close(); });
+        dialog.setFooter([[buttons.cancel, buttons.remove], buttons.check]);
+        dialog.setSize(500);
+        dialog.open();
+        if (e) {
+            e.preventDefault();
+        }
+        return false;
+    };
+    editor.events
+        .on('afterInit', function () {
+        if (opt.image.openOnDblClick) {
+            editor.events.on(editor.editor, 'dblclick', open, 'img');
+        }
+        else {
+            editor.events.on(editor.editor, 'dblclick', function (event) {
+                event.stopImmediatePropagation();
+                editor.selection.select(this);
+            }, 'img');
+        }
+    })
+        .on('openImageProperties', function (image) {
+        open.call(image);
+    });
+}
+exports.imageProperties = imageProperties;
+
+
+/***/ }),
+/* 168 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.controls.indent = {
+    tooltip: 'Increase Indent'
+};
+Config_1.Config.prototype.controls.outdent = {
+    isDisable: function (editor) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+            if (currentBox && currentBox.style && currentBox.style.marginLeft) {
+                return parseInt(currentBox.style.marginLeft, 10) <= 0;
+            }
+        }
+        return true;
+    },
+    tooltip: 'Decrease Indent'
+};
+Config_1.Config.prototype.indentMargin = 10;
+function indent(editor) {
+    var callback = function (command) {
+        var indentedBoxes = [];
+        editor.selection.eachSelection(function (current) {
+            var selectionInfo = editor.selection.save();
+            var currentBox = current
+                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
+                : false;
+            var enter = editor.options.enter;
+            if (!currentBox && current) {
+                currentBox = Dom_1.Dom.wrapInline(current, enter !== constants_1.BR ? enter : constants_1.PARAGRAPH, editor);
+            }
+            if (!currentBox) {
+                editor.selection.restore(selectionInfo);
+                return false;
+            }
+            var alreadyIndented = indentedBoxes.indexOf(currentBox) !== -1;
+            if (currentBox && currentBox.style && !alreadyIndented) {
+                indentedBoxes.push(currentBox);
+                var marginLeft = currentBox.style.marginLeft
+                    ? parseInt(currentBox.style.marginLeft, 10)
+                    : 0;
+                marginLeft +=
+                    editor.options.indentMargin *
+                        (command === 'outdent' ? -1 : 1);
+                currentBox.style.marginLeft =
+                    marginLeft > 0 ? marginLeft + 'px' : '';
+                if (!currentBox.getAttribute('style')) {
+                    currentBox.removeAttribute('style');
+                }
+            }
+            editor.selection.restore(selectionInfo);
+        });
+        editor.setEditorValue();
+        return false;
+    };
+    editor.registerCommand('indent', {
+        exec: callback,
+        hotkeys: ['ctrl+]', 'cmd+]']
+    });
+    editor.registerCommand('outdent', {
+        exec: callback,
+        hotkeys: ['ctrl+[', 'cmd+[']
+    });
+}
+exports.indent = indent;
+
+
+/***/ }),
+/* 169 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var Widget_1 = __webpack_require__(18);
+var ColorPickerWidget = Widget_1.Widget.ColorPickerWidget;
+var TabsWidget = Widget_1.Widget.TabsWidget;
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+var Plugin_1 = __webpack_require__(7);
+var Table_1 = __webpack_require__(29);
+var popup_1 = __webpack_require__(28);
+var joditToolbarCollection_1 = __webpack_require__(16);
+Config_1.Config.prototype.toolbarInline = true;
+Config_1.Config.prototype.toolbarInlineDisableFor = [];
+Config_1.Config.prototype.popup = {
+    a: [
+        {
+            name: 'eye',
+            tooltip: 'Open link',
+            exec: function (editor, current) {
+                var href = current.getAttribute('href');
+                if (current && href) {
+                    editor.ownerWindow.open(href);
+                }
+            }
+        },
+        {
+            name: 'link',
+            tooltip: 'Edit link',
+            icon: 'pencil'
+        },
+        'unlink',
+        'brush',
+        'file'
+    ],
+    jodit: [
+        {
+            name: 'bin',
+            tooltip: 'Delete',
+            exec: function (editor, image) {
+                if (image.parentNode) {
+                    Dom_1.Dom.safeRemove(image);
+                    editor.events.fire('hidePopup');
+                }
+            }
+        }
+    ],
+    'jodit-media': [
+        {
+            name: 'bin',
+            tooltip: 'Delete',
+            exec: function (editor, image) {
+                if (image.parentNode) {
+                    Dom_1.Dom.safeRemove(image);
+                    editor.events.fire('hidePopup');
+                }
+            }
+        }
+    ],
+    img: [
+        {
+            name: 'delete',
+            icon: 'bin',
+            tooltip: 'Delete',
+            exec: function (editor, image) {
+                if (image.parentNode) {
+                    Dom_1.Dom.safeRemove(image);
+                    editor.events.fire('hidePopup');
+                }
+            }
+        },
+        {
+            name: 'pencil',
+            exec: function (editor, current) {
+                var tagName = current.tagName.toLowerCase();
+                if (tagName === 'img') {
+                    editor.events.fire('openImageProperties', current);
+                }
+            },
+            tooltip: 'Edit'
+        },
+        {
+            name: 'valign',
+            list: ['Top', 'Middle', 'Bottom'],
+            tooltip: 'Vertical align',
+            exec: function (editor, image, control) {
+                var tagName = image.tagName.toLowerCase();
+                if (tagName !== 'img') {
+                    return;
+                }
+                var command = control.args && typeof control.args[1] === 'string'
+                    ? control.args[1].toLowerCase()
+                    : '';
+                helpers_1.css(image, 'vertical-align', command);
+                editor.events.fire('recalcPositionPopup');
+            }
+        },
+        {
+            name: 'left',
+            list: ['Left', 'Right', 'Center', 'Normal'],
+            exec: function (editor, image, control) {
+                var tagName = image.tagName.toLowerCase();
+                if (tagName !== 'img') {
+                    return;
+                }
+                var command = control.args && typeof control.args[1] === 'string'
+                    ? control.args[1].toLowerCase()
+                    : '';
+                if (command !== 'normal') {
+                    if (['right', 'left'].indexOf(command) !== -1) {
+                        helpers_1.css(image, 'float', command);
+                        helpers_1.clearCenterAlign(image);
+                    }
+                    else {
+                        helpers_1.css(image, 'float', '');
+                        helpers_1.css(image, {
+                            display: 'block',
+                            'margin-left': 'auto',
+                            'margin-right': 'auto'
+                        });
+                    }
+                }
+                else {
+                    if (helpers_1.css(image, 'float') &&
+                        ['right', 'left'].indexOf(helpers_1.css(image, 'float').toLowerCase()) !== -1) {
+                        helpers_1.css(image, 'float', '');
+                    }
+                    helpers_1.clearCenterAlign(image);
+                }
+                editor.events.fire('recalcPositionPopup');
+            },
+            tooltip: 'Horizontal align'
+        }
+    ],
+    table: [
+        {
+            name: 'brush',
+            popup: function (editor, elm) {
+                var selected = Table_1.Table.getAllSelectedCells(elm);
+                var $bg, $cl, $br, $tab, color, br_color, bg_color;
+                if (!selected.length) {
+                    return false;
+                }
+                color = helpers_1.css(selected[0], 'color');
+                bg_color = helpers_1.css(selected[0], 'background-color');
+                br_color = helpers_1.css(selected[0], 'border-color');
+                $bg = ColorPickerWidget(editor, function (value) {
+                    selected.forEach(function (cell) {
+                        helpers_1.css(cell, 'background-color', value);
+                    });
+                    editor.setEditorValue();
+                }, bg_color);
+                $cl = ColorPickerWidget(editor, function (value) {
+                    selected.forEach(function (cell) {
+                        helpers_1.css(cell, 'color', value);
+                    });
+                    editor.setEditorValue();
+                }, color);
+                $br = ColorPickerWidget(editor, function (value) {
+                    selected.forEach(function (cell) {
+                        helpers_1.css(cell, 'border-color', value);
+                    });
+                    editor.setEditorValue();
+                }, br_color);
+                $tab = TabsWidget(editor, {
+                    Background: $bg,
+                    Text: $cl,
+                    Border: $br
+                });
+                return $tab;
+            },
+            tooltip: 'Background'
+        },
+        {
+            name: 'valign',
+            list: ['Top', 'Middle', 'Bottom'],
+            exec: function (editor, table, control) {
+                var command = control.args && typeof control.args[1] === 'string'
+                    ? control.args[1].toLowerCase()
+                    : '';
+                Table_1.Table.getAllSelectedCells(table).forEach(function (cell) {
+                    helpers_1.css(cell, 'vertical-align', command);
+                });
+            },
+            tooltip: 'Vertical align'
+        },
+        {
+            name: 'splitv',
+            list: {
+                tablesplitv: 'Split vertical',
+                tablesplitg: 'Split horizontal'
+            },
+            tooltip: 'Split'
+        },
+        {
+            name: 'align',
+            icon: 'left'
+        },
+        '\n',
+        {
+            name: 'merge',
+            command: 'tablemerge',
+            tooltip: 'Merge'
+        },
+        {
+            name: 'addcolumn',
+            list: {
+                tableaddcolumnbefore: 'Insert column before',
+                tableaddcolumnafter: 'Insert column after'
+            },
+            exec: function (editor, table, control) {
+                var command = control.args && typeof control.args[0] === 'string'
+                    ? control.args[0].toLowerCase()
+                    : '';
+                editor.execCommand(command, false, table);
+            },
+            tooltip: 'Add column'
+        },
+        {
+            name: 'addrow',
+            list: {
+                tableaddrowbefore: 'Insert row above',
+                tableaddrowafter: 'Insert row below'
+            },
+            exec: function (editor, table, control) {
+                var command = control.args && typeof control.args[0] === 'string'
+                    ? control.args[0].toLowerCase()
+                    : '';
+                editor.execCommand(command, false, table);
+            },
+            tooltip: 'Add row'
+        },
+        {
+            name: 'delete',
+            icon: 'bin',
+            list: {
+                tablebin: 'Delete table',
+                tablebinrow: 'Delete row',
+                tablebincolumn: 'Delete column',
+                tableempty: 'Empty cell'
+            },
+            exec: function (editor, table, control) {
+                var command = control.args && typeof control.args[0] === 'string'
+                    ? control.args[0].toLowerCase()
+                    : '';
+                editor.execCommand(command, false, table);
+                editor.events.fire('hidePopup');
+            },
+            tooltip: 'Delete'
+        }
+    ]
+};
+var inlinePopup = (function (_super) {
+    tslib_1.__extends(inlinePopup, _super);
+    function inlinePopup() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this._hiddenClass = 'jodit_toolbar_popup-inline-target-hidden';
+        _this.isSelectionStarted = false;
+        _this.onSelectionEnd = helpers_1.debounce(function () {
+            if (_this.isDestructed || !_this.jodit.isEditorMode()) {
+                return;
+            }
+            if (_this.isSelectionStarted) {
+                if (!_this.isTargetAction) {
+                    _this.onChangeSelection();
+                }
+            }
+            _this.isSelectionStarted = false;
+            _this.isTargetAction = false;
+        }, _this.jodit.defaultTimeout);
+        _this.isTargetAction = false;
+        _this.isSelectionPopup = false;
+        _this.calcWindSizes = function () {
+            var win = _this.jodit.ownerWindow;
+            var docElement = _this.jodit.ownerDocument
+                .documentElement;
+            if (!docElement) {
+                return {
+                    left: 0,
+                    top: 0,
+                    width: 0,
+                    height: 0
+                };
+            }
+            var body = _this.jodit.ownerDocument.body;
+            var scrollTop = win.pageYOffset || docElement.scrollTop || body.scrollTop;
+            var clientTop = docElement.clientTop || body.clientTop || 0;
+            var scrollLeft = win.pageXOffset || docElement.scrollLeft || body.scrollLeft;
+            var clientLeft = docElement.clientLeft || body.clientLeft || 0;
+            var windWidth = docElement.clientWidth + scrollLeft - clientLeft;
+            var windHeight = docElement.clientHeight + scrollTop - clientTop;
+            return {
+                left: clientLeft,
+                top: clientTop,
+                width: windWidth,
+                height: windHeight
+            };
+        };
+        _this.calcPosition = function (rect, windowSize) {
+            if (_this.isDestructed) {
+                return;
+            }
+            _this.popup.target.classList.remove(_this._hiddenClass);
+            var selectionCenterLeft = rect.left + rect.width / 2;
+            var workplacePosition = helpers_1.offset(_this.jodit.workplace, _this.jodit, _this.jodit.ownerDocument, true);
+            var targetTop = rect.top + rect.height + 10;
+            var diff = 50;
+            _this.target.style.left = selectionCenterLeft + 'px';
+            _this.target.style.top = targetTop + 'px';
+            if (_this.jodit.isFullSize()) {
+                _this.target.style.zIndex = helpers_1.css(_this.jodit.container, 'zIndex').toString();
+            }
+            var halfWidthPopup = _this.container.offsetWidth / 2;
+            var marginLeft = -halfWidthPopup;
+            _this.popup.container.classList.remove('jodit_toolbar_popup-inline-top');
+            if (targetTop + _this.container.offsetHeight > windowSize.height) {
+                targetTop = rect.top - _this.container.offsetHeight - 10;
+                _this.target.style.top = targetTop + 'px';
+                _this.popup.container.classList.add('jodit_toolbar_popup-inline-top');
+            }
+            if (selectionCenterLeft - halfWidthPopup < 0) {
+                marginLeft = -(rect.width / 2 + rect.left);
+            }
+            if (selectionCenterLeft + halfWidthPopup > windowSize.width) {
+                marginLeft = -(_this.container.offsetWidth -
+                    (windowSize.width - selectionCenterLeft));
+            }
+            _this.container.style.marginLeft = marginLeft + 'px';
+            if (workplacePosition.top - targetTop > diff ||
+                targetTop - (workplacePosition.top + workplacePosition.height) >
+                    diff) {
+                _this.popup.target.classList.add(_this._hiddenClass);
+            }
+        };
+        _this.reCalcPosition = function () {
+            if (_this.__getRect) {
+                _this.calcPosition(_this.__getRect(), _this.calcWindSizes());
+            }
+        };
+        _this.showPopup = function (rect, type, elm) {
+            if (!_this.jodit.options.toolbarInline ||
+                !_this.jodit.options.popup[type.toLowerCase()]) {
+                return false;
+            }
+            if (_this.isExcludedTarget(type)) {
+                return true;
+            }
+            _this.isOpened = true;
+            _this.isTargetAction = true;
+            var windSize = _this.calcWindSizes();
+            _this.targetContainer.parentNode ||
+                _this.jodit.ownerDocument.body.appendChild(_this.targetContainer);
+            _this.toolbar.build(_this.jodit.options.popup[type.toLowerCase()], _this.container, elm);
+            _this.popup.open(_this.container, false, true);
+            _this.__getRect = rect;
+            _this.calcPosition(rect(), windSize);
+            return true;
+        };
+        _this.hidePopup = function (root) {
+            if (_this.isDestructed) {
+                return;
+            }
+            if (root &&
+                (Dom_1.Dom.isNode(root, _this.jodit.editorWindow || window) ||
+                    root instanceof popup_1.Popup) &&
+                Dom_1.Dom.isOrContains(_this.target, root instanceof popup_1.Popup ? root.target : root)) {
+                return;
+            }
+            _this.isTargetAction = false;
+            _this.isOpened = false;
+            _this.popup.close();
+            Dom_1.Dom.safeRemove(_this.targetContainer);
+        };
+        _this.onSelectionStart = function (event) {
+            if (_this.isDestructed || !_this.jodit.isEditorMode()) {
+                return;
+            }
+            _this.isTargetAction = false;
+            _this.isSelectionPopup = false;
+            if (!_this.isSelectionStarted) {
+                var elements = Object.keys(_this.jodit.options.popup).join('|'), target_1 = event.target.nodeName === 'IMG'
+                    ? event.target
+                    : Dom_1.Dom.closest(event.target, elements, _this.jodit.editor);
+                if (!target_1 ||
+                    !_this.showPopup(function () { return helpers_1.offset(target_1, _this.jodit, _this.jodit.editorDocument); }, target_1.nodeName, target_1)) {
+                    _this.isSelectionStarted = true;
+                }
+            }
+        };
+        _this.checkIsTargetEvent = function () {
+            if (!_this.isTargetAction) {
+                _this.hidePopup();
+            }
+            else {
+                _this.isTargetAction = false;
+            }
+        };
+        _this.isOpened = false;
+        _this.onChangeSelection = function () {
+            if (!_this.jodit.options.toolbarInline || !_this.jodit.isEditorMode()) {
+                return;
+            }
+            if (_this.hideIfCollapsed()) {
+                return;
+            }
+            if (_this.jodit.options.popup.selection !== undefined) {
+                var sel = _this.jodit.selection.sel;
+                if (sel && sel.rangeCount) {
+                    _this.isSelectionPopup = true;
+                    var range_1 = sel.getRangeAt(0);
+                    _this.showPopup(function () { return helpers_1.offset(range_1, _this.jodit, _this.jodit.editorDocument); }, 'selection');
+                }
+            }
+        };
+        return _this;
+    }
+    inlinePopup.prototype.isExcludedTarget = function (type) {
+        return (helpers_1.splitArray(this.jodit.options.toolbarInlineDisableFor)
+            .map(function (a) { return a.toLowerCase(); })
+            .indexOf(type.toLowerCase()) !== -1);
+    };
+    inlinePopup.prototype.hideIfCollapsed = function () {
+        if (this.jodit.selection.isCollapsed()) {
+            this.hidePopup();
+            return true;
+        }
+        return false;
+    };
+    inlinePopup.prototype.afterInit = function (editor) {
+        var _this = this;
+        this.toolbar = joditToolbarCollection_1.JoditToolbarCollection.makeCollection(editor);
+        this.target = editor.create.div('jodit_toolbar_popup-inline-target');
+        this.targetContainer = editor.create.div('jodit_toolbar_popup-inline-container', this.target);
+        this.container = editor.create.div();
+        this.popup = new popup_1.Popup(editor, this.target, undefined, 'jodit_toolbar_popup-inline');
+        editor.events
+            .on(this.target, 'mousedown keydown touchstart', function (e) {
+            e.stopPropagation();
+        })
+            .on('beforeOpenPopup hidePopup afterSetMode blur', this.hidePopup)
+            .on('recalcPositionPopup', this.reCalcPosition)
+            .on('getDiffButtons.mobile', function (_toolbar) {
+            if (_this.toolbar === _toolbar) {
+                return helpers_1.splitArray(editor.options.buttons)
+                    .filter(function (name) { return name !== '|' && name !== '\n'; })
+                    .filter(function (name) {
+                    return (_this.toolbar
+                        .getButtonsList()
+                        .indexOf(name) < 0);
+                });
+            }
+        })
+            .on('selectionchange', this.onChangeSelection)
+            .on('afterCommand afterExec', function () {
+            if (_this.isOpened && _this.isSelectionPopup) {
+                _this.onChangeSelection();
+            }
+        })
+            .on('showPopup', function (elm, rect) {
+            var elementName = (typeof elm === 'string'
+                ? elm
+                : elm.nodeName).toLowerCase();
+            _this.isSelectionPopup = false;
+            _this.showPopup(rect, elementName, typeof elm === 'string' ? undefined : elm);
+        })
+            .on('mousedown keydown touchstart', this.onSelectionStart)
+            .on([editor.ownerWindow, editor.editor], 'scroll resize', this.reCalcPosition)
+            .on([editor.ownerWindow], 'mouseup keyup touchend', this.onSelectionEnd)
+            .on([editor.ownerWindow], 'mousedown keydown touchstart', this.checkIsTargetEvent);
+    };
+    inlinePopup.prototype.beforeDestruct = function (editor) {
+        this.popup && this.popup.destruct();
+        delete this.popup;
+        this.toolbar && this.toolbar.destruct();
+        delete this.toolbar;
+        Dom_1.Dom.safeRemove(this.target);
+        Dom_1.Dom.safeRemove(this.container);
+        editor.events &&
+            editor.events
+                .off([editor.ownerWindow], 'scroll resize', this.reCalcPosition)
+                .off([editor.ownerWindow], 'mouseup keyup touchend', this.onSelectionEnd)
+                .off([editor.ownerWindow], 'mousedown keydown touchstart', this.checkIsTargetEvent);
+    };
+    return inlinePopup;
+}(Plugin_1.Plugin));
+exports.inlinePopup = inlinePopup;
+
+
+/***/ }),
+/* 170 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+var icon_1 = __webpack_require__(6);
+Config_1.Config.prototype.controls.align = {
+    name: 'left',
+    tooltip: 'Align',
+    getLabel: function (editor, btn, button) {
+        var current = editor.selection.current();
+        if (current) {
+            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor;
+            var currentValue = helpers_1.css(currentBox, 'text-align').toString();
+            if (btn.defaultValue &&
+                btn.defaultValue.indexOf(currentValue) !== -1) {
+                currentValue = 'left';
+            }
+            if (button &&
+                btn.data &&
+                btn.data.currentValue !== currentValue &&
+                btn.list &&
+                btn.list.indexOf(currentValue) !== -1) {
+                button.textBox.innerHTML = !editor.options.textIcons
+                    ? icon_1.ToolbarIcon.getIcon(currentValue, '')
+                    : "<span>" + currentValue + "</span>";
+                button.textBox.firstChild.classList.add('jodit_icon');
+                btn.data.currentValue = currentValue;
+            }
+        }
+        return false;
+    },
+    isActive: function (editor, btn) {
+        var current = editor.selection.current();
+        if (current && btn.defaultValue) {
+            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor;
+            return (btn.defaultValue.indexOf(helpers_1.css(currentBox, 'text-align').toString()) === -1);
+        }
+        return false;
+    },
+    defaultValue: ['left', 'start', 'inherit'],
+    data: {
+        currentValue: 'left'
+    },
+    list: ['center', 'left', 'right', 'justify']
+};
+Config_1.Config.prototype.controls.center = {
+    command: 'justifyCenter',
+    css: {
+        'text-align': 'center'
+    },
+    tooltip: 'Align Center'
+};
+Config_1.Config.prototype.controls.justify = {
+    command: 'justifyFull',
+    css: {
+        'text-align': 'justify'
+    },
+    tooltip: 'Align Justify'
+};
+Config_1.Config.prototype.controls.left = {
+    command: 'justifyLeft',
+    css: {
+        'text-align': 'left'
+    },
+    tooltip: 'Align Left'
+};
+Config_1.Config.prototype.controls.right = {
+    command: 'justifyRight',
+    css: {
+        'text-align': 'right'
+    },
+    tooltip: 'Align Right'
+};
+function justify(editor) {
+    var callback = function (command) {
+        var justifyElm = function (box) {
+            if (box instanceof editor.editorWindow.HTMLElement) {
+                switch (command.toLowerCase()) {
+                    case 'justifyfull':
+                        box.style.textAlign = 'justify';
+                        break;
+                    case 'justifyright':
+                        box.style.textAlign = 'right';
+                        break;
+                    case 'justifyleft':
+                        box.style.textAlign = 'left';
+                        break;
+                    case 'justifycenter':
+                        box.style.textAlign = 'center';
+                        break;
+                }
+            }
+        };
+        editor.selection.focus();
+        editor.selection.eachSelection(function (current) {
+            if (!current) {
+                if (editor.editor.querySelector('.jodit_selected_cell')) {
+                    helpers_1.$$('.jodit_selected_cell', editor.editor).forEach(justifyElm);
+                    return false;
+                }
+            }
+            if (!(current instanceof editor.editorWindow.Node)) {
+                return;
+            }
+            var currentBox = current
+                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
+                : false;
+            if (!currentBox && current) {
+                currentBox = Dom_1.Dom.wrapInline(current, editor.options.enterBlock, editor);
+            }
+            justifyElm(currentBox);
+        });
+        return false;
+    };
+    editor.registerCommand('justifyfull', callback);
+    editor.registerCommand('justifyright', callback);
+    editor.registerCommand('justifyleft', callback);
+    editor.registerCommand('justifycenter', callback);
+}
+exports.justify = justify;
+
+
+/***/ }),
+/* 171 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-var dialog_1 = __webpack_require__(16);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var async_1 = __webpack_require__(5);
+var html_1 = __webpack_require__(35);
+Config_1.Config.prototype.limitWords = false;
+Config_1.Config.prototype.limitChars = false;
+Config_1.Config.prototype.limitHTML = false;
+function limit(jodit) {
+    if (jodit && (jodit.options.limitWords || jodit.options.limitChars)) {
+        var callback_1 = function (event, inputText) {
+            if (inputText === void 0) { inputText = ''; }
+            var text = inputText ||
+                (jodit.options.limitHTML ? jodit.value : jodit.getEditorText());
+            var words = text
+                .replace(constants_1.INVISIBLE_SPACE_REG_EXP, '')
+                .split(constants_1.SPACE_REG_EXP)
+                .filter(function (e) { return e.length; });
+            if (event && constants_1.COMMAND_KEYS.indexOf(event.which) !== -1) {
+                return;
+            }
+            if (jodit.options.limitWords &&
+                jodit.options.limitWords <= words.length) {
+                return jodit.options.limitWords === words.length;
+            }
+            if (jodit.options.limitChars &&
+                jodit.options.limitChars <= words.join('').length) {
+                return jodit.options.limitChars === words.join('').length;
+            }
+            return;
+        };
+        var snapshot_1 = null;
+        jodit.events
+            .on('beforePaste', function () {
+            snapshot_1 = jodit.observer.snapshot.make();
+        })
+            .on('keydown keyup beforeEnter beforePaste', function (event) {
+            if (callback_1(event) !== undefined) {
+                return false;
+            }
+        })
+            .on('change', async_1.debounce(function (newValue, oldValue) {
+            if (callback_1(null, jodit.options.limitHTML
+                ? newValue
+                : html_1.stripTags(newValue)) === false) {
+                jodit.value = oldValue;
+            }
+        }, jodit.defaultTimeout))
+            .on('afterPaste', function () {
+            if (callback_1(null) === false && snapshot_1) {
+                jodit.observer.snapshot.restore(snapshot_1);
+                return false;
+            }
+        });
+    }
+}
+exports.limit = limit;
+
+
+/***/ }),
+/* 172 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.link = {
+    followOnDblClick: true,
+    processVideoLink: true,
+    processPastedLink: true,
+    removeLinkAfterFormat: true,
+    noFollowCheckbox: true,
+    openInNewTabCheckbox: true
+};
+Config_1.Config.prototype.controls.unlink = {
+    exec: function (editor, current) {
+        var anchor = Dom_1.Dom.closest(current, 'A', editor.editor);
+        if (anchor) {
+            Dom_1.Dom.unwrap(anchor);
+        }
+        editor.events.fire('hidePopup');
+    }
+};
+Config_1.Config.prototype.controls.link = {
+    isActive: function (editor) {
+        var current = editor.selection.current();
+        return current && Dom_1.Dom.closest(current, 'a', editor.editor) !== false;
+    },
+    popup: function (editor, current, self, close) {
+        var sel = editor.selection.sel, form = editor.create.fromHTML('<form class="jodit_form">' +
+            '<div class="jodit_form_group">' +
+            '<input class="jodit_input" required type="text" name="url" placeholder="http://" type="text"/>' +
+            '</div>' +
+            '<div class="jodit_form_group">' +
+            '<input class="jodit_input" name="text" placeholder="' + editor.i18n('Text') + '" type="text"/>' +
+            '</div>' +
+            (editor.options.link.openInNewTabCheckbox
+                ? '<label>' +
+                    '<input class="jodit_checkbox" name="target" type="checkbox"/> ' +
+                    editor.i18n('Open in new tab') +
+                    '</label>'
+                : '') +
+            (editor.options.link.noFollowCheckbox
+                ? '<label>' +
+                    '<input class="jodit_checkbox" name="nofollow" type="checkbox"/> ' +
+                    editor.i18n('No follow') +
+                    '</label>'
+                : '') +
+            '<div style="text-align: right">' +
+            '<button class="jodit_button jodit_unlink_button" type="button">' +
+            editor.i18n('Unlink') +
+            '</button> &nbsp;&nbsp;' +
+            '<button class="jodit_button jodit_link_insert_button" type="submit"></button>' +
+            '</div>' +
+            '<form/>');
+        if (current && Dom_1.Dom.closest(current, 'A', editor.editor)) {
+            current = Dom_1.Dom.closest(current, 'A', editor.editor);
+        }
+        else {
+            current = false;
+        }
+        var lnk = form.querySelector('.jodit_link_insert_button'), unlink = form.querySelector('.jodit_unlink_button');
+        if (current) {
+            helpers_1.val(form, 'input[name=url]', current.getAttribute('href') || '');
+            helpers_1.val(form, 'input[name=text]', current.textContent || '');
+            if (editor.options.link.openInNewTabCheckbox) {
+                form.querySelector('input[name=target]').checked =
+                    current.getAttribute('target') === '_blank';
+            }
+            if (editor.options.link.noFollowCheckbox) {
+                form.querySelector('input[name=nofollow]').checked =
+                    current.getAttribute('rel') === 'nofollow';
+            }
+            if (lnk) {
+                lnk.innerHTML = editor.i18n('Update');
+            }
+        }
+        else {
+            if (unlink) {
+                unlink.style.display = 'none';
+            }
+            helpers_1.val(form, 'input[name=text]', sel ? sel.toString() : '');
+            if (lnk) {
+                lnk.innerHTML = editor.i18n('Insert');
+            }
+        }
+        var selInfo = editor.selection.save();
+        if (unlink) {
+            unlink.addEventListener('mousedown', function (e) {
+                if (current) {
+                    Dom_1.Dom.unwrap(current);
+                }
+                editor.selection.restore(selInfo);
+                close();
+                e.preventDefault();
+            });
+        }
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            editor.selection.restore(selInfo);
+            var a = current ||
+                editor.editorDocument.createElement('a');
+            if (!helpers_1.val(form, 'input[name=url]')) {
+                form.querySelector('input[name=url]').focus();
+                form.querySelector('input[name=url]').classList.add('jodit_error');
+                return false;
+            }
+            a.setAttribute('href', helpers_1.val(form, 'input[name=url]'));
+            a.textContent = helpers_1.val(form, 'input[name=text]');
+            if (editor.options.link.openInNewTabCheckbox) {
+                if (form.querySelector('input[name=target]').checked) {
+                    a.setAttribute('target', '_blank');
+                }
+                else {
+                    a.removeAttribute('target');
+                }
+            }
+            if (editor.options.link.noFollowCheckbox) {
+                if (form.querySelector('input[name=nofollow]').checked) {
+                    a.setAttribute('rel', 'nofollow');
+                }
+                else {
+                    a.removeAttribute('rel');
+                }
+            }
+            if (!current) {
+                editor.selection.insertNode(a);
+            }
+            close();
+            return false;
+        });
+        return form;
+    },
+    tags: ['a'],
+    tooltip: 'Insert link'
+};
+function link(jodit) {
+    if (jodit.options.link.followOnDblClick) {
+        jodit.events.on('afterInit', function () {
+            jodit.events.on(jodit.editor, 'dblclick', function (e) {
+                var href = this.getAttribute('href');
+                if (href) {
+                    location.href = href;
+                    e.preventDefault();
+                }
+            }, 'a');
+        });
+    }
+    if (jodit.options.link.processPastedLink) {
+        jodit.events.on('processPaste', function (event, html) {
+            if (helpers_1.isURL(html)) {
+                if (jodit.options.link.processVideoLink) {
+                    var embed = helpers_1.convertMediaURLToVideoEmbed(html);
+                    if (embed !== html) {
+                        return jodit.create.inside.fromHTML(embed);
+                    }
+                }
+                var a = jodit.create.inside.element('a');
+                a.setAttribute('href', html);
+                a.textContent = html;
+                return a;
+            }
+        });
+    }
+    if (jodit.options.link.removeLinkAfterFormat) {
+        jodit.events.on('afterCommand', function (command) {
+            var sel = jodit.selection;
+            var newtag, node;
+            if (command === 'removeFormat') {
+                node = sel.current();
+                if (node && node.nodeName !== 'A') {
+                    node = Dom_1.Dom.closest(node, 'A', jodit.editor);
+                }
+                if (node && node.nodeName === 'A') {
+                    if (node.innerHTML ===
+                        node.textContent) {
+                        newtag = jodit.editorDocument.createTextNode(node.innerHTML);
+                    }
+                    else {
+                        newtag = jodit.editorDocument.createElement('span');
+                        newtag.innerHTML = node.innerHTML;
+                    }
+                    if (node.parentNode) {
+                        node.parentNode.replaceChild(newtag, node);
+                        jodit.selection.setCursorIn(newtag, true);
+                    }
+                }
+            }
+        });
+    }
+}
+exports.link = link;
+
+
+/***/ }),
+/* 173 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var async_1 = __webpack_require__(5);
+var selector_1 = __webpack_require__(13);
+Config_1.Config.prototype.mediaFakeTag = 'jodit-media';
+Config_1.Config.prototype.mediaInFakeBlock = true;
+Config_1.Config.prototype.mediaBlocks = ['video', 'audio'];
+function media(editor) {
+    var keyFake = 'jodit_fake_wrapper';
+    var _a = editor.options, mediaFakeTag = _a.mediaFakeTag, mediaBlocks = _a.mediaBlocks, mediaInFakeBlock = _a.mediaInFakeBlock;
+    var wrap = function (element) {
+        if (element.parentNode &&
+            element.parentNode.getAttribute('data-jodit_iframe_wrapper')) {
+            element = element.parentNode;
+        }
+        else {
+            var wrapper = void 0;
+            wrapper = editor.create.inside.fromHTML('<' +
+                mediaFakeTag +
+                ' data-jodit-temp="1" ' +
+                'contenteditable="false" ' +
+                'draggable="true" ' +
+                'data-' +
+                keyFake +
+                '="1">' +
+                '</' +
+                mediaFakeTag +
+                '>');
+            wrapper.style.display =
+                element.style.display === 'inline-block'
+                    ? 'inline-block'
+                    : 'block';
+            wrapper.style.width = element.offsetWidth + 'px';
+            wrapper.style.height = element.offsetHeight + 'px';
+            if (element.parentNode) {
+                element.parentNode.insertBefore(wrapper, element);
+            }
+            wrapper.appendChild(element);
+            element = wrapper;
+        }
+        editor.events
+            .off(element, 'mousedown.select touchstart.select')
+            .on(element, 'mousedown.select touchstart.select', function () {
+            editor.selection.setCursorAfter(element);
+        });
+    };
+    if (mediaInFakeBlock) {
+        editor.events
+            .on('afterGetValueFromEditor', function (data) {
+            var rxp = new RegExp("<" + mediaFakeTag + "[^>]+data-" + keyFake + "[^>]+>(.+?)</" + mediaFakeTag + ">", 'ig');
+            if (rxp.test(data.value)) {
+                data.value = data.value.replace(rxp, '$1');
+            }
+        })
+            .on('change afterInit afterSetMode', async_1.debounce(function () {
+            if (!editor.isDestructed &&
+                editor.getMode() !== consts.MODE_SOURCE) {
+                selector_1.$$(mediaBlocks.join(','), editor.editor).forEach(function (elm) {
+                    if (!elm['__' + keyFake]) {
+                        elm['__' + keyFake] = true;
+                        wrap(elm);
+                    }
+                });
+            }
+        }, editor.defaultTimeout));
+    }
+}
+exports.media = media;
+
+
+/***/ }),
+/* 174 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var array_1 = __webpack_require__(30);
+var joditToolbarCollection_1 = __webpack_require__(16);
+Config_1.Config.prototype.mobileTapTimeout = 300;
+Config_1.Config.prototype.toolbarAdaptive = true;
+Config_1.Config.prototype.controls.dots = {
+    mode: consts.MODE_SOURCE + consts.MODE_WYSIWYG,
+    popup: function (editor, current, control, close, button) {
+        var store = control.data;
+        if (store === undefined) {
+            store = {
+                container: editor.create.div(),
+                toolbar: joditToolbarCollection_1.JoditToolbarCollection.makeCollection(editor),
+                rebuild: function () {
+                    if (button) {
+                        var buttons = editor.events.fire('getDiffButtons.mobile', button.parentToolbar);
+                        if (buttons && store) {
+                            store.toolbar.build(array_1.splitArray(buttons), store.container);
+                        }
+                    }
+                }
+            };
+            var w = 32;
+            var size = editor.options.toolbarButtonSize;
+            if (size === 'large') {
+                w = 36;
+            }
+            else if (size === 'small') {
+                w = 24;
+            }
+            store.container.style.width = (w * 3) + 'px';
+            control.data = store;
+        }
+        store.rebuild();
+        return store.container;
+    }
+};
+function mobile(editor) {
+    var timeout = 0, now, store = array_1.splitArray(editor.options.buttons);
+    editor.events
+        .on('touchend', function (e) {
+        if (e.changedTouches && e.changedTouches.length) {
+            now = new Date().getTime();
+            if (now - timeout > editor.options.mobileTapTimeout) {
+                timeout = now;
+                editor.selection.insertCursorAtPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+            }
+        }
+    })
+        .on('getDiffButtons.mobile', function (toolbar) {
+        if (toolbar === editor.toolbar) {
+            return array_1.splitArray(editor.options.buttons).filter(function (i) {
+                return store.indexOf(i) < 0;
+            });
+        }
+    });
+    if (editor.options.toolbarAdaptive) {
+        editor.events.on('resize afterInit', function () {
+            if (!editor.options.toolbar) {
+                return;
+            }
+            var width = editor.container.offsetWidth;
+            var newStore = [];
+            if (width >= editor.options.sizeLG) {
+                newStore = array_1.splitArray(editor.options.buttons);
+            }
+            else if (width >= editor.options.sizeMD) {
+                newStore = array_1.splitArray(editor.options.buttonsMD);
+            }
+            else if (width >= editor.options.sizeSM) {
+                newStore = array_1.splitArray(editor.options.buttonsSM);
+            }
+            else {
+                newStore = array_1.splitArray(editor.options.buttonsXS);
+            }
+            if (newStore.toString() !== store.toString()) {
+                store = newStore;
+                editor.toolbar.build(store.concat(editor.options.extraButtons), editor.toolbar.container.parentElement || editor.toolbar.getParentContainer());
+            }
+        });
+    }
+}
+exports.mobile = mobile;
+
+
+/***/ }),
+/* 175 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.controls.ul = {
+    command: 'insertUnorderedList',
+    controlName: 'ul',
+    tags: ['ul'],
+    tooltip: 'Insert Unordered List'
+};
+Config_1.Config.prototype.controls.ol = {
+    command: 'insertOrderedList',
+    controlName: 'ol',
+    tags: ['ol'],
+    tooltip: 'Insert Ordered List'
+};
+function orderedlist(editor) {
+    editor.events.on('afterCommand', function (command) {
+        if (/insert(un)?orderedlist/i.test(command)) {
+            var ul = Dom_1.Dom.up(editor.selection.current(), function (tag) { return tag && /^UL|OL$/i.test(tag.nodeName); }, editor.editor);
+            if (ul && ul.parentNode && ul.parentNode.nodeName === 'P') {
+                var selection = editor.selection.save();
+                Dom_1.Dom.unwrap(ul.parentNode);
+                Array.from(ul.childNodes).forEach(function (li) {
+                    if (li.lastChild &&
+                        li.lastChild.nodeType === Node.ELEMENT_NODE &&
+                        li.lastChild.nodeName === 'BR') {
+                        Dom_1.Dom.safeRemove(li.lastChild);
+                    }
+                });
+                editor.selection.restore(selection);
+            }
+            editor.setEditorValue();
+        }
+    });
+}
+exports.orderedlist = orderedlist;
+
+
+/***/ }),
+/* 176 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var css_1 = __webpack_require__(10);
+var async_1 = __webpack_require__(5);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.showPlaceholder = true;
+Config_1.Config.prototype.useInputsPlaceholder = true;
+Config_1.Config.prototype.placeholder = 'Type something';
+function placeholder(editor) {
+    if (!editor.options.showPlaceholder) {
+        return;
+    }
+    this.destruct = function () {
+        Dom_1.Dom.safeRemove(placeholderElm);
+    };
+    var show = function () {
+        if (!placeholderElm.parentNode || editor.options.readonly) {
+            return;
+        }
+        var marginTop = 0, marginLeft = 0;
+        var style = editor.editorWindow.getComputedStyle(editor.editor);
+        if (editor.editor.firstChild &&
+            editor.editor.firstChild.nodeType === Node.ELEMENT_NODE) {
+            var style2 = editor.editorWindow.getComputedStyle(editor.editor.firstChild);
+            marginTop = parseInt(style2.getPropertyValue('margin-top'), 10);
+            marginLeft = parseInt(style2.getPropertyValue('margin-left'), 10);
+            placeholderElm.style.fontSize =
+                parseInt(style2.getPropertyValue('font-size'), 10) + 'px';
+            placeholderElm.style.lineHeight = style2.getPropertyValue('line-height');
+        }
+        else {
+            placeholderElm.style.fontSize =
+                parseInt(style.getPropertyValue('font-size'), 10) + 'px';
+            placeholderElm.style.lineHeight = style.getPropertyValue('line-height');
+        }
+        css_1.css(placeholderElm, {
+            display: 'block',
+            marginTop: Math.max(parseInt(style.getPropertyValue('margin-top'), 10), marginTop),
+            marginLeft: Math.max(parseInt(style.getPropertyValue('margin-left'), 10), marginLeft)
+        });
+    }, hide = function () {
+        if (placeholderElm.parentNode) {
+            placeholderElm.style.display = 'none';
+        }
+    }, toggle = async_1.debounce(function () {
+        if (placeholderElm.parentNode === null) {
+            return;
+        }
+        if (!editor.editor) {
+            return;
+        }
+        if (editor.getRealMode() !== consts.MODE_WYSIWYG) {
+            return hide();
+        }
+        var value = editor.getEditorValue();
+        if (value && !/^<(p|div|h[1-6])><\/\1>$/.test(value)) {
+            hide();
+        }
+        else {
+            show();
+        }
+    }, editor.defaultTimeout / 10);
+    var placeholderElm = editor.create.fromHTML('<span style="display: none;" class="jodit_placeholder">' +
+        editor.i18n(editor.options.placeholder) +
+        '</span>');
+    if (editor.options.direction === 'rtl') {
+        placeholderElm.style.right = '0px';
+        placeholderElm.style.direction = 'rtl';
+    }
+    if (editor.options.useInputsPlaceholder &&
+        editor.element.hasAttribute('placeholder')) {
+        placeholderElm.innerHTML =
+            editor.element.getAttribute('placeholder') || '';
+    }
+    editor.events
+        .on('readonly', function (isReadOnly) {
+        if (isReadOnly) {
+            hide();
+        }
+        else {
+            toggle();
+        }
+    })
+        .on('afterInit', function () {
+        editor.workplace.appendChild(placeholderElm);
+        toggle();
+        editor.events.fire('placeholder', placeholderElm.innerHTML);
+        editor.events
+            .on('change keyup mouseup keydown mousedown afterSetMode', toggle)
+            .on(window, 'load', toggle);
+    });
+}
+exports.placeholder = placeholder;
+
+
+/***/ }),
+/* 177 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var Plugin_1 = __webpack_require__(7);
+Config_1.Config.prototype.controls.redo = {
+    mode: consts.MODE_SPLIT,
+    isDisable: function (editor) { return !editor.observer.stack.canRedo(); },
+    tooltip: 'Redo'
+};
+Config_1.Config.prototype.controls.undo = {
+    mode: consts.MODE_SPLIT,
+    isDisable: function (editor) { return !editor.observer.stack.canUndo(); },
+    tooltip: 'Undo'
+};
+var redoundo = (function (_super) {
+    tslib_1.__extends(redoundo, _super);
+    function redoundo() {
+        return _super !== null && _super.apply(this, arguments) || this;
+    }
+    redoundo.prototype.beforeDestruct = function () {
+    };
+    redoundo.prototype.afterInit = function (editor) {
+        var callback = function (command) {
+            if (editor.getRealMode() === consts.MODE_WYSIWYG) {
+                editor.observer[command]();
+            }
+            return false;
+        };
+        editor.registerCommand('redo', {
+            exec: callback,
+            hotkeys: ['ctrl+y', 'ctrl+shift+z', 'cmd+y', 'cmd+shift+z']
+        });
+        editor.registerCommand('undo', {
+            exec: callback,
+            hotkeys: ['ctrl+z', 'cmd+z']
+        });
+    };
+    return redoundo;
+}(Plugin_1.Plugin));
+exports.redoundo = redoundo;
+
+
+/***/ }),
+/* 178 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var selector_1 = __webpack_require__(13);
+var async_1 = __webpack_require__(5);
+var size_1 = __webpack_require__(23);
+var helpers_1 = __webpack_require__(4);
+Config_1.Config.prototype.useIframeResizer = true;
+Config_1.Config.prototype.useTableResizer = true;
+Config_1.Config.prototype.useImageResizer = true;
+Config_1.Config.prototype.resizer = {
+    showSize: true,
+    hideSizeTimeout: 1000,
+    min_width: 10,
+    min_height: 10
+};
+function resizer(editor) {
+    var LOCK_KEY = 'resizer';
+    var handle, currentElement, resizeElementClicked = false, isResizing = false, start_x, start_y, width, height, ratio, new_h, new_w, diff_x, diff_y, resizerIsVisible = false, timeoutSizeViewer = 0;
+    var resizerElm = editor.create.fromHTML('<div data-editor_id="' +
+        editor.id +
+        '" style="display:none" class="jodit_resizer">' +
+        '<i class="jodit_resizer-topleft"></i>' +
+        '<i class="jodit_resizer-topright"></i>' +
+        '<i class="jodit_resizer-bottomright"></i>' +
+        '<i class="jodit_resizer-bottomleft"></i>' +
+        '<span>100x100</span>' +
+        '</div>'), sizeViewer = resizerElm.getElementsByTagName('span')[0], hideResizer = function () {
+        isResizing = false;
+        resizerIsVisible = false;
+        currentElement = null;
+        resizerElm.style.display = 'none';
+    }, hideSizeViewer = function () {
+        sizeViewer.style.opacity = '0';
+    }, showSizeViewer = function (w, h) {
+        if (!editor.options.resizer.showSize) {
+            return;
+        }
+        if (w < sizeViewer.offsetWidth || h < sizeViewer.offsetHeight) {
+            hideSizeViewer();
+            return;
+        }
+        sizeViewer.style.opacity = '1';
+        sizeViewer.innerHTML = w + " x " + h;
+        clearTimeout(timeoutSizeViewer);
+        timeoutSizeViewer = async_1.setTimeout(hideSizeViewer, editor.options.resizer.hideSizeTimeout);
+    }, updateSize = function () {
+        if (resizerIsVisible && currentElement && resizerElm) {
+            var workplacePosition = size_1.offset((resizerElm.parentNode ||
+                editor.ownerDocument
+                    .documentElement), editor, editor.ownerDocument, true), pos = size_1.offset(currentElement, editor, editor.editorDocument), left = parseInt(resizerElm.style.left || '0', 10), top_1 = parseInt(resizerElm.style.top || '0', 10), w = resizerElm.offsetWidth, h = resizerElm.offsetHeight;
+            var newTop = pos.top - 1 - workplacePosition.top, newLeft = pos.left - 1 - workplacePosition.left;
+            if (top_1 !== newTop ||
+                left !== newLeft ||
+                w !== currentElement.offsetWidth ||
+                h !== currentElement.offsetHeight) {
+                resizerElm.style.top = newTop + 'px';
+                resizerElm.style.left = newLeft + 'px';
+                resizerElm.style.width = currentElement.offsetWidth + 'px';
+                resizerElm.style.height =
+                    currentElement.offsetHeight + 'px';
+                if (editor.events) {
+                    editor.events.fire(currentElement, 'changesize');
+                    if (!isNaN(left)) {
+                        editor.events.fire('resize');
+                    }
+                }
+            }
+        }
+    }, showResizer = function () {
+        if (editor.options.readonly) {
+            return;
+        }
+        if (!resizerElm.parentNode) {
+            editor.workplace.appendChild(resizerElm);
+        }
+        resizerIsVisible = true;
+        resizerElm.style.display = 'block';
+        if (editor.isFullSize()) {
+            resizerElm.style.zIndex = helpers_1.css(editor.container, 'zIndex').toString();
+        }
+        updateSize();
+    }, bind = function (element) {
+        var wrapper;
+        if (element.tagName === 'IFRAME') {
+            var iframe_1 = element;
+            if (element.parentNode &&
+                element.parentNode.getAttribute('data-jodit_iframe_wrapper')) {
+                element = element.parentNode;
+            }
+            else {
+                wrapper = editor.create.inside.fromHTML('<jodit ' +
+                    'data-jodit-temp="1" ' +
+                    'contenteditable="false" ' +
+                    'draggable="true" ' +
+                    'data-jodit_iframe_wrapper="1"' +
+                    '></jodit>');
+                wrapper.style.display =
+                    element.style.display === 'inline-block'
+                        ? 'inline-block'
+                        : 'block';
+                wrapper.style.width = element.offsetWidth + 'px';
+                wrapper.style.height = element.offsetHeight + 'px';
+                if (element.parentNode) {
+                    element.parentNode.insertBefore(wrapper, element);
+                }
+                wrapper.appendChild(element);
+                element = wrapper;
+            }
+            editor.events
+                .off(element, 'mousedown.select touchstart.select')
+                .on(element, 'mousedown.select touchstart.select', function () {
+                editor.selection.select(element);
+            });
+            editor.events
+                .off(element, 'changesize')
+                .on(element, 'changesize', function () {
+                iframe_1.setAttribute('width', element.offsetWidth + 'px');
+                iframe_1.setAttribute('height', element.offsetHeight + 'px');
+            });
+        }
+        var timer;
+        editor.events
+            .on(element, 'dragstart', hideResizer)
+            .on(element, 'mousedown', function (event) {
+            if (constants_1.IS_IE && element.nodeName === 'IMG') {
+                event.preventDefault();
+            }
+        })
+            .on(element, 'mousedown touchstart', function () {
+            if (!resizeElementClicked) {
+                resizeElementClicked = true;
+                currentElement = element;
+                showResizer();
+                if (currentElement.tagName === 'IMG' &&
+                    !currentElement.complete) {
+                    currentElement.addEventListener('load', function ElementOnLoad() {
+                        updateSize();
+                        if (currentElement) {
+                            currentElement.removeEventListener('load', ElementOnLoad);
+                        }
+                    });
+                }
+                clearTimeout(timer);
+            }
+            timer = async_1.setTimeout(function () {
+                resizeElementClicked = false;
+            }, 400);
+        });
+    };
+    selector_1.$$('i', resizerElm).forEach(function (resizeHandle) {
+        editor.events.on(resizeHandle, 'mousedown touchstart', function (e) {
+            if (!currentElement || !currentElement.parentNode) {
+                hideResizer();
+                return false;
+            }
+            handle = resizeHandle;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            width = currentElement.offsetWidth;
+            height = currentElement.offsetHeight;
+            ratio = width / height;
+            isResizing = true;
+            start_x = e.clientX;
+            start_y = e.clientY;
+            editor.events.fire('hidePopup');
+            editor.lock(LOCK_KEY);
+        });
+    });
+    editor.events
+        .on('readonly', function (isReadOnly) {
+        if (isReadOnly) {
+            hideResizer();
+        }
+    })
+        .on('beforeDestruct', function () {
+        Dom_1.Dom.safeRemove(resizerElm);
+    })
+        .on('afterInit', function () {
+        editor.events
+            .on(editor.editor, 'keydown', function (e) {
+            if (resizerIsVisible &&
+                e.which === consts.KEY_DELETE &&
+                currentElement &&
+                currentElement.tagName.toLowerCase() !== 'table') {
+                if (currentElement.tagName !== 'JODIT') {
+                    editor.selection.select(currentElement);
+                }
+                else {
+                    Dom_1.Dom.safeRemove(currentElement);
+                    hideResizer();
+                    e.preventDefault();
+                }
+            }
+        })
+            .on(editor.ownerWindow, 'mousemove touchmove', function (e) {
+            if (isResizing) {
+                diff_x = e.clientX - start_x;
+                diff_y = e.clientY - start_y;
+                if (!currentElement) {
+                    return;
+                }
+                var className = handle.className;
+                if ('IMG' === currentElement.tagName) {
+                    if (diff_x) {
+                        new_w =
+                            width +
+                                (className.match(/left/) ? -1 : 1) *
+                                    diff_x;
+                        new_h = Math.round(new_w / ratio);
+                    }
+                    else {
+                        new_h =
+                            height +
+                                (className.match(/top/) ? -1 : 1) *
+                                    diff_y;
+                        new_w = Math.round(new_h * ratio);
+                    }
+                    if (new_w >
+                        size_1.innerWidth(editor.editor, editor.ownerWindow)) {
+                        new_w = size_1.innerWidth(editor.editor, editor.ownerWindow);
+                        new_h = Math.round(new_w / ratio);
+                    }
+                }
+                else {
+                    new_w =
+                        width +
+                            (className.match(/left/) ? -1 : 1) * diff_x;
+                    new_h =
+                        height +
+                            (className.match(/top/) ? -1 : 1) * diff_y;
+                }
+                if (new_w > editor.options.resizer.min_width) {
+                    if (new_w <
+                        resizerElm.parentNode
+                            .offsetWidth) {
+                        currentElement.style.width = new_w + 'px';
+                    }
+                    else {
+                        currentElement.style.width = '100%';
+                    }
+                }
+                if (new_h > editor.options.resizer.min_height) {
+                    currentElement.style.height = new_h + 'px';
+                }
+                updateSize();
+                showSizeViewer(currentElement.offsetWidth, currentElement.offsetHeight);
+                e.stopImmediatePropagation();
+            }
+        })
+            .on(editor.ownerWindow, 'resize', function () {
+            if (resizerIsVisible) {
+                updateSize();
+            }
+        })
+            .on(editor.ownerWindow, 'mouseup keydown touchend', function (e) {
+            if (resizerIsVisible && !resizeElementClicked) {
+                if (isResizing) {
+                    editor.unlock();
+                    isResizing = false;
+                    editor.setEditorValue();
+                    e.stopImmediatePropagation();
+                }
+                else {
+                    hideResizer();
+                }
+            }
+        })
+            .on([editor.ownerWindow, editor.editor], 'scroll', function () {
+            if (resizerIsVisible && !isResizing) {
+                hideResizer();
+            }
+        });
+    })
+        .on('afterGetValueFromEditor', function (data) {
+        var rgx = /<jodit[^>]+data-jodit_iframe_wrapper[^>]+>(.*?<iframe[^>]+>[\s\n\r]*<\/iframe>.*?)<\/jodit>/gi;
+        if (rgx.test(data.value)) {
+            data.value = data.value.replace(rgx, '$1');
+        }
+    })
+        .on('hideResizer', hideResizer)
+        .on('change afterInit afterSetMode', async_1.debounce(function () {
+        if (resizerIsVisible) {
+            if (!currentElement || !currentElement.parentNode) {
+                hideResizer();
+            }
+            else {
+                updateSize();
+            }
+        }
+        if (!editor.isDestructed) {
+            selector_1.$$('img, table, iframe', editor.editor).forEach(function (elm) {
+                if (editor.getMode() === consts.MODE_SOURCE) {
+                    return;
+                }
+                if (!elm.__jodit_resizer_binded &&
+                    ((elm.tagName === 'IFRAME' &&
+                        editor.options.useIframeResizer) ||
+                        (elm.tagName === 'IMG' &&
+                            editor.options.useImageResizer) ||
+                        (elm.tagName === 'TABLE' &&
+                            editor.options.useTableResizer))) {
+                    elm.__jodit_resizer_binded = true;
+                    bind(elm);
+                }
+            });
+        }
+    }, editor.defaultTimeout));
+}
+exports.resizer = resizer;
+
+
+/***/ }),
+/* 179 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var icon_1 = __webpack_require__(6);
+var Plugin_1 = __webpack_require__(7);
+var async_1 = __webpack_require__(5);
+var string_1 = __webpack_require__(9);
+Config_1.Config.prototype.useSearch = true;
+var search = (function (_super) {
+    tslib_1.__extends(search, _super);
+    function search() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.template = '<div class="jodit_search">' +
+            '<div class="jodit_search_box">' +
+            '<div class="jodit_search_inputs">' +
+            '<input tabindex="0" class="jodit_search-query" placeholder="' +
+            _this.jodit.i18n('Search for') +
+            '" type="text"/>' +
+            '<input tabindex="0" class="jodit_search-replace" placeholder="' +
+            _this.jodit.i18n('Replace with') +
+            '" type="text"/>' +
+            '</div>' +
+            '<div class="jodit_search_counts">' +
+            '<span>0/0</span>' +
+            '</div>' +
+            '<div class="jodit_search_buttons">' +
+            '<button tabindex="0" type="button" class="jodit_search_buttons-next">' +
+            icon_1.ToolbarIcon.getIcon('angle-down') +
+            '</button>' +
+            '<button tabindex="0" type="button" class="jodit_search_buttons-prev">' +
+            icon_1.ToolbarIcon.getIcon('angle-up') +
+            '</button>' +
+            '<button tabindex="0" type="button" class="jodit_search_buttons-cancel">' +
+            icon_1.ToolbarIcon.getIcon('cancel') +
+            '</button>' +
+            '<button tabindex="0" type="button" class="jodit_search_buttons-replace">' +
+            _this.jodit.i18n('Replace') +
+            '</button>' +
+            '</div>' +
+            '</div>' +
+            '</div>';
+        _this.isOpened = false;
+        _this.selInfo = null;
+        _this.current = false;
+        _this.eachMap = function (node, callback, next) {
+            Dom_1.Dom.findWithCurrent(node, function (child) {
+                return !!child && callback(child);
+            }, _this.jodit.editor, next ? 'nextSibling' : 'previousSibling', next ? 'firstChild' : 'lastChild');
+        };
+        _this.updateCounters = function () {
+            if (!_this.isOpened) {
+                return;
+            }
+            _this.counterBox.style.display = _this.queryInput.value.length
+                ? 'inline-block'
+                : 'none';
+            var range = _this.jodit.selection.range, counts = _this.calcCounts(_this.queryInput.value, range);
+            _this.counterBox.textContent = counts.join('/');
+        };
+        _this.calcCounts = function (query, current) {
+            if (current === void 0) { current = false; }
+            var bounds = [];
+            var currentIndex = 0, count = 0, bound = false, start = _this.jodit.editor.firstChild;
+            while (start && query.length) {
+                bound = _this.find(start, query, true, 0, bound || _this.jodit.editorDocument.createRange());
+                if (bound) {
+                    if (_this.boundAlreadyWas(bound, bounds)) {
+                        break;
+                    }
+                    bounds.push(bound);
+                    start = bound.startContainer;
+                    count += 1;
+                    if (current && _this.boundAlreadyWas(current, [bound])) {
+                        currentIndex = count;
+                    }
+                }
+                else {
+                    start = null;
+                }
+            }
+            return [currentIndex, count];
+        };
+        _this.findAndReplace = function (start, query) {
+            var range = _this.jodit.selection.range, bound = _this.find(start, query, true, 0, range);
+            if (bound && bound.startContainer && bound.endContainer) {
+                var rng = _this.jodit.editorDocument.createRange();
+                try {
+                    if (bound && bound.startContainer && bound.endContainer) {
+                        rng.setStart(bound.startContainer, bound.startOffset);
+                        rng.setEnd(bound.endContainer, bound.endOffset);
+                        rng.deleteContents();
+                        var textNode = _this.jodit.editorDocument.createTextNode(_this.replaceInput.value);
+                        rng.insertNode(textNode);
+                        _this.jodit.selection.select(textNode);
+                        _this.tryScrollToElement(textNode);
+                    }
+                }
+                catch (_a) { }
+                return true;
+            }
+            return false;
+        };
+        _this.findAndSelect = function (start, query, next) {
+            var range = _this.jodit.selection.range, bound = _this.find(start, query, next, 0, range);
+            if (bound && bound.startContainer && bound.endContainer) {
+                var rng = _this.jodit.editorDocument.createRange();
+                try {
+                    rng.setStart(bound.startContainer, bound.startOffset);
+                    rng.setEnd(bound.endContainer, bound.endOffset);
+                    _this.jodit.selection.selectRange(rng);
+                }
+                catch (e) { }
+                _this.tryScrollToElement(bound.startContainer);
+                _this.current = bound.startContainer;
+                _this.updateCounters();
+                return true;
+            }
+            return false;
+        };
+        _this.find = function (start, query, next, deep, range) {
+            if (start && query.length) {
+                var sentence_1 = '', bound_1 = {
+                    startContainer: null,
+                    startOffset: null,
+                    endContainer: null,
+                    endOffset: null
+                };
+                _this.eachMap(start, function (elm) {
+                    if (elm.nodeType === Node.TEXT_NODE &&
+                        elm.nodeValue !== null &&
+                        elm.nodeValue.length) {
+                        var value = elm.nodeValue;
+                        if (!next && elm === range.startContainer) {
+                            value = !deep
+                                ? value.substr(0, range.startOffset)
+                                : value.substr(range.endOffset);
+                        }
+                        else if (next && elm === range.endContainer) {
+                            value = !deep
+                                ? value.substr(range.endOffset)
+                                : value.substr(0, range.startOffset);
+                        }
+                        var tmpSentence = next
+                            ? sentence_1 + value
+                            : value + sentence_1;
+                        var part = search.findSomePartOfString(query, tmpSentence, next);
+                        if (part !== false) {
+                            var currentPart = search.findSomePartOfString(query, value, next);
+                            if (currentPart === true) {
+                                currentPart = string_1.trim(query);
+                            }
+                            else if (currentPart === false) {
+                                currentPart = search.findSomePartOfString(value, query, next);
+                                if (currentPart === true) {
+                                    currentPart = string_1.trim(value);
+                                }
+                            }
+                            var currentPartIndex = search.getSomePartOfStringIndex(query, value, next) || 0;
+                            if (((next && !deep) || (!next && deep)) &&
+                                elm.nodeValue.length - value.length > 0) {
+                                currentPartIndex +=
+                                    elm.nodeValue.length - value.length;
+                            }
+                            if (bound_1.startContainer === null) {
+                                bound_1.startContainer = elm;
+                                bound_1.startOffset = currentPartIndex;
+                            }
+                            if (part !== true) {
+                                sentence_1 = tmpSentence;
+                            }
+                            else {
+                                bound_1.endContainer = elm;
+                                bound_1.endOffset = currentPartIndex;
+                                bound_1.endOffset += currentPart.length;
+                                return true;
+                            }
+                        }
+                        else {
+                            sentence_1 = '';
+                            bound_1 = {
+                                startContainer: null,
+                                startOffset: null,
+                                endContainer: null,
+                                endOffset: null
+                            };
+                        }
+                    }
+                    else if (Dom_1.Dom.isBlock(elm, _this.jodit.editorWindow) &&
+                        sentence_1 !== '') {
+                        sentence_1 = next ? sentence_1 + ' ' : ' ' + sentence_1;
+                    }
+                    return false;
+                }, next);
+                if (bound_1.startContainer && bound_1.endContainer) {
+                    return bound_1;
+                }
+                if (!deep) {
+                    _this.current = next
+                        ? _this.jodit.editor.firstChild
+                        : _this.jodit.editor.lastChild;
+                    return _this.find(_this.current, query, next, deep + 1, range);
+                }
+            }
+            return false;
+        };
+        _this.open = function (searchAndReplace) {
+            if (searchAndReplace === void 0) { searchAndReplace = false; }
+            if (!_this.isOpened) {
+                _this.searchBox.classList.add('jodit_search-active');
+                _this.isOpened = true;
+            }
+            _this.jodit.events.fire('hidePopup');
+            _this.searchBox.classList.toggle('jodit_search-and-replace', searchAndReplace);
+            _this.current = _this.jodit.selection.current();
+            _this.selInfo = _this.jodit.selection.save();
+            var selStr = (_this.jodit.selection.sel || '').toString();
+            if (selStr) {
+                _this.queryInput.value = selStr;
+            }
+            _this.updateCounters();
+            if (selStr) {
+                _this.queryInput.select();
+            }
+            else {
+                _this.queryInput.focus();
+            }
+        };
+        _this.close = function () {
+            if (!_this.isOpened) {
+                return;
+            }
+            if (_this.selInfo) {
+                _this.jodit.selection.restore(_this.selInfo);
+                _this.selInfo = null;
+            }
+            _this.searchBox.classList.remove('jodit_search-active');
+            _this.isOpened = false;
+        };
+        return _this;
+    }
+    search.getSomePartOfStringIndex = function (needle, haystack, start) {
+        if (start === void 0) { start = true; }
+        return this.findSomePartOfString(needle, haystack, start, true);
+    };
+    search.findSomePartOfString = function (needle, haystack, start, getIndex) {
+        if (start === void 0) { start = true; }
+        if (getIndex === void 0) { getIndex = false; }
+        needle = string_1.trim(needle.toLowerCase().replace(consts.SPACE_REG_EXP, ' '));
+        haystack = haystack.toLowerCase();
+        var i = start ? 0 : haystack.length - 1, needleStart = start ? 0 : needle.length - 1, tmpEqualLength = 0, startAtIndex = null;
+        var inc = start ? 1 : -1, tmp = [];
+        for (; haystack[i] !== undefined; i += inc) {
+            var some = needle[needleStart] === haystack[i];
+            if (some ||
+                (startAtIndex !== null &&
+                    consts.SPACE_REG_EXP.test(haystack[i]))) {
+                if (startAtIndex === null || !start) {
+                    startAtIndex = i;
+                }
+                tmp.push(haystack[i]);
+                if (some) {
+                    tmpEqualLength += 1;
+                    needleStart += inc;
+                }
+            }
+            else {
+                startAtIndex = null;
+                tmp.length = 0;
+                tmpEqualLength = 0;
+                needleStart = start ? 0 : needle.length - 1;
+            }
+            if (tmpEqualLength === needle.length) {
+                return getIndex ? startAtIndex : true;
+            }
+        }
+        if (getIndex) {
+            return (startAtIndex !== null && startAtIndex !== void 0 ? startAtIndex : false);
+        }
+        if (tmp.length) {
+            return start ? tmp.join('') : tmp.reverse().join('');
+        }
+        return false;
+    };
+    search.prototype.boundAlreadyWas = function (current, bounds) {
+        return bounds.some(function (bound) {
+            return (bound.startContainer === current.startContainer &&
+                bound.endContainer === current.endContainer &&
+                bound.startOffset === current.startOffset &&
+                bound.endOffset === current.endOffset);
+        }, false);
+    };
+    search.prototype.tryScrollToElement = function (startContainer) {
+        var parentBox = Dom_1.Dom.closest(startContainer, function (elm) { return elm && elm.nodeType === Node.ELEMENT_NODE; }, this.jodit.editor);
+        if (!parentBox) {
+            parentBox = Dom_1.Dom.prev(startContainer, function (elm) { return elm && elm.nodeType === Node.ELEMENT_NODE; }, this.jodit.editor);
+        }
+        parentBox &&
+            parentBox !== this.jodit.editor &&
+            parentBox.scrollIntoView();
+    };
+    search.prototype.afterInit = function (editor) {
+        var _this = this;
+        if (editor.options.useSearch) {
+            var self_1 = this;
+            self_1.searchBox = editor.create.fromHTML(self_1.template);
+            var qs = self_1.searchBox.querySelector.bind(self_1.searchBox);
+            self_1.queryInput = qs('input.jodit_search-query');
+            self_1.replaceInput = qs('input.jodit_search-replace');
+            self_1.closeButton = qs('.jodit_search_buttons-cancel');
+            self_1.nextButton = qs('.jodit_search_buttons-next');
+            self_1.prevButton = qs('.jodit_search_buttons-prev');
+            self_1.replaceButton = qs('.jodit_search_buttons-replace');
+            self_1.counterBox = qs('.jodit_search_counts span');
+            editor.workplace.appendChild(this.searchBox);
+            editor.events
+                .on(self_1.closeButton, 'click', this.close)
+                .on(self_1.queryInput, 'mousedown', function () {
+                if (editor.selection.isFocused()) {
+                    editor.selection.removeMarkers();
+                    self_1.selInfo = editor.selection.save();
+                }
+            })
+                .on(self_1.replaceButton, 'click', function (e) {
+                self_1.findAndReplace(editor.selection.current() || editor.editor.firstChild, self_1.queryInput.value);
+                _this.updateCounters();
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            })
+                .on([self_1.nextButton, self_1.prevButton], 'click', function (e) {
+                editor.events.fire(self_1.nextButton === this
+                    ? 'searchNext'
+                    : 'searchPrevious');
+                e.preventDefault();
+                e.stopImmediatePropagation();
+            })
+                .on(this.queryInput, 'keydown', async_1.debounce(function (e) {
+                switch (e.which) {
+                    case consts.KEY_ENTER:
+                        e.preventDefault();
+                        e.stopImmediatePropagation();
+                        if (editor.events.fire('searchNext')) {
+                            _this.close();
+                        }
+                        break;
+                    default:
+                        _this.updateCounters();
+                        break;
+                }
+            }, this.jodit.defaultTimeout))
+                .on(this.jodit.container, 'keydown.search', function (e) {
+                if (editor.getRealMode() !== constants_1.MODE_WYSIWYG) {
+                    return;
+                }
+                switch (e.which) {
+                    case consts.KEY_ESC:
+                        _this.close();
+                        break;
+                    case consts.KEY_F3:
+                        if (self_1.queryInput.value) {
+                            editor.events.fire(!e.shiftKey
+                                ? 'searchNext'
+                                : 'searchPrevious');
+                            e.preventDefault();
+                        }
+                        break;
+                }
+            })
+                .on('beforeSetMode.search', function () {
+                _this.close();
+            })
+                .on('keydown.search mousedown.search', function () {
+                if (_this.selInfo) {
+                    editor.selection.removeMarkers();
+                    _this.selInfo = null;
+                }
+                if (_this.isOpened) {
+                    _this.current = _this.jodit.selection.current();
+                    _this.updateCounters();
+                }
+            })
+                .on('searchNext.search searchPrevious.search', function () {
+                return self_1.findAndSelect(editor.selection.current() || editor.editor.firstChild, self_1.queryInput.value, editor.events.current[editor.events.current.length - 1] === 'searchNext');
+            })
+                .on('search.search', function (value, next) {
+                if (next === void 0) { next = true; }
+                editor.execCommand('search', value, next);
+            });
+            editor.registerCommand('search', {
+                exec: function (command, value, next) {
+                    if (next === void 0) { next = true; }
+                    self_1.findAndSelect(editor.selection.current() || editor.editor.firstChild, value || '', next);
+                    return false;
+                }
+            });
+            editor.registerCommand('openSearchDialog', {
+                exec: function () {
+                    self_1.open();
+                    return false;
+                },
+                hotkeys: ['ctrl+f', 'cmd+f']
+            });
+            editor.registerCommand('openReplaceDialog', {
+                exec: function () {
+                    if (!editor.options.readonly) {
+                        self_1.open(true);
+                    }
+                    return false;
+                },
+                hotkeys: ['ctrl+h', 'cmd+h']
+            });
+        }
+    };
+    search.prototype.beforeDestruct = function (jodit) {
+        Dom_1.Dom.safeRemove(this.searchBox);
+        jodit.events && jodit.events.off('.search');
+        jodit.events && jodit.events.off(jodit.container, '.search');
+    };
+    return search;
+}(Plugin_1.Plugin));
+exports.search = search;
+
+
+/***/ }),
+/* 180 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var async_1 = __webpack_require__(5);
+var css_1 = __webpack_require__(10);
+Config_1.Config.prototype.allowResizeX = false;
+Config_1.Config.prototype.allowResizeY = true;
+function size(editor) {
+    var setHeight = function (height) {
+        css_1.css(editor.container, 'height', height);
+        if (editor.options.saveHeightInStorage) {
+            editor.storage.set('height', height);
+        }
+    };
+    var setWidth = function (width) {
+        return css_1.css(editor.container, 'width', width);
+    };
+    var setHeightWorkPlace = function (height) {
+        return css_1.css(editor.workplace, 'height', height);
+    };
+    if (editor.options.height !== 'auto' &&
+        (editor.options.allowResizeX || editor.options.allowResizeY)) {
+        var handle_1 = editor.create.div('jodit_editor_resize', '<a tabindex="-1" href="javascript:void(0)"></a>'), start_1 = {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0
+        };
+        var isResized_1 = false;
+        editor.events
+            .on(handle_1, 'mousedown touchstart', function (e) {
+            isResized_1 = true;
+            start_1.x = e.clientX;
+            start_1.y = e.clientY;
+            start_1.w = editor.container.offsetWidth;
+            start_1.h = editor.container.offsetHeight;
+            editor.lock();
+            e.preventDefault();
+        })
+            .on(editor.ownerWindow, 'mousemove touchmove', async_1.throttle(function (e) {
+            if (isResized_1) {
+                if (editor.options.allowResizeY) {
+                    setHeight(start_1.h + e.clientY - start_1.y);
+                }
+                if (editor.options.allowResizeX) {
+                    setWidth(start_1.w + e.clientX - start_1.x);
+                }
+                resizeWorkspaceImd();
+                editor.events.fire('resize');
+            }
+        }, editor.defaultTimeout / 10))
+            .on(editor.ownerWindow, 'mouseup touchsend', function () {
+            if (isResized_1) {
+                isResized_1 = false;
+                editor.unlock();
+            }
+        })
+            .on('afterInit', function () {
+            editor.container.appendChild(handle_1);
+        })
+            .on('toggleFullSize', function (fullsize) {
+            handle_1.style.display = fullsize ? 'none' : 'block';
+        });
+    }
+    var getNotWorkHeight = function () {
+        return (editor.options.toolbar ? editor.toolbar.container.offsetHeight : 0) +
+            (editor.statusbar ? editor.statusbar.getHeight() : 0);
+    };
+    var calcMinHeightWorkspace = function () {
+        if (!editor.container || !editor.container.parentNode) {
+            return;
+        }
+        var minHeight = css_1.css(editor.container, 'minHeight') - getNotWorkHeight();
+        [editor.workplace, editor.iframe, editor.editor].map(function (elm) {
+            var minHeightD = elm === editor.editor ? minHeight - 2 : minHeight;
+            elm && css_1.css(elm, 'minHeight', minHeightD);
+            editor.events.fire('setMinHeight', minHeightD);
+        });
+    };
+    var resizeWorkspaceImd = function () {
+        if (!editor ||
+            editor.isDestructed ||
+            !editor.options ||
+            editor.options.inline) {
+            return;
+        }
+        calcMinHeightWorkspace();
+        if (editor.container &&
+            (editor.options.height !== 'auto' || editor.isFullSize())) {
+            setHeightWorkPlace(editor.container.offsetHeight - getNotWorkHeight());
+        }
+    };
+    var resizeWorkspace = async_1.debounce(resizeWorkspaceImd, editor.defaultTimeout);
+    editor.events
+        .on('toggleFullSize', function (fullsize) {
+        if (!fullsize && editor.options.height === 'auto') {
+            setHeightWorkPlace('auto');
+            calcMinHeightWorkspace();
+        }
+    })
+        .on('afterInit', function () {
+        if (!editor.options.inline) {
+            css_1.css(editor.editor, {
+                minHeight: '100%'
+            });
+            css_1.css(editor.container, {
+                minHeight: editor.options.minHeight,
+                minWidth: editor.options.minWidth,
+                maxWidth: editor.options.maxWidth
+            });
+        }
+        var height = editor.options.height;
+        if (editor.options.saveHeightInStorage && height !== 'auto') {
+            var localHeight = editor.storage.get('height');
+            if (localHeight) {
+                height = localHeight;
+            }
+        }
+        if (!editor.options.inline) {
+            setHeight(height);
+            setWidth(editor.options.width);
+        }
+        resizeWorkspaceImd();
+    }, undefined, undefined, true)
+        .on(window, 'load', resizeWorkspace)
+        .on('afterInit resize updateToolbar scroll afterResize', resizeWorkspace);
+}
+exports.size = size;
+
+
+/***/ }),
+/* 181 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var constants_1 = __webpack_require__(2);
+var Plugin_1 = __webpack_require__(7);
+var appendScript_1 = __webpack_require__(52);
+var async_1 = __webpack_require__(5);
+var selector_1 = __webpack_require__(13);
+var css_1 = __webpack_require__(10);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.beautifyHTML = true;
+Config_1.Config.prototype.useAceEditor = true;
+Config_1.Config.prototype.sourceEditorNativeOptions = {
+    showGutter: true,
+    theme: 'ace/theme/idle_fingers',
+    mode: 'ace/mode/html',
+    wrap: true,
+    highlightActiveLine: true
+};
+Config_1.Config.prototype.sourceEditorCDNUrlsJS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/ace.js'
+];
+Config_1.Config.prototype.beautifyHTMLCDNUrlsJS = [
+    'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.0/beautify.min.js',
+    'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.0/beautify-html.min.js'
+];
+Config_1.Config.prototype.controls.source = {
+    mode: consts.MODE_SPLIT,
+    exec: function (editor) {
+        editor.toggleMode();
+    },
+    isActive: function (editor) {
+        return editor.getRealMode() === consts.MODE_SOURCE;
+    },
+    tooltip: 'Change mode'
+};
+var source = (function (_super) {
+    tslib_1.__extends(source, _super);
+    function source() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.className = 'jodit_ace_editor';
+        _this.__lock = false;
+        _this.__oldMirrorValue = '';
+        _this.autosize = async_1.debounce(function () {
+            _this.mirror.style.height = 'auto';
+            _this.mirror.style.height = _this.mirror.scrollHeight + 'px';
+        }, _this.jodit.defaultTimeout);
+        _this.tempMarkerStart = '{start-jodit-selection}';
+        _this.tempMarkerStartReg = /{start-jodit-selection}/g;
+        _this.tempMarkerEnd = '{end-jodit-selection}';
+        _this.tempMarkerEndReg = /{end-jodit-selection}/g;
+        _this.selInfo = [];
+        _this.lastTuple = null;
+        _this.loadNext = function (i, urls, eventOnFinalize, className) {
+            if (eventOnFinalize === void 0) { eventOnFinalize = 'aceReady'; }
+            if (className === void 0) { className = _this.className; }
+            if (eventOnFinalize && urls[i] === undefined && !_this.isDestructed) {
+                _this.jodit &&
+                    _this.jodit.events &&
+                    _this.jodit.events.fire(eventOnFinalize);
+                _this.jodit &&
+                    _this.jodit.events &&
+                    _this.jodit.events.fire(_this.jodit.ownerWindow, eventOnFinalize);
+                return;
+            }
+            if (urls[i] !== undefined) {
+                if (_this.lastTuple) {
+                    _this.lastTuple.element.removeEventListener('load', _this.lastTuple.callback);
+                }
+                _this.lastTuple = appendScript_1.appendScript(urls[i], function () {
+                    if (!_this.isDestructed) {
+                        _this.loadNext(i + 1, urls, eventOnFinalize, className);
+                    }
+                }, className, _this.jodit.ownerDocument);
+            }
+        };
+        _this.insertHTML = function (html) {
+            if (_this.mirror.selectionStart || _this.mirror.selectionStart === 0) {
+                var startPos = _this.mirror.selectionStart, endPos = _this.mirror.selectionEnd;
+                _this.mirror.value =
+                    _this.mirror.value.substring(0, startPos) +
+                        html +
+                        _this.mirror.value.substring(endPos, _this.mirror.value.length);
+            }
+            else {
+                _this.mirror.value += _this.mirror;
+            }
+            _this.toWYSIWYG();
+        };
+        _this.fromWYSIWYG = function (force) {
+            if (force === void 0) { force = false; }
+            if (!_this.__lock || force === true) {
+                _this.__lock = true;
+                var new_value = _this.jodit.getEditorValue(false);
+                if (new_value !== _this.getMirrorValue()) {
+                    _this.setMirrorValue(new_value);
+                }
+                _this.__lock = false;
+            }
+        };
+        _this.toWYSIWYG = function () {
+            if (_this.__lock) {
+                return;
+            }
+            var value = _this.getMirrorValue();
+            if (value === _this.__oldMirrorValue) {
+                return;
+            }
+            _this.__lock = true;
+            _this.jodit.setEditorValue(value);
+            _this.__lock = false;
+            _this.__oldMirrorValue = value;
+        };
+        _this.getNormalPosition = function (pos, str) {
+            var start = pos;
+            while (start > 0) {
+                start--;
+                if (str[start] === '<' &&
+                    str[start + 1] !== undefined &&
+                    str[start + 1].match(/[\w\/]+/i)) {
+                    return start;
+                }
+                if (str[start] === '>') {
+                    return pos;
+                }
+            }
+            return pos;
+        };
+        _this.__clear = function (str) {
+            return str.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
+        };
+        _this.selectAll = function () {
+            _this.mirror.select();
+        };
+        _this.onSelectAll = function (command) {
+            if (command.toLowerCase() === 'selectall' &&
+                _this.jodit.getRealMode() === constants_1.MODE_SOURCE) {
+                _this.selectAll();
+                return false;
+            }
+        };
+        _this.getSelectionStart = function () {
+            return _this.mirror.selectionStart;
+        };
+        _this.getSelectionEnd = function () {
+            return _this.mirror.selectionEnd;
+        };
+        _this.saveSelection = function () {
+            if (_this.jodit.getRealMode() === consts.MODE_WYSIWYG) {
+                _this.selInfo = _this.jodit.selection.save() || [];
+                _this.jodit.setEditorValue();
+                _this.fromWYSIWYG(true);
+            }
+            else {
+                _this.selInfo.length = 0;
+                var value = _this.getMirrorValue();
+                if (_this.getSelectionStart() === _this.getSelectionEnd()) {
+                    var marker = _this.jodit.selection.marker(true);
+                    _this.selInfo[0] = {
+                        startId: marker.id,
+                        collapsed: true,
+                        startMarker: marker.outerHTML
+                    };
+                    var selectionStart = _this.getNormalPosition(_this.getSelectionStart(), _this.getMirrorValue());
+                    _this.setMirrorValue(value.substr(0, selectionStart) +
+                        _this.__clear(_this.selInfo[0].startMarker) +
+                        value.substr(selectionStart));
+                }
+                else {
+                    var markerStart = _this.jodit.selection.marker(true);
+                    var markerEnd = _this.jodit.selection.marker(false);
+                    _this.selInfo[0] = {
+                        startId: markerStart.id,
+                        endId: markerEnd.id,
+                        collapsed: false,
+                        startMarker: _this.__clear(markerStart.outerHTML),
+                        endMarker: _this.__clear(markerEnd.outerHTML)
+                    };
+                    var selectionStart = _this.getNormalPosition(_this.getSelectionStart(), value);
+                    var selectionEnd = _this.getNormalPosition(_this.getSelectionEnd(), value);
+                    _this.setMirrorValue(value.substr(0, selectionStart) +
+                        _this.selInfo[0].startMarker +
+                        value.substr(selectionStart, selectionEnd - selectionStart) +
+                        _this.selInfo[0].endMarker +
+                        value.substr(selectionEnd));
+                }
+                _this.toWYSIWYG();
+            }
+        };
+        _this.restoreSelection = function () {
+            if (!_this.selInfo.length) {
+                return;
+            }
+            if (_this.jodit.getRealMode() === consts.MODE_WYSIWYG) {
+                _this.__lock = true;
+                _this.jodit.selection.restore(_this.selInfo);
+                _this.__lock = false;
+                return;
+            }
+            var value = _this.getMirrorValue();
+            var selectionStart = 0, selectionEnd = 0;
+            try {
+                if (_this.selInfo[0].startMarker) {
+                    value = value.replace(/<span[^>]+data-jodit_selection_marker="start"[^>]*>[<>]*?<\/span>/gim, _this.tempMarkerStart);
+                }
+                if (_this.selInfo[0].endMarker) {
+                    value = value.replace(/<span[^>]+data-jodit_selection_marker="end"[^>]*>[<>]*?<\/span>/gim, _this.tempMarkerEnd);
+                }
+                if (_this.jodit.ownerWindow.html_beautify &&
+                    _this.jodit.options.beautifyHTML) {
+                    value = _this.jodit.ownerWindow.html_beautify(value);
+                }
+                selectionStart = value.indexOf(_this.tempMarkerStart);
+                selectionEnd = selectionStart;
+                value = value.replace(_this.tempMarkerStartReg, '');
+                if (!_this.selInfo[0].collapsed || selectionStart === -1) {
+                    selectionEnd = value.indexOf(_this.tempMarkerEnd);
+                    if (selectionStart === -1) {
+                        selectionStart = selectionEnd;
+                    }
+                }
+                value = value.replace(_this.tempMarkerEndReg, '');
+            }
+            finally {
+                value = value
+                    .replace(_this.tempMarkerEndReg, '')
+                    .replace(_this.tempMarkerStartReg, '');
+            }
+            _this.setMirrorValue(value);
+            _this.setMirrorSelectionRange(selectionStart, selectionEnd);
+            _this.toWYSIWYG();
+            _this.setFocusToMirror();
+        };
+        _this.__proxyOnFocus = function (e) {
+            _this.jodit.events.fire('focus', e);
+        };
+        _this.__proxyOnMouseDown = function (e) {
+            _this.jodit.events.fire('mousedown', e);
+        };
+        _this.setMirrorSelectionRange = function (start, end) {
+            _this.mirror.setSelectionRange(start, end);
+        };
+        _this.onReadonlyReact = function () {
+            var isReadOnly = _this.jodit.options.readonly;
+            if (isReadOnly) {
+                _this.mirror.setAttribute('readonly', 'true');
+            }
+            else {
+                _this.mirror.removeAttribute('readonly');
+            }
+            if (_this.aceEditor) {
+                _this.aceEditor.setReadOnly(isReadOnly);
+            }
+        };
+        return _this;
+    }
+    source.prototype.getMirrorValue = function () {
+        return this.mirror.value;
+    };
+    source.prototype.setMirrorValue = function (value) {
+        this.mirror.value = value;
+    };
+    source.prototype.setFocusToMirror = function () {
+        this.mirror.focus();
+    };
+    source.prototype.replaceMirrorToACE = function () {
+        var _this = this;
+        var editor = this.jodit;
+        var aceEditor, undoManager;
+        var updateButtons = function () {
+            if (undoManager &&
+                editor.getRealMode() === consts.MODE_SOURCE) {
+                editor.events.fire('canRedo', undoManager.hasRedo());
+                editor.events.fire('canUndo', undoManager.hasUndo());
+            }
+        }, getLastColumnIndex = function (row) {
+            return aceEditor.session.getLine(row).length;
+        }, getLastColumnIndices = function () {
+            var rows = aceEditor.session.getLength();
+            var lastColumnIndices = [];
+            var lastColIndex = 0;
+            for (var i = 0; i < rows; i++) {
+                lastColIndex += getLastColumnIndex(i);
+                if (i > 0) {
+                    lastColIndex += 1;
+                }
+                lastColumnIndices[i] = lastColIndex;
+            }
+            return lastColumnIndices;
+        }, getRowColumnIndices = function (characterIndex) {
+            var lastColumnIndices = getLastColumnIndices();
+            if (characterIndex <= lastColumnIndices[0]) {
+                return { row: 0, column: characterIndex };
+            }
+            var row = 1;
+            for (var i = 1; i < lastColumnIndices.length; i++) {
+                if (characterIndex > lastColumnIndices[i]) {
+                    row = i + 1;
+                }
+            }
+            var column = characterIndex - lastColumnIndices[row - 1] - 1;
+            return { row: row, column: column };
+        }, setSelectionRangeIndices = function (start, end) {
+            var startRowColumn = getRowColumnIndices(start);
+            var endRowColumn = getRowColumnIndices(end);
+            aceEditor.getSelection().setSelectionRange({
+                start: startRowColumn,
+                end: endRowColumn
+            });
+        }, getIndexByRowColumn = function (row, column) {
+            var lastColumnIndices = getLastColumnIndices();
+            return (lastColumnIndices[row] - getLastColumnIndex(row) + column);
+        }, tryInitAceEditor = function () {
+            if (aceEditor === undefined &&
+                _this.jodit.ownerWindow.ace !== undefined) {
+                _this.jodit.events.off(_this.jodit.ownerWindow, 'aceReady', tryInitAceEditor);
+                var fakeMirror = _this.jodit.create.div('jodit_source_mirror-fake');
+                _this.mirrorContainer.insertBefore(fakeMirror, _this.mirrorContainer.firstChild);
+                _this.aceEditor = aceEditor = _this.jodit
+                    .ownerWindow.ace.edit(fakeMirror);
+                aceEditor.setTheme(editor.options.sourceEditorNativeOptions.theme);
+                aceEditor.renderer.setShowGutter(editor.options.sourceEditorNativeOptions.showGutter);
+                aceEditor
+                    .getSession()
+                    .setMode(editor.options.sourceEditorNativeOptions.mode);
+                aceEditor.setHighlightActiveLine(editor.options.sourceEditorNativeOptions
+                    .highlightActiveLine);
+                aceEditor.getSession().setUseWrapMode(true);
+                aceEditor.setOption('indentedSoftWrap', false);
+                aceEditor.setOption('wrap', editor.options.sourceEditorNativeOptions.wrap);
+                aceEditor.getSession().setUseWorker(false);
+                aceEditor.$blockScrolling = Infinity;
+                aceEditor.setOptions({
+                    maxLines: Infinity
+                });
+                aceEditor.on('change', _this.toWYSIWYG);
+                aceEditor.on('focus', _this.__proxyOnFocus);
+                aceEditor.on('mousedown', _this.__proxyOnMouseDown);
+                _this.mirror.style.display = 'none';
+                undoManager = aceEditor.getSession().getUndoManager();
+                _this.setMirrorValue = function (value) {
+                    if (editor.options.beautifyHTML &&
+                        editor.ownerWindow.html_beautify) {
+                        aceEditor.setValue(editor.ownerWindow.html_beautify(value));
+                    }
+                    else {
+                        aceEditor.setValue(value);
+                    }
+                    aceEditor.clearSelection();
+                    updateButtons();
+                };
+                if (_this.jodit.getRealMode() !== consts.MODE_WYSIWYG) {
+                    _this.setMirrorValue(_this.getMirrorValue());
+                }
+                _this.getMirrorValue = function () {
+                    return aceEditor.getValue();
+                };
+                _this.setFocusToMirror = function () {
+                    aceEditor.focus();
+                };
+                _this.getSelectionStart = function () {
+                    var range = aceEditor.selection.getRange();
+                    return getIndexByRowColumn(range.start.row, range.start.column);
+                };
+                _this.getSelectionEnd = function () {
+                    var range = aceEditor.selection.getRange();
+                    return getIndexByRowColumn(range.end.row, range.end.column);
+                };
+                _this.selectAll = function () {
+                    aceEditor.selection.selectAll();
+                };
+                _this.insertHTML = function (html) {
+                    var start = aceEditor.selection.getCursor(), end = aceEditor.session.insert(start, html);
+                    aceEditor.selection.setRange({
+                        start: start,
+                        end: end
+                    }, false);
+                };
+                _this.setMirrorSelectionRange = function (start, end) {
+                    setSelectionRangeIndices(start, end);
+                };
+                editor.events
+                    .on('afterResize', function () {
+                    aceEditor.resize();
+                })
+                    .fire('aceInited', editor);
+            }
+        };
+        editor.events
+            .on(this.jodit.ownerWindow, 'aceReady', tryInitAceEditor)
+            .on('aceReady', tryInitAceEditor)
+            .on('afterSetMode', function () {
+            if (editor.getRealMode() !== consts.MODE_SOURCE &&
+                editor.getMode() !== consts.MODE_SPLIT) {
+                return;
+            }
+            _this.fromWYSIWYG();
+            tryInitAceEditor();
+        })
+            .on('beforeCommand', function (command) {
+            if (editor.getRealMode() !== consts.MODE_WYSIWYG &&
+                (command === 'redo' || command === 'undo') &&
+                undoManager) {
+                if (undoManager['has' +
+                    command.substr(0, 1).toUpperCase() +
+                    command.substr(1)]) {
+                    aceEditor[command]();
+                }
+                updateButtons();
+                return false;
+            }
+        });
+        tryInitAceEditor();
+        if (this.jodit.ownerWindow.ace === undefined &&
+            !selector_1.$$('script.' + this.className, this.jodit.ownerDocument.body)
+                .length) {
+            this.loadNext(0, editor.options.sourceEditorCDNUrlsJS, 'aceReady', this.className);
+        }
+    };
+    source.prototype.afterInit = function (editor) {
+        var _this = this;
+        this.mirrorContainer = editor.create.div('jodit_source');
+        this.mirror = editor.create.fromHTML('<textarea class="jodit_source_mirror"/>');
+        var addListeners = function () {
+            editor.events
+                .off('beforeSetMode.source afterSetMode.source')
+                .on('beforeSetMode.source', _this.saveSelection)
+                .on('afterSetMode.source', _this.restoreSelection);
+        };
+        addListeners();
+        this.onReadonlyReact();
+        editor.events
+            .on(this.mirror, 'mousedown keydown touchstart input', async_1.debounce(this.toWYSIWYG, editor.defaultTimeout))
+            .on(this.mirror, 'change keydown mousedown touchstart input', this.autosize)
+            .on('afterSetMode.source', this.autosize)
+            .on(this.mirror, 'mousedown focus', function (e) {
+            editor.events.fire(e.type, e);
+        });
+        editor.events
+            .on('setMinHeight.source', function (minHeightD) {
+            _this.mirror && css_1.css(_this.mirror, 'minHeight', minHeightD);
+        })
+            .on('insertHTML.source', function (html) {
+            if (!editor.options.readonly &&
+                !_this.jodit.isEditorMode()) {
+                _this.insertHTML(html);
+                return false;
+            }
+        })
+            .on('aceInited', function () {
+            _this.onReadonlyReact();
+            addListeners();
+        }, void 0, void 0, true)
+            .on('readonly.source', this.onReadonlyReact)
+            .on('placeholder.source', function (text) {
+            _this.mirror.setAttribute('placeholder', text);
+        })
+            .on('beforeCommand.source', this.onSelectAll)
+            .on('change.source', this.fromWYSIWYG);
+        this.mirrorContainer.appendChild(this.mirror);
+        editor.workplace.appendChild(this.mirrorContainer);
+        this.autosize();
+        var className = 'beutyfy_html_jodit_helper';
+        if (editor.options.beautifyHTML &&
+            editor.ownerWindow.html_beautify === undefined &&
+            !selector_1.$$('script.' + className, editor.ownerDocument.body).length) {
+            this.loadNext(0, editor.options.beautifyHTMLCDNUrlsJS, false, className);
+        }
+        if (editor.options.useAceEditor) {
+            this.replaceMirrorToACE();
+        }
+        this.fromWYSIWYG();
+    };
+    source.prototype.beforeDestruct = function (jodit) {
+        Dom_1.Dom.safeRemove(this.mirrorContainer);
+        Dom_1.Dom.safeRemove(this.mirror);
+        if (jodit && jodit.events) {
+            jodit.events.off('aceInited.source');
+        }
+        if (this.aceEditor) {
+            this.setFocusToMirror = function () { };
+            this.aceEditor.off('change', this.toWYSIWYG);
+            this.aceEditor.off('focus', this.__proxyOnFocus);
+            this.aceEditor.off('mousedown', this.__proxyOnMouseDown);
+            this.aceEditor.destroy();
+            delete this.aceEditor;
+        }
+        if (this.lastTuple) {
+            this.lastTuple.element.removeEventListener('load', this.lastTuple.callback);
+        }
+    };
+    return source;
+}(Plugin_1.Plugin));
+exports.source = source;
+
+
+/***/ }),
+/* 182 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var async_1 = __webpack_require__(5);
+var Plugin_1 = __webpack_require__(7);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.showCharsCounter = true;
+Config_1.Config.prototype.showWordsCounter = true;
+var stat = (function (_super) {
+    tslib_1.__extends(stat, _super);
+    function stat() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.calc = async_1.throttle(function () {
+            var text = _this.jodit.getEditorText();
+            if (_this.jodit.options.showCharsCounter && _this.charCounter) {
+                _this.charCounter.textContent = _this.jodit.i18n('Chars: %d', text.replace(constants_1.SPACE_REG_EXP, '').length);
+            }
+            if (_this.jodit.options.showWordsCounter && _this.wordCounter) {
+                _this.wordCounter.textContent = _this.jodit.i18n('Words: %d', text
+                    .replace(constants_1.INVISIBLE_SPACE_REG_EXP, '')
+                    .split(constants_1.SPACE_REG_EXP)
+                    .filter(function (e) { return e.length; }).length);
+            }
+        }, _this.jodit.defaultTimeout);
+        return _this;
+    }
+    stat.prototype.afterInit = function () {
+        if (this.jodit.options.showCharsCounter) {
+            this.charCounter = this.jodit.create.span();
+            this.jodit.statusbar.append(this.charCounter, true);
+        }
+        if (this.jodit.options.showWordsCounter) {
+            this.wordCounter = this.jodit.create.span();
+            this.jodit.statusbar.append(this.wordCounter, true);
+        }
+        this.jodit.events.on('change keyup', this.calc);
+        this.calc();
+    };
+    stat.prototype.beforeDestruct = function () {
+        Dom_1.Dom.safeRemove(this.charCounter);
+        Dom_1.Dom.safeRemove(this.wordCounter);
+        this.charCounter = null;
+        this.wordCounter = null;
+    };
+    return stat;
+}(Plugin_1.Plugin));
+exports.stat = stat;
+
+
+/***/ }),
+/* 183 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var Plugin_1 = __webpack_require__(7);
+var css_1 = __webpack_require__(10);
+var size_1 = __webpack_require__(23);
+var Dom_1 = __webpack_require__(0);
+Config_1.Config.prototype.toolbarSticky = true;
+Config_1.Config.prototype.toolbarDisableStickyForMobile = true;
+Config_1.Config.prototype.toolbarStickyOffset = 0;
+var sticky = (function (_super) {
+    tslib_1.__extends(sticky, _super);
+    function sticky() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.isToolbarSticked = false;
+        _this.createDummy = function (toolbar) {
+            if (constants_1.IS_IE && !_this.dummyBox) {
+                _this.dummyBox = _this.jodit.create.div();
+                _this.dummyBox.classList.add('jodit_sticky-dummy_toolbar');
+                _this.jodit.container.insertBefore(_this.dummyBox, toolbar);
+            }
+        };
+        _this.addSticky = function (toolbar) {
+            if (!_this.isToolbarSticked) {
+                _this.createDummy(toolbar);
+                _this.jodit.container.classList.add('jodit_sticky');
+                _this.isToolbarSticked = true;
+            }
+            css_1.css(toolbar, {
+                top: _this.jodit.options.toolbarStickyOffset,
+                width: _this.jodit.container.offsetWidth
+            });
+            if (constants_1.IS_IE && _this.dummyBox) {
+                css_1.css(_this.dummyBox, {
+                    height: toolbar.offsetHeight
+                });
+            }
+        };
+        _this.removeSticky = function (toolbar) {
+            if (_this.isToolbarSticked) {
+                css_1.css(toolbar, {
+                    width: '',
+                    top: ''
+                });
+                _this.jodit.container.classList.remove('jodit_sticky');
+                _this.isToolbarSticked = false;
+            }
+        };
+        return _this;
+    }
+    sticky.prototype.isMobile = function () {
+        return (this.jodit &&
+            this.jodit.options &&
+            this.jodit.container &&
+            this.jodit.options.sizeSM >= this.jodit.container.offsetWidth);
+    };
+    sticky.prototype.afterInit = function (jodit) {
+        var _this = this;
+        jodit.events.on(jodit.ownerWindow, 'scroll wheel mousewheel resize', function () {
+            var scrollWindowTop = jodit.ownerWindow.pageYOffset ||
+                (jodit.ownerDocument.documentElement &&
+                    jodit.ownerDocument.documentElement.scrollTop) ||
+                0, offsetEditor = size_1.offset(jodit.container, jodit, jodit.ownerDocument, true), doSticky = jodit.getMode() === constants_1.MODE_WYSIWYG &&
+                (scrollWindowTop + jodit.options.toolbarStickyOffset >
+                    offsetEditor.top &&
+                    scrollWindowTop +
+                        jodit.options.toolbarStickyOffset <
+                        offsetEditor.top + offsetEditor.height) &&
+                !(jodit.options.toolbarDisableStickyForMobile &&
+                    _this.isMobile());
+            if (jodit.options.toolbarSticky && jodit.options.toolbar === true) {
+                doSticky
+                    ? _this.addSticky(jodit.toolbar.getParentContainer())
+                    : _this.removeSticky(jodit.toolbar.getParentContainer());
+            }
+            jodit.events.fire('toggleSticky', doSticky);
+        });
+    };
+    sticky.prototype.beforeDestruct = function (jodit) {
+        this.dummyBox && Dom_1.Dom.safeRemove(this.dummyBox);
+    };
+    return sticky;
+}(Plugin_1.Plugin));
+exports.sticky = sticky;
+
+
+/***/ }),
+/* 184 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var dialog_1 = __webpack_require__(14);
+Config_1.Config.prototype.usePopupForSpecialCharacters = false;
+Config_1.Config.prototype.specialCharacters = [
+    '!',
+    '&quot;',
+    '#',
+    '$',
+    '%',
+    '&amp;',
+    "'",
+    '(',
+    ')',
+    '*',
+    '+',
+    '-',
+    '.',
+    '/',
+    '0',
+    '1',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    ':',
+    ';',
+    '&lt;',
+    '=',
+    '&gt;',
+    '?',
+    '@',
+    'A',
+    'B',
+    'C',
+    'D',
+    'E',
+    'F',
+    'G',
+    'H',
+    'I',
+    'J',
+    'K',
+    'L',
+    'M',
+    'N',
+    'O',
+    'P',
+    'Q',
+    'R',
+    'S',
+    'T',
+    'U',
+    'V',
+    'W',
+    'X',
+    'Y',
+    'Z',
+    '[',
+    ']',
+    '^',
+    '_',
+    '`',
+    'a',
+    'b',
+    'c',
+    'd',
+    'e',
+    'f',
+    'g',
+    'h',
+    'i',
+    'j',
+    'k',
+    'l',
+    'm',
+    'n',
+    'o',
+    'p',
+    'q',
+    'r',
+    's',
+    't',
+    'u',
+    'v',
+    'w',
+    'x',
+    'y',
+    'z',
+    '{',
+    '|',
+    '}',
+    '~',
+    '&euro;',
+    '&lsquo;',
+    '&rsquo;',
+    '&ldquo;',
+    '&rdquo;',
+    '&ndash;',
+    '&mdash;',
+    '&iexcl;',
+    '&cent;',
+    '&pound;',
+    '&curren;',
+    '&yen;',
+    '&brvbar;',
+    '&sect;',
+    '&uml;',
+    '&copy;',
+    '&ordf;',
+    '&laquo;',
+    '&raquo;',
+    '&not;',
+    '&reg;',
+    '&macr;',
+    '&deg;',
+    '&sup2;',
+    '&sup3;',
+    '&acute;',
+    '&micro;',
+    '&para;',
+    '&middot;',
+    '&cedil;',
+    '&sup1;',
+    '&ordm;',
+    '&frac14;',
+    '&frac12;',
+    '&frac34;',
+    '&iquest;',
+    '&Agrave;',
+    '&Aacute;',
+    '&Acirc;',
+    '&Atilde;',
+    '&Auml;',
+    '&Aring;',
+    '&AElig;',
+    '&Ccedil;',
+    '&Egrave;',
+    '&Eacute;',
+    '&Ecirc;',
+    '&Euml;',
+    '&Igrave;',
+    '&Iacute;',
+    '&Icirc;',
+    '&Iuml;',
+    '&ETH;',
+    '&Ntilde;',
+    '&Ograve;',
+    '&Oacute;',
+    '&Ocirc;',
+    '&Otilde;',
+    '&Ouml;',
+    '&times;',
+    '&Oslash;',
+    '&Ugrave;',
+    '&Uacute;',
+    '&Ucirc;',
+    '&Uuml;',
+    '&Yacute;',
+    '&THORN;',
+    '&szlig;',
+    '&agrave;',
+    '&aacute;',
+    '&acirc;',
+    '&atilde;',
+    '&auml;',
+    '&aring;',
+    '&aelig;',
+    '&ccedil;',
+    '&egrave;',
+    '&eacute;',
+    '&ecirc;',
+    '&euml;',
+    '&igrave;',
+    '&iacute;',
+    '&icirc;',
+    '&iuml;',
+    '&eth;',
+    '&ntilde;',
+    '&ograve;',
+    '&oacute;',
+    '&ocirc;',
+    '&otilde;',
+    '&ouml;',
+    '&divide;',
+    '&oslash;',
+    '&ugrave;',
+    '&uacute;',
+    '&ucirc;',
+    '&uuml;',
+    '&yacute;',
+    '&thorn;',
+    '&yuml;',
+    '&OElig;',
+    '&oelig;',
+    '&#372;',
+    '&#374',
+    '&#373',
+    '&#375;',
+    '&sbquo;',
+    '&#8219;',
+    '&bdquo;',
+    '&hellip;',
+    '&trade;',
+    '&#9658;',
+    '&bull;',
+    '&rarr;',
+    '&rArr;',
+    '&hArr;',
+    '&diams;',
+    '&asymp;'
+];
+Config_1.Config.prototype.controls.symbol = {
+    icon: 'omega',
+    hotkeys: ['ctrl+shift+i', 'cmd+shift+i'],
+    tooltip: 'Insert Special Character',
+    popup: function (editor, current, control, close) {
+        var container = editor.events.fire('generateSpecialCharactersTable.symbols');
+        if (container) {
+            if (editor.options.usePopupForSpecialCharacters) {
+                var box = editor.ownerDocument.createElement('div');
+                box.classList.add('jodit_symbols');
+                box.appendChild(container);
+                editor.events.on(container, 'close_dialog', close);
+                return box;
+            }
+            else {
+                var dialog_2 = dialog_1.Alert(container, editor.i18n('Select Special Character'), void 0, 'jodit_symbols');
+                var a = container.querySelector('a');
+                a && a.focus();
+                editor.events.on('beforeDestruct', function () {
+                    dialog_2 && dialog_2.close();
+                });
+            }
+        }
+    }
+};
+var symbols = (function () {
+    function symbols(editor) {
+        var _this = this;
+        this.countInRow = 17;
+        editor.events.on('generateSpecialCharactersTable.symbols', function () {
+            var container = editor.create.fromHTML('<div class="jodit_symbols-container">' +
+                '<div class="jodit_symbols-container_table"><table><tbody></tbody></table></div>' +
+                '<div class="jodit_symbols-container_preview"><div class="jodit_symbols-preview"></div></div>' +
+                '</div>'), preview = container.querySelector('.jodit_symbols-preview'), table = container.querySelector('table'), body = table.tBodies[0], chars = [];
+            for (var i = 0; i < editor.options.specialCharacters.length;) {
+                var tr = editor.create.element('tr');
+                for (var j = 0; j < _this.countInRow &&
+                    i < editor.options.specialCharacters.length; j += 1, i += 1) {
+                    var td = editor.create.element('td'), a = editor.create.fromHTML("<a\n                                    data-index=\"" + i + "\"\n                                    data-index-j=\"" + j + "\"\n                                    href=\"javascript:void(0)\"\n                                    role=\"option\"\n                                    tabindex=\"-1\"\n                                >" + editor.options.specialCharacters[i] + "</a>");
+                    chars.push(a);
+                    td.appendChild(a);
+                    tr.appendChild(td);
+                }
+                body.appendChild(tr);
+            }
+            var self = _this;
+            editor.events
+                .on(chars, 'focus', function () {
+                preview.innerHTML = this.innerHTML;
+            })
+                .on(chars, 'mousedown', function (e) {
+                if (this && this.nodeName === 'A') {
+                    editor.selection.focus();
+                    editor.selection.insertHTML(this.innerHTML);
+                    editor.events.fire(this, 'close_dialog');
+                    e && e.preventDefault();
+                    e && e.stopImmediatePropagation();
+                }
+            })
+                .on(chars, 'mouseenter', function () {
+                if (this && this.nodeName === 'A') {
+                    this.focus();
+                }
+            })
+                .on(chars, 'keydown', function (e) {
+                var target = e.target;
+                if (target && target.nodeName === 'A') {
+                    var index = parseInt(target.getAttribute('data-index') || '0', 10), jIndex = parseInt(target.getAttribute('data-index-j') || '0', 10);
+                    var newIndex = void 0;
+                    switch (e.which) {
+                        case constants_1.KEY_UP:
+                        case constants_1.KEY_DOWN:
+                            newIndex =
+                                e.which === constants_1.KEY_UP
+                                    ? index - self.countInRow
+                                    : index + self.countInRow;
+                            if (chars[newIndex] === undefined) {
+                                newIndex =
+                                    e.which === constants_1.KEY_UP
+                                        ? Math.floor(chars.length /
+                                            self.countInRow) *
+                                            self.countInRow +
+                                            jIndex
+                                        : jIndex;
+                                if (newIndex > chars.length - 1) {
+                                    newIndex -= self.countInRow;
+                                }
+                            }
+                            chars[newIndex] && chars[newIndex].focus();
+                            break;
+                        case constants_1.KEY_RIGHT:
+                        case constants_1.KEY_LEFT:
+                            newIndex =
+                                e.which === constants_1.KEY_LEFT
+                                    ? index - 1
+                                    : index + 1;
+                            if (chars[newIndex] === undefined) {
+                                newIndex =
+                                    e.which === constants_1.KEY_LEFT
+                                        ? chars.length - 1
+                                        : 0;
+                            }
+                            chars[newIndex] && chars[newIndex].focus();
+                            break;
+                        case constants_1.KEY_ENTER:
+                            editor.events.fire(target, 'mousedown');
+                            e.stopImmediatePropagation();
+                            e.preventDefault();
+                            break;
+                    }
+                }
+            });
+            return container;
+        });
+    }
+    return symbols;
+}());
+exports.symbols = symbols;
+
+
+/***/ }),
+/* 185 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var consts = __webpack_require__(2);
+var Dom_1 = __webpack_require__(0);
+var Table_1 = __webpack_require__(29);
+function tableKeyboardNavigation(editor) {
+    editor.events.on('keydown', function (event) {
+        var current, block;
+        if (event.which === consts.KEY_TAB ||
+            event.which === consts.KEY_LEFT ||
+            event.which === consts.KEY_RIGHT ||
+            event.which === consts.KEY_UP ||
+            event.which === consts.KEY_DOWN) {
+            current = editor.selection.current();
+            block = Dom_1.Dom.up(current, function (elm) {
+                return elm && elm.nodeName && /^td|th$/i.test(elm.nodeName);
+            }, editor.editor);
+            if (!block) {
+                return;
+            }
+            var range = editor.selection.range;
+            if (event.which !== consts.KEY_TAB && current !== block) {
+                if (((event.which === consts.KEY_LEFT ||
+                    event.which === consts.KEY_UP) &&
+                    (Dom_1.Dom.prev(current, function (elm) {
+                        return event.which === consts.KEY_UP
+                            ? elm && elm.nodeName === 'BR'
+                            : !!elm;
+                    }, block) ||
+                        (event.which !== consts.KEY_UP &&
+                            current.nodeType === Node.TEXT_NODE &&
+                            range.startOffset !== 0))) ||
+                    ((event.which === consts.KEY_RIGHT ||
+                        event.which === consts.KEY_DOWN) &&
+                        (Dom_1.Dom.next(current, function (elm) {
+                            return event.which === consts.KEY_DOWN
+                                ? elm && elm.nodeName === 'BR'
+                                : !!elm;
+                        }, block) ||
+                            (event.which !== consts.KEY_DOWN &&
+                                current.nodeType === Node.TEXT_NODE &&
+                                current.nodeValue &&
+                                range.startOffset !==
+                                    current.nodeValue.length)))) {
+                    return;
+                }
+            }
+        }
+        else {
+            return;
+        }
+        var table = Dom_1.Dom.up(block, function (elm) { return elm && /^table$/i.test(elm.nodeName); }, editor.editor);
+        var next = null;
+        switch (event.which) {
+            case consts.KEY_TAB:
+            case consts.KEY_LEFT:
+                var sibling = event.which === consts.KEY_LEFT || event.shiftKey
+                    ? 'prev'
+                    : 'next';
+                next = Dom_1.Dom[sibling](block, function (elm) {
+                    return elm &&
+                        /^td|th$/i.test(elm.tagName);
+                }, table);
+                if (!next) {
+                    Table_1.Table.appendRow(table, sibling === 'next'
+                        ? false
+                        : table.querySelector('tr'), sibling === 'next');
+                    next = Dom_1.Dom[sibling](block, function (elm) {
+                        return elm && Dom_1.Dom.isCell(elm, editor.editorWindow);
+                    }, table);
+                }
+                break;
+            case consts.KEY_UP:
+            case consts.KEY_DOWN:
+                {
+                    var i_1 = 0, j_1 = 0;
+                    var matrix = Table_1.Table.formalMatrix(table, function (elm, _i, _j) {
+                        if (elm === block) {
+                            i_1 = _i;
+                            j_1 = _j;
+                        }
+                    });
+                    if (event.which === consts.KEY_UP) {
+                        if (matrix[i_1 - 1] !== undefined) {
+                            next = matrix[i_1 - 1][j_1];
+                        }
+                    }
+                    else {
+                        if (matrix[i_1 + 1] !== undefined) {
+                            next = matrix[i_1 + 1][j_1];
+                        }
+                    }
+                }
+                break;
+        }
+        if (next) {
+            if (!next.firstChild) {
+                var first = editor.editorDocument.createElement('br');
+                next.appendChild(first);
+                editor.selection.setCursorBefore(first);
+            }
+            else {
+                if (event.which === consts.KEY_TAB) {
+                    editor.selection.select(next, true);
+                }
+                else {
+                    editor.selection.setCursorIn(next, event.which === consts.KEY_RIGHT ||
+                        event.which === consts.KEY_DOWN);
+                }
+            }
+            return false;
+        }
+    });
+}
+exports.tableKeyboardNavigation = tableKeyboardNavigation;
+
+
+/***/ }),
+/* 186 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var Plugin_1 = __webpack_require__(7);
+var Dom_1 = __webpack_require__(0);
+var Table_1 = __webpack_require__(29);
+var helpers_1 = __webpack_require__(4);
+var async_1 = __webpack_require__(5);
+Config_1.Config.prototype.useTableProcessor = true;
+Config_1.Config.prototype.useExtraClassesOptions = true;
+Config_1.Config.prototype.controls.table = {
+    data: {
+        cols: 10,
+        rows: 10,
+        classList: {
+            'table table-bordered': 'Bootstrap Bordered',
+            'table table-striped': 'Bootstrap Striped',
+            'table table-dark': 'Bootstrap Dark'
+        }
+    },
+    popup: function (editor, current, control, close, button) {
+        var default_rows_count = control.data && control.data.rows ? control.data.rows : 10, default_cols_count = control.data && control.data.cols ? control.data.cols : 10;
+        var generateExtraClasses = function () {
+            if (!editor.options.useExtraClassesOptions) {
+                return '';
+            }
+            var out = [];
+            if (control.data) {
+                var classList_1 = control.data.classList;
+                Object.keys(classList_1).forEach(function (classes) {
+                    out.push("<label class=\"jodit_vertical_middle\"><input class=\"jodit_checkbox\" value=\"" + classes + "\" type=\"checkbox\"/>" + classList_1[classes] + "</label>");
+                });
+            }
+            return out.join('');
+        };
+        var form = editor.create.fromHTML('<form class="jodit_form jodit_form_inserter">' +
+            '<label class="jodit_form_center">' +
+            '<span>1</span> &times; <span>1</span>' +
+            '</label>' +
+            '<div class="jodit_form-table-creator-box">' +
+            '<div class="jodit_form-container"></div>' +
+            '<div class="jodit_form-options">' +
+            generateExtraClasses() +
+            '</div>' +
+            '</div>' +
+            '</form>'), rows = form.querySelectorAll('span')[0], cols = form.querySelectorAll('span')[1], blocksContainer = form.querySelector('.jodit_form-container'), mainBox = form.querySelector('.jodit_form-table-creator-box'), options = form.querySelector('.jodit_form-options'), cells = [];
+        var generateRows = function (need_rows) {
+            var cnt = need_rows * default_cols_count;
+            if (cells.length > cnt) {
+                for (var i = cnt; i < cells.length; i += 1) {
+                    Dom_1.Dom.safeRemove(cells[i]);
+                    delete cells[i];
+                }
+                cells.length = cnt;
+            }
+            for (var i = 0; i < cnt; i += 1) {
+                if (!cells[i]) {
+                    var div = editor.create.div();
+                    div.setAttribute('data-index', i.toString());
+                    cells.push(div);
+                }
+            }
+            cells.forEach(function (cell) {
+                blocksContainer.appendChild(cell);
+            });
+            var width = (cells[0].offsetWidth || 18) * default_cols_count;
+            blocksContainer.style.width = width + 'px';
+            mainBox.style.width = width + options.offsetWidth + 1 + 'px';
+        };
+        var mouseenter = function (e, index) {
+            var dv = e.target;
+            if (!dv || dv.tagName !== 'DIV') {
+                return;
+            }
+            var k = index === undefined || isNaN(index)
+                ? parseInt(dv.getAttribute('data-index') || '0', 10)
+                : index || 0;
+            var rows_count = Math.ceil((k + 1) / default_cols_count), cols_count = (k % default_cols_count) + 1;
+            for (var i = 0; i < cells.length; i += 1) {
+                if (cols_count >= (i % default_cols_count) + 1 &&
+                    rows_count >= Math.ceil((i + 1) / default_cols_count)) {
+                    cells[i].className = 'hovered';
+                }
+                else {
+                    cells[i].className = '';
+                }
+            }
+            cols.textContent = cols_count.toString();
+            rows.textContent = rows_count.toString();
+        };
+        blocksContainer.addEventListener('mousemove', mouseenter);
+        editor.events.on(blocksContainer, 'touchstart mousedown', function (e) {
+            var dv = e.target;
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            if (dv.tagName !== 'DIV') {
+                return;
+            }
+            var k = parseInt(dv.getAttribute('data-index') || '0', 10);
+            var rows_count = Math.ceil((k + 1) / default_cols_count), cols_count = (k % default_cols_count) + 1;
+            var crt = editor.create.inside, tbody = crt.element('tbody'), table = crt.element('table');
+            table.appendChild(tbody);
+            table.style.width = '100%';
+            var first_td = null, tr, td;
+            for (var i = 1; i <= rows_count; i += 1) {
+                tr = crt.element('tr');
+                for (var j = 1; j <= cols_count; j += 1) {
+                    td = crt.element('td');
+                    if (!first_td) {
+                        first_td = td;
+                    }
+                    td.appendChild(crt.element('br'));
+                    tr.appendChild(crt.text('\n'));
+                    tr.appendChild(crt.text('\t'));
+                    tr.appendChild(td);
+                }
+                tbody.appendChild(crt.text('\n'));
+                tbody.appendChild(tr);
+            }
+            var crnt = editor.selection.current();
+            if (crnt && editor.selection.isCollapsed()) {
+                var block = Dom_1.Dom.closest(crnt, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
+                if (block &&
+                    block !== editor.editor &&
+                    !block.nodeName.match(/^TD|TH|TBODY|TABLE|THEADER|TFOOTER$/)) {
+                    editor.selection.setCursorAfter(block);
+                }
+            }
+            helpers_1.$$('input[type=checkbox]:checked', options).forEach(function (input) {
+                input.value
+                    .split(/[\s]+/)
+                    .forEach(function (className) {
+                    table.classList.add(className);
+                });
+            });
+            editor.selection.insertNode(crt.text('\n'));
+            editor.selection.insertNode(table, false);
+            if (first_td) {
+                editor.selection.setCursorIn(first_td);
+                helpers_1.scrollIntoView(first_td, editor.editor, editor.editorDocument);
+            }
+            close();
+        });
+        if (button && button.parentToolbar) {
+            editor.events
+                .off(button.parentToolbar.container, 'afterOpenPopup.tableGenerator')
+                .on(button.parentToolbar.container, 'afterOpenPopup.tableGenerator', function () {
+                generateRows(default_rows_count);
+                if (cells[0]) {
+                    cells[0].className = 'hovered';
+                }
+            }, '', true);
+        }
+        return form;
+    },
+    tooltip: 'Insert table'
+};
+var TableProcessor = (function (_super) {
+    tslib_1.__extends(TableProcessor, _super);
+    function TableProcessor() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.__key = 'table_processor_observer';
+        _this.__selectMode = false;
+        _this.__resizerDelta = 0;
+        _this.__drag = false;
+        _this.__addResizer = function () {
+            if (!_this.__resizerHandler) {
+                _this.__resizerHandler = _this.jodit.container.querySelector('.jodit_table_resizer');
+                if (!_this.__resizerHandler) {
+                    _this.__resizerHandler = _this.jodit.create.div('jodit_table_resizer');
+                    var startX_1 = 0;
+                    _this.jodit.events
+                        .on(_this.__resizerHandler, 'mousedown.table touchstart.table', function (event) {
+                        _this.__drag = true;
+                        startX_1 = event.clientX;
+                        _this.jodit.lock(_this.__key);
+                        _this.__resizerHandler.classList.add('jodit_table_resizer-moved');
+                        var box, tableBox = _this.__workTable.getBoundingClientRect();
+                        _this.__minX = 0;
+                        _this.__maxX = 1000000;
+                        if (_this.__wholeTable !== null) {
+                            tableBox = _this.__workTable
+                                .parentNode.getBoundingClientRect();
+                            _this.__minX = tableBox.left;
+                            _this.__maxX = tableBox.left + tableBox.width;
+                        }
+                        else {
+                            var coordinate_1 = Table_1.Table.formalCoordinate(_this.__workTable, _this.__workCell, true);
+                            Table_1.Table.formalMatrix(_this.__workTable, function (td, i, j) {
+                                if (coordinate_1[1] === j) {
+                                    box = td.getBoundingClientRect();
+                                    _this.__minX = Math.max(box.left + consts.NEARBY / 2, _this.__minX);
+                                }
+                                if (coordinate_1[1] + 1 === j) {
+                                    box = td.getBoundingClientRect();
+                                    _this.__maxX = Math.min(box.left +
+                                        box.width -
+                                        consts.NEARBY / 2, _this.__maxX);
+                                }
+                            });
+                        }
+                        return false;
+                    })
+                        .on(_this.__resizerHandler, 'mouseenter.table', function () {
+                        clearTimeout(_this.hideTimeout);
+                    })
+                        .on(_this.jodit.editorWindow, 'mousemove.table touchmove.table', function (event) {
+                        if (_this.__drag) {
+                            var x = event.clientX;
+                            var workplacePosition = helpers_1.offset((_this.__resizerHandler.parentNode ||
+                                _this.jodit.ownerDocument
+                                    .documentElement), _this.jodit, _this.jodit.ownerDocument, true);
+                            if (x < _this.__minX) {
+                                x = _this.__minX;
+                            }
+                            if (x > _this.__maxX) {
+                                x = _this.__maxX;
+                            }
+                            _this.__resizerDelta =
+                                x -
+                                    startX_1 +
+                                    (!_this.jodit.options.iframe
+                                        ? 0
+                                        : workplacePosition.left);
+                            _this.__resizerHandler.style.left =
+                                x -
+                                    (_this.jodit.options.iframe
+                                        ? 0
+                                        : workplacePosition.left) +
+                                    'px';
+                            var sel = _this.jodit.selection.sel;
+                            sel && sel.removeAllRanges();
+                            if (event.preventDefault) {
+                                event.preventDefault();
+                            }
+                        }
+                    });
+                    _this.jodit.workplace.appendChild(_this.__resizerHandler);
+                }
+            }
+        };
+        _this.onExecCommand = function (command) {
+            if (/table(splitv|splitg|merge|empty|bin|binrow|bincolumn|addcolumn|addrow)/.test(command)) {
+                command = command.replace('table', '');
+                var cells = Table_1.Table.getAllSelectedCells(_this.jodit.editor);
+                if (cells.length) {
+                    var cell = cells.shift();
+                    if (!cell) {
+                        return;
+                    }
+                    var table = Dom_1.Dom.closest(cell, 'table', _this.jodit.editor);
+                    switch (command) {
+                        case 'splitv':
+                            Table_1.Table.splitVertical(table);
+                            break;
+                        case 'splitg':
+                            Table_1.Table.splitHorizontal(table);
+                            break;
+                        case 'merge':
+                            Table_1.Table.mergeSelected(table);
+                            break;
+                        case 'empty':
+                            Table_1.Table.getAllSelectedCells(_this.jodit.editor).forEach(function (td) { return (td.innerHTML = ''); });
+                            break;
+                        case 'bin':
+                            Dom_1.Dom.safeRemove(table);
+                            break;
+                        case 'binrow':
+                            Table_1.Table.removeRow(table, cell.parentNode.rowIndex);
+                            break;
+                        case 'bincolumn':
+                            Table_1.Table.removeColumn(table, cell.cellIndex);
+                            break;
+                        case 'addcolumnafter':
+                        case 'addcolumnbefore':
+                            Table_1.Table.appendColumn(table, cell.cellIndex, command === 'addcolumnafter');
+                            break;
+                        case 'addrowafter':
+                        case 'addrowbefore':
+                            Table_1.Table.appendRow(table, cell.parentNode, command === 'addrowafter');
+                            break;
+                    }
+                }
+                return false;
+            }
+        };
+        return _this;
+    }
+    TableProcessor.isCell = function (tag) {
+        return !!tag && /^TD|TH$/i.test(tag.nodeName);
+    };
+    TableProcessor.prototype.showResizer = function () {
+        clearTimeout(this.hideTimeout);
+        this.__resizerHandler.style.display = 'block';
+    };
+    TableProcessor.prototype.hideResizer = function () {
+        var _this = this;
+        clearTimeout(this.hideTimeout);
+        this.hideTimeout = async_1.setTimeout(function () {
+            _this.__resizerHandler.style.display = 'none';
+        }, this.jodit.defaultTimeout);
+    };
+    TableProcessor.prototype.__deSelectAll = function (table, currentCell) {
+        var cells = table
+            ? Table_1.Table.getAllSelectedCells(table)
+            : Table_1.Table.getAllSelectedCells(this.jodit.editor);
+        if (cells.length) {
+            cells.forEach(function (cell) {
+                if (!currentCell || currentCell !== cell) {
+                    Table_1.Table.restoreSelection(cell);
+                }
+            });
+        }
+    };
+    TableProcessor.prototype.__setWorkCell = function (cell, wholeTable) {
+        if (wholeTable === void 0) { wholeTable = null; }
+        this.__wholeTable = wholeTable;
+        this.__workCell = cell;
+        this.__workTable = Dom_1.Dom.up(cell, function (elm) { return elm && elm.nodeName === 'TABLE'; }, this.jodit.editor);
+    };
+    TableProcessor.prototype.__calcResizerPosition = function (table, cell, offsetX, delta) {
+        if (offsetX === void 0) { offsetX = 0; }
+        if (delta === void 0) { delta = 0; }
+        var box = helpers_1.offset(cell, this.jodit, this.jodit.editorDocument);
+        if (offsetX <= consts.NEARBY || box.width - offsetX <= consts.NEARBY) {
+            var workplacePosition = helpers_1.offset((this.__resizerHandler.parentNode ||
+                this.jodit.ownerDocument
+                    .documentElement), this.jodit, this.jodit.ownerDocument, true), parentBox = helpers_1.offset(table, this.jodit, this.jodit.editorDocument);
+            this.__resizerHandler.style.left =
+                (offsetX <= consts.NEARBY ? box.left : box.left + box.width) -
+                    workplacePosition.left +
+                    delta +
+                    'px';
+            this.__resizerHandler.style.height = parentBox.height + 'px';
+            this.__resizerHandler.style.top =
+                parentBox.top - workplacePosition.top + 'px';
+            this.showResizer();
+            if (offsetX <= consts.NEARBY) {
+                var prevTD = Dom_1.Dom.prev(cell, TableProcessor.isCell, cell.parentNode);
+                if (prevTD) {
+                    this.__setWorkCell(prevTD);
+                }
+                else {
+                    this.__setWorkCell(cell, true);
+                }
+            }
+            else {
+                var nextTD = Dom_1.Dom.next(cell, TableProcessor.isCell, cell.parentNode);
+                this.__setWorkCell(cell, !nextTD ? false : null);
+            }
+        }
+        else {
+            this.hideResizer();
+        }
+    };
+    TableProcessor.prototype.observe = function (table) {
+        var _this = this;
+        table[this.__key] = true;
+        var start;
+        this.jodit.events
+            .on(table, 'mousedown.table touchstart.table', function (event) {
+            if (_this.jodit.options.readonly) {
+                return;
+            }
+            var cell = Dom_1.Dom.up(event.target, TableProcessor.isCell, table);
+            if (cell &&
+                cell instanceof
+                    _this.jodit.editorWindow.HTMLElement) {
+                if (!cell.firstChild) {
+                    cell.appendChild(_this.jodit.editorDocument.createElement('br'));
+                }
+                start = cell;
+                Table_1.Table.addSelected(cell);
+                _this.__selectMode = true;
+            }
+        })
+            .on(table, 'mouseleave.table', function (e) {
+            if (_this.__resizerHandler &&
+                _this.__resizerHandler !== e.relatedTarget) {
+                _this.hideResizer();
+            }
+        })
+            .on(table, 'mousemove.table touchmove.table', function (event) {
+            if (_this.jodit.options.readonly) {
+                return;
+            }
+            if (_this.__drag || _this.jodit.isLockedNotBy(_this.__key)) {
+                return;
+            }
+            var cell = Dom_1.Dom.up(event.target, TableProcessor.isCell, table);
+            if (cell) {
+                if (_this.__selectMode) {
+                    if (cell !== start) {
+                        _this.jodit.lock(_this.__key);
+                        var sel = _this.jodit.selection.sel;
+                        sel && sel.removeAllRanges();
+                        if (event.preventDefault) {
+                            event.preventDefault();
+                        }
+                    }
+                    _this.__deSelectAll(table);
+                    var bound = Table_1.Table.getSelectedBound(table, [
+                        cell,
+                        start
+                    ]), box = Table_1.Table.formalMatrix(table);
+                    for (var i = bound[0][0]; i <= bound[1][0]; i += 1) {
+                        for (var j = bound[0][1]; j <= bound[1][1]; j += 1) {
+                            Table_1.Table.addSelected(box[i][j]);
+                        }
+                    }
+                    var max_1 = box[bound[1][0]][bound[1][1]], min_1 = box[bound[0][0]][bound[0][1]];
+                    _this.jodit.events.fire('showPopup', table, function () {
+                        var minOffset = helpers_1.offset(min_1, _this.jodit, _this.jodit.editorDocument);
+                        var maxOffset = helpers_1.offset(max_1, _this.jodit, _this.jodit.editorDocument);
+                        return {
+                            left: minOffset.left,
+                            top: minOffset.top,
+                            width: maxOffset.left -
+                                minOffset.left +
+                                maxOffset.width,
+                            height: maxOffset.top -
+                                minOffset.top +
+                                maxOffset.height
+                        };
+                    });
+                    event.stopPropagation();
+                }
+                else {
+                    _this.__calcResizerPosition(table, cell, event.offsetX);
+                }
+            }
+        });
+        this.__addResizer();
+    };
+    TableProcessor.prototype.afterInit = function (editor) {
+        var _this = this;
+        if (!editor.options.useTableProcessor) {
+            return;
+        }
+        editor.events
+            .on(this.jodit.ownerWindow, 'mouseup.table touchend.table', function () {
+            if (_this.__selectMode || _this.__drag) {
+                _this.__selectMode = false;
+                _this.jodit.unlock();
+            }
+            if (_this.__resizerHandler && _this.__drag) {
+                _this.__drag = false;
+                _this.__resizerHandler.classList.remove('jodit_table_resizer-moved');
+                if (_this.__wholeTable === null) {
+                    var __marked = [];
+                    Table_1.Table.setColumnWidthByDelta(_this.__workTable, Table_1.Table.formalCoordinate(_this.__workTable, _this.__workCell, true)[1], _this.__resizerDelta, true, __marked);
+                    var nextTD = Dom_1.Dom.next(_this.__workCell, TableProcessor.isCell, _this.__workCell.parentNode);
+                    Table_1.Table.setColumnWidthByDelta(_this.__workTable, Table_1.Table.formalCoordinate(_this.__workTable, nextTD)[1], -_this.__resizerDelta, false, __marked);
+                }
+                else {
+                    var width = _this.__workTable.offsetWidth, parentWidth = helpers_1.getContentWidth(_this.__workTable.parentNode, _this.jodit.editorWindow);
+                    if (!_this.__wholeTable) {
+                        _this.__workTable.style.width =
+                            ((width + _this.__resizerDelta) / parentWidth) *
+                                100 +
+                                '%';
+                    }
+                    else {
+                        var margin = parseInt(_this.jodit.editorWindow.getComputedStyle(_this.__workTable).marginLeft || '0', 10);
+                        _this.__workTable.style.width =
+                            ((width - _this.__resizerDelta) / parentWidth) *
+                                100 +
+                                '%';
+                        _this.__workTable.style.marginLeft =
+                            ((margin + _this.__resizerDelta) / parentWidth) *
+                                100 +
+                                '%';
+                    }
+                }
+                editor.setEditorValue();
+                editor.selection.focus();
+            }
+        })
+            .on(this.jodit.ownerWindow, 'scroll.table', function () {
+            if (_this.__drag) {
+                var parent_1 = Dom_1.Dom.up(_this.__workCell, function (elm) { return elm && elm.nodeName === 'TABLE'; }, editor.editor);
+                if (parent_1) {
+                    var parentBox = parent_1.getBoundingClientRect();
+                    _this.__resizerHandler.style.top = parentBox.top + 'px';
+                }
+            }
+        })
+            .on(this.jodit.ownerWindow, 'mousedown.table touchend.table', function (event) {
+            var current_cell = Dom_1.Dom.closest(event.originalEvent.target, 'TD|TH', _this.jodit.editor);
+            var table = null;
+            if (current_cell instanceof
+                _this.jodit.editorWindow.HTMLTableCellElement) {
+                table = Dom_1.Dom.closest(current_cell, 'table', _this.jodit.editor);
+            }
+            if (table) {
+                _this.__deSelectAll(table, current_cell instanceof
+                    _this.jodit.editorWindow
+                        .HTMLTableCellElement
+                    ? current_cell
+                    : false);
+            }
+            else {
+                _this.__deSelectAll();
+            }
+        })
+            .on('afterGetValueFromEditor.table', function (data) {
+            var rxp = new RegExp("([s]*)" + consts.JODIT_SELECTED_CELL_MARKER + "=\"1\"", 'g');
+            if (rxp.test(data.value)) {
+                data.value = data.value.replace(rxp, '');
+            }
+        })
+            .on('change.table afterCommand.table afterSetMode.table', function () {
+            helpers_1.$$('table', editor.editor).forEach(function (table) {
+                if (!table[_this.__key]) {
+                    _this.observe(table);
+                }
+            });
+        })
+            .on('beforeSetMode.table', function () {
+            Table_1.Table.getAllSelectedCells(editor.editor).forEach(function (td) {
+                Table_1.Table.restoreSelection(td);
+                Table_1.Table.normalizeTable(Dom_1.Dom.closest(td, 'table', editor.editor));
+            });
+        })
+            .on('keydown.table', function (event) {
+            if (event.which === consts.KEY_TAB) {
+                helpers_1.$$('table', editor.editor).forEach(function (table) {
+                    _this.__deSelectAll(table);
+                });
+            }
+        })
+            .on('beforeCommand.table', this.onExecCommand.bind(this));
+    };
+    TableProcessor.prototype.beforeDestruct = function (jodit) {
+        if (jodit.events) {
+            jodit.events.off(this.jodit.ownerWindow, '.table');
+            jodit.events.off('.table');
+        }
+    };
+    return TableProcessor;
+}(Plugin_1.Plugin));
+exports.TableProcessor = TableProcessor;
+
+
+/***/ }),
+/* 187 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+/*!
+ * Jodit Editor (https://xdsoft.net/jodit/)
+ * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
+ * For GPL see LICENSE-GPL.txt in the project root for license information.
+ * For MIT see LICENSE-MIT.txt in the project root for license information.
+ * For commercial licenses see https://xdsoft.net/jodit/commercial/
+ * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+var tslib_1 = __webpack_require__(1);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var ContextMenu_1 = __webpack_require__(40);
+var Dom_1 = __webpack_require__(0);
+var async_1 = __webpack_require__(5);
+var selector_1 = __webpack_require__(13);
+var Plugin_1 = __webpack_require__(7);
+var button_1 = __webpack_require__(27);
+var string_1 = __webpack_require__(9);
+Config_1.Config.prototype.controls.selectall = {
+    icon: 'select-all',
+    command: 'selectall',
+    tooltip: 'Select all'
+};
+Config_1.Config.prototype.showXPathInStatusbar = true;
+var xpath = (function (_super) {
+    tslib_1.__extends(xpath, _super);
+    function xpath() {
+        var _this = _super !== null && _super.apply(this, arguments) || this;
+        _this.onContext = function (bindElement, event) {
+            if (!_this.menu) {
+                _this.menu = new ContextMenu_1.ContextMenu(_this.jodit);
+            }
+            _this.menu.show(event.clientX, event.clientY, [
+                {
+                    icon: 'bin',
+                    title: bindElement === _this.jodit.editor ? 'Clear' : 'Remove',
+                    exec: function () {
+                        if (bindElement !== _this.jodit.editor) {
+                            Dom_1.Dom.safeRemove(bindElement);
+                        }
+                        else {
+                            _this.jodit.value = '';
+                        }
+                        _this.jodit.setEditorValue();
+                    }
+                },
+                {
+                    icon: 'select-all',
+                    title: 'Select',
+                    exec: function () {
+                        _this.jodit.selection.select(bindElement);
+                    }
+                }
+            ]);
+            return false;
+        };
+        _this.onSelectPath = function (bindElement, event) {
+            _this.jodit.selection.focus();
+            var path = event.target.getAttribute('data-path') || '/';
+            if (path === '/') {
+                _this.jodit.execCommand('selectall');
+                return false;
+            }
+            try {
+                var elm = _this.jodit.editorDocument
+                    .evaluate(path, _this.jodit.editor, null, XPathResult.ANY_TYPE, null)
+                    .iterateNext();
+                if (elm) {
+                    _this.jodit.selection.select(elm);
+                    return false;
+                }
+            }
+            catch (_a) { }
+            _this.jodit.selection.select(bindElement);
+            return false;
+        };
+        _this.tpl = function (bindElement, path, name, title) {
+            var li = _this.jodit.create.fromHTML('<li>' +
+                ("<a role=\"button\" data-path=\"" + path + "\" href=\"javascript:void(0)\" title=\"" + title + "\" tabindex=\"-1\"'>" + string_1.trim(name) + "</a>") +
+                '</li>');
+            var a = li.firstChild;
+            _this.jodit.events
+                .on(a, 'click', _this.onSelectPath.bind(_this, bindElement))
+                .on(a, 'contextmenu', _this.onContext.bind(_this, bindElement));
+            return li;
+        };
+        _this.removeSelectAll = function () {
+            if (_this.selectAllButton) {
+                _this.selectAllButton.destruct();
+                delete _this.selectAllButton;
+            }
+        };
+        _this.appendSelectAll = function () {
+            _this.removeSelectAll();
+            _this.selectAllButton = new button_1.ToolbarButton(_this.jodit, tslib_1.__assign({ name: 'selectall' }, _this.jodit.options.controls.selectall));
+            _this.container &&
+                _this.container.insertBefore(_this.selectAllButton.container, _this.container.firstChild);
+        };
+        _this.calcPathImd = function () {
+            if (_this.isDestructed) {
+                return;
+            }
+            var current = _this.jodit.selection.current();
+            if (_this.container) {
+                _this.container.innerHTML = constants_1.INVISIBLE_SPACE;
+            }
+            if (current) {
+                var name_1, xpth_1, li_1;
+                Dom_1.Dom.up(current, function (elm) {
+                    if (elm &&
+                        _this.jodit.editor !== elm &&
+                        elm.nodeType !== Node.TEXT_NODE) {
+                        name_1 = elm.nodeName.toLowerCase();
+                        xpth_1 = selector_1.getXPathByElement(elm, _this.jodit.editor).replace(/^\//, '');
+                        li_1 = _this.tpl(elm, xpth_1, name_1, _this.jodit.i18n('Select %s', name_1));
+                        _this.container &&
+                            _this.container.insertBefore(li_1, _this.container.firstChild);
+                    }
+                }, _this.jodit.editor);
+            }
+            _this.appendSelectAll();
+        };
+        _this.calcPath = async_1.debounce(_this.calcPathImd, _this.jodit.defaultTimeout * 2);
+        _this.container = null;
+        _this.menu = null;
+        return _this;
+    }
+    xpath.prototype.afterInit = function () {
+        var _this = this;
+        if (this.jodit.options.showXPathInStatusbar) {
+            this.container = this.jodit.create.element('ul');
+            this.container.classList.add('jodit_xpath');
+            this.jodit.statusbar.append(this.container);
+            this.jodit.events
+                .on('mouseup.xpath change.xpath keydown.xpath changeSelection.xpath', this.calcPath)
+                .on('afterSetMode.xpath afterInit.xpath', function () {
+                if (_this.jodit.getRealMode() === constants_1.MODE_WYSIWYG) {
+                    _this.calcPath();
+                }
+                else {
+                    if (_this.container) {
+                        _this.container.innerHTML = constants_1.INVISIBLE_SPACE;
+                    }
+                    _this.appendSelectAll();
+                }
+            });
+            this.calcPath();
+        }
+    };
+    xpath.prototype.beforeDestruct = function () {
+        if (this.jodit && this.jodit.events) {
+            this.jodit.events.off('.xpath');
+        }
+        this.removeSelectAll();
+        this.menu && this.menu.destruct();
+        Dom_1.Dom.safeRemove(this.container);
+        this.menu = null;
+        this.container = null;
+    };
+    return xpath;
+}(Plugin_1.Plugin));
+exports.xpath = xpath;
+
+
+/***/ }),
+/* 188 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var dialog_1 = __webpack_require__(17);
 var icon_1 = __webpack_require__(6);
 exports.Alert = function (msg, title, callback, className) {
     if (className === void 0) { className = 'jodit_alert'; }
@@ -11754,13 +19464,13 @@ exports.Alert = function (msg, title, callback, className) {
     okButton.focus();
     return dialog;
 };
-var Jodit_1 = __webpack_require__(10);
-var array_1 = __webpack_require__(31);
+var Jodit_1 = __webpack_require__(11);
+var array_1 = __webpack_require__(30);
 var Dom_1 = __webpack_require__(0);
 
 
 /***/ }),
-/* 141 */
+/* 189 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -11775,30 +19485,30 @@ var Dom_1 = __webpack_require__(0);
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var dialog_1 = __webpack_require__(16);
-var confirm_1 = __webpack_require__(67);
-var promt_1 = __webpack_require__(66);
+var Config_1 = __webpack_require__(3);
+var consts = __webpack_require__(2);
+var dialog_1 = __webpack_require__(17);
+var confirm_1 = __webpack_require__(74);
+var promt_1 = __webpack_require__(73);
 var icon_1 = __webpack_require__(6);
 var storage_1 = __webpack_require__(25);
 var each_1 = __webpack_require__(24);
-var normalize_1 = __webpack_require__(19);
-var selector_1 = __webpack_require__(12);
-var ctrlKey_1 = __webpack_require__(54);
+var normalize_1 = __webpack_require__(20);
+var selector_1 = __webpack_require__(13);
+var ctrlKey_1 = __webpack_require__(55);
 var extend_1 = __webpack_require__(15);
-var setTimeout_1 = __webpack_require__(18);
-var viewWithToolbar_1 = __webpack_require__(62);
-__webpack_require__(142);
+var setTimeout_1 = __webpack_require__(19);
+var viewWithToolbar_1 = __webpack_require__(63);
+__webpack_require__(190);
 var Dom_1 = __webpack_require__(0);
 var async_1 = __webpack_require__(5);
 var dialog_2 = __webpack_require__(14);
-var dataProvider_1 = __webpack_require__(143);
-var contextMenu_1 = __webpack_require__(144);
-var observeObject_1 = __webpack_require__(145);
-var item_1 = __webpack_require__(146);
-var isValidName_1 = __webpack_require__(147);
-var consts_1 = __webpack_require__(42);
+var dataProvider_1 = __webpack_require__(191);
+var contextMenu_1 = __webpack_require__(192);
+var observeObject_1 = __webpack_require__(193);
+var item_1 = __webpack_require__(194);
+var isValidName_1 = __webpack_require__(47);
+var consts_1 = __webpack_require__(41);
 var DEFAULT_SOURCE_NAME = 'default', ITEM_ACTIVE_CLASS = consts_1.ITEM_CLASS + '-active-true';
 var FileBrowser = (function (_super) {
     tslib_1.__extends(FileBrowser, _super);
@@ -12489,7 +20199,7 @@ exports.FileBrowser = FileBrowser;
 
 
 /***/ }),
-/* 142 */
+/* 190 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12503,11 +20213,11 @@ exports.FileBrowser = FileBrowser;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
+var Config_1 = __webpack_require__(3);
 var icon_1 = __webpack_require__(6);
-var debounce_1 = __webpack_require__(44);
+var debounce_1 = __webpack_require__(43);
 var helpers_1 = __webpack_require__(4);
-var consts_1 = __webpack_require__(42);
+var consts_1 = __webpack_require__(41);
 Config_1.Config.prototype.filebrowser = {
     filter: function (item, search) {
         search = search.toLowerCase();
@@ -12548,7 +20258,7 @@ Config_1.Config.prototype.filebrowser = {
         }
         switch (sortAttr) {
             case 'changed': {
-                var f = (new Date(a.changed)).getTime(), s = (new Date(b.changed)).getTime();
+                var f = new Date(a.changed).getTime(), s = new Date(b.changed).getTime();
                 return asc ? f - s : s - f;
             }
             case 'size': {
@@ -12608,38 +20318,12 @@ Config_1.Config.prototype.filebrowser = {
         if (item.file !== undefined) {
             name = item.file;
         }
-        info =
-            "<div class=\"" + consts_1.ITEM_CLASS + "-info\">" +
-                (showName
-                    ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filename\">" + name + "</span>"
-                    : '') +
-                (showSize
-                    ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filesize\">" + item.size + "</span>"
-                    : '') +
-                (showTime
-                    ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filechanged\">" + showTime + "</span>"
-                    : '') +
-                '</div>';
-        return ('<a ' +
-            ("data-is-file=\"" + (item.isImage ? 0 : 1) + "\" ") +
-            'draggable="true" ' +
-            ("class=\"" + consts_1.ITEM_CLASS + "\" ") +
-            ("href=\"" + item.fileURL + "\" ") +
-            ("data-source=\"" + source_name + "\" ") +
-            ("data-path=\"" + item.path + "\" ") +
-            ("data-name=\"" + name + "\" ") +
-            ("title=\"" + name + "\" ") +
-            ("data-url=\"" + item.fileURL + "\"") +
-            '>' +
-            "<img " +
-            ("data-is-file=\"" + (item.isImage ? 0 : 1) + "\" ") +
-            ("data-src=\"" + item.fileURL + "\" ") +
-            ("src=\"" + item.imageURL + "\" ") +
-            ("alt=\"" + name + "\" ") +
-            'loading="lazy" ' +
-            '/>' +
-            (showName || showSize || showTime ? info : '') +
-            '</a>');
+        info = "<div class=\"" + consts_1.ITEM_CLASS + "-info\">" + (showName ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filename\">" + name + "</span>" : '') + (showSize
+            ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filesize\">" + item.size + "</span>"
+            : '') + (showTime
+            ? "<span class=\"" + consts_1.ITEM_CLASS + "-info-filechanged\">" + showTime + "</span>"
+            : '') + "</div>";
+        return "<a\n\t\t\tdata-is-file=\"" + (item.isImage ? 0 : 1) + "\"\n\t\t\tdraggable=\"true\"\n\t\t\tclass=\"" + consts_1.ITEM_CLASS + "\"\n\t\t\thref=\"" + item.fileURL + "\"\n\t\t\tdata-source=\"" + source_name + "\"\n\t\t\tdata-path=\"" + item.path + "\"\n\t\t\tdata-name=\"" + name + "\"\n\t\t\ttitle=\"" + name + "\"\n\t\t\tdata-url=\"" + item.fileURL + "\">\n\t\t\t\t<img\n\t\t\t\t\tdata-is-file=\"" + (item.isImage ? 0 : 1) + "\"\n\t\t\t\t\tdata-src=\"" + item.fileURL + "\"\n\t\t\t\t\tsrc=\"" + item.imageURL + "\"\n\t\t\t\t\talt=\"" + name + "\"\n\t\t\t\t\tloading=\"lazy\"\n\t\t\t\t/>\n\t\t\t\t" + (showName || showSize || showTime ? info : '') + "\n\t\t\t</a>";
     },
     ajax: {
         url: '',
@@ -12744,7 +20428,9 @@ Config_1.Config.prototype.controls.filebrowser = {
     },
     select: {
         icon: 'check',
-        isDisable: function (browser) { return !browser.state.activeElements.length; },
+        isDisable: function (browser) {
+            return !browser.state.activeElements.length;
+        },
         exec: function (editor) {
             editor.events.fire('select.filebrowser');
         }
@@ -12820,7 +20506,7 @@ Config_1.Config.prototype.controls.filebrowser = {
 
 
 /***/ }),
-/* 143 */
+/* 191 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -12828,7 +20514,7 @@ Config_1.Config.prototype.controls.filebrowser = {
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
 var helpers_1 = __webpack_require__(4);
-var Ajax_1 = __webpack_require__(40);
+var Ajax_1 = __webpack_require__(39);
 exports.DEFAULT_SOURCE_NAME = 'default';
 var possableRules = [
     "allowFiles",
@@ -13068,19 +20754,19 @@ exports.default = dataProvider;
 
 
 /***/ }),
-/* 144 */
+/* 192 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var ContextMenu_1 = __webpack_require__(41);
+var ContextMenu_1 = __webpack_require__(40);
 var async_1 = __webpack_require__(5);
 var dialog_1 = __webpack_require__(14);
 var Dom_1 = __webpack_require__(0);
-var __1 = __webpack_require__(29);
-var consts_1 = __webpack_require__(42);
+var __1 = __webpack_require__(68);
+var consts_1 = __webpack_require__(41);
 var CLASS_PREVIEW = consts_1.F_CLASS + '_preview_', preview_tpl_next = function (next, right) {
     if (next === void 0) { next = 'next'; }
     if (right === void 0) { right = 'right'; }
@@ -13218,7 +20904,7 @@ exports.default = (function (self) {
 
 
 /***/ }),
-/* 145 */
+/* 193 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13286,14 +20972,14 @@ exports.ObserveObject = ObserveObject;
 
 
 /***/ }),
-/* 146 */
+/* 194 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var extend_1 = __webpack_require__(15);
-var normalize_1 = __webpack_require__(19);
+var normalize_1 = __webpack_require__(20);
 var FileBrowserItem = (function () {
     function FileBrowserItem(data) {
         this.data = data;
@@ -13355,33 +21041,7 @@ exports.FileBrowserItem = FileBrowserItem;
 
 
 /***/ }),
-/* 147 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.isValidName = function (name) {
-    if (!name.length) {
-        return false;
-    }
-    if (/[^0-9A-Za-zа-яА-ЯЁё\w\-_\.]/.test(name)) {
-        return false;
-    }
-    return true;
-};
-
-
-/***/ }),
-/* 148 */
+/* 195 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -13396,7 +21056,7 @@ exports.isValidName = function (name) {
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
+var Config_1 = __webpack_require__(3);
 var Component_1 = __webpack_require__(8);
 var dialog_1 = __webpack_require__(14);
 var helpers_1 = __webpack_require__(4);
@@ -13418,7 +21078,7 @@ Config_1.Config.prototype.imageeditor = {
     cropDefaultHeight: '70%'
 };
 var jie = 'jodit_image_editor';
-var gi = icon_1.ToolbarIcon.getIcon;
+var gi = icon_1.ToolbarIcon.getIcon.bind(icon_1.ToolbarIcon);
 var ImageEditor = (function (_super) {
     tslib_1.__extends(ImageEditor, _super);
     function ImageEditor(editor) {
@@ -13933,19 +21593,19 @@ exports.ImageEditor = ImageEditor;
 
 
 /***/ }),
-/* 149 */
+/* 196 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
 var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var Ajax_1 = __webpack_require__(40);
+var Config_1 = __webpack_require__(3);
+var constants_1 = __webpack_require__(2);
+var Ajax_1 = __webpack_require__(39);
 var helpers_1 = __webpack_require__(4);
 var Dom_1 = __webpack_require__(0);
-var isJoditObject_1 = __webpack_require__(13);
+var isJoditObject_1 = __webpack_require__(12);
 var Component_1 = __webpack_require__(8);
 Config_1.Config.prototype.enableDragAndDropFileToEditor = true;
 Config_1.Config.prototype.uploader = {
@@ -14241,31 +21901,32 @@ var Uploader = (function (_super) {
     Uploader.prototype.bind = function (form, handlerSuccess, handlerError) {
         var _this = this;
         var self = this, onPaste = function (e) {
-            var i, file, extension;
+            var i, file, extension, cData = e.clipboardData;
             var process = function (formdata) {
                 if (file) {
                     formdata.append('extension', extension);
                     formdata.append('mimetype', file.type);
                 }
             };
-            if (e.clipboardData &&
-                e.clipboardData.files &&
-                e.clipboardData.files.length) {
-                _this.sendFiles(e.clipboardData.files, handlerSuccess, handlerError);
+            if (cData && cData.files && cData.files.length) {
+                _this.sendFiles(cData.files, handlerSuccess, handlerError);
                 return false;
             }
             if (helpers_1.browser('ff') || constants_1.IS_IE) {
-                if (e.clipboardData &&
-                    (!e.clipboardData.types.length &&
-                        e.clipboardData.types[0] !== constants_1.TEXT_PLAIN)) {
+                if (cData &&
+                    (!cData.types ||
+                        !cData.types.length ||
+                        cData.types[0] !== constants_1.TEXT_PLAIN)) {
                     var div_1 = _this.jodit.create.div('', {
-                        'tabindex': -1,
-                        'style': 'left: -9999px; top: 0; width: 0; height: 100%;line-height: 140%; ' +
+                        tabindex: -1,
+                        style: 'left: -9999px; top: 0; width: 0; height: 100%;line-height: 140%; ' +
                             'overflow: hidden; position: fixed; z-index: 2147483647; word-break: break-all;',
-                        'contenteditable': true
+                        contenteditable: true
                     });
                     _this.jodit.ownerDocument.body.appendChild(div_1);
-                    var selection_1 = _this.jodit && isJoditObject_1.isJoditObject(_this.jodit) ? _this.jodit.selection.save() : null, restore_1 = function () {
+                    var selection_1 = _this.jodit && isJoditObject_1.isJoditObject(_this.jodit)
+                        ? _this.jodit.selection.save()
+                        : null, restore_1 = function () {
                         return selection_1 &&
                             _this.jodit &&
                             isJoditObject_1.isJoditObject(_this.jodit) &&
@@ -14284,10 +21945,8 @@ var Uploader = (function (_super) {
                 }
                 return;
             }
-            if (e.clipboardData &&
-                e.clipboardData.items &&
-                e.clipboardData.items.length) {
-                var items = e.clipboardData.items;
+            if (cData && cData.items && cData.items.length) {
+                var items = cData.items;
                 for (i = 0; i < items.length; i += 1) {
                     if (items[i].kind === 'file' &&
                         items[i].type === 'image/png') {
@@ -14385,8 +22044,7 @@ var Uploader = (function (_super) {
             try {
                 ajax.abort();
             }
-            catch (_a) {
-            }
+            catch (_a) { }
         });
         delete this.options;
         _super.prototype.destruct.call(this);
@@ -14397,7 +22055,7 @@ exports.Uploader = Uploader;
 
 
 /***/ }),
-/* 150 */
+/* 197 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -14411,8038 +22069,628 @@ exports.Uploader = Uploader;
  * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-var add_new_line_1 = __webpack_require__(151);
-exports.addNewLine = add_new_line_1.addNewLine;
-var autofocus_1 = __webpack_require__(152);
-exports.autofocus = autofocus_1.autofocus;
-var backspace_1 = __webpack_require__(153);
-exports.backspace = backspace_1.backspace;
-var bold_1 = __webpack_require__(154);
-exports.bold = bold_1.bold;
-var clean_html_1 = __webpack_require__(155);
-exports.cleanHtml = clean_html_1.cleanHtml;
-var clipboard_1 = __webpack_require__(156);
-exports.clipboard = clipboard_1.clipboard;
-exports.paste = clipboard_1.paste;
-exports.pasteStorage = clipboard_1.pasteStorage;
-var color_1 = __webpack_require__(160);
-exports.color = color_1.color;
-var drag_and_drop_1 = __webpack_require__(161);
-exports.DragAndDrop = drag_and_drop_1.DragAndDrop;
-var drag_and_drop_element_1 = __webpack_require__(162);
-exports.DragAndDropElement = drag_and_drop_element_1.DragAndDropElement;
-var enter_1 = __webpack_require__(163);
-exports.enter = enter_1.enter;
-var error_messages_1 = __webpack_require__(164);
-exports.errorMessages = error_messages_1.errorMessages;
-var font_1 = __webpack_require__(165);
-exports.font = font_1.font;
-var format_block_1 = __webpack_require__(166);
-exports.formatBlock = format_block_1.formatBlock;
-var fullsize_1 = __webpack_require__(167);
-exports.fullsize = fullsize_1.fullsize;
-var hotkeys_1 = __webpack_require__(168);
-exports.hotkeys = hotkeys_1.hotkeys;
-var iframe_1 = __webpack_require__(169);
-exports.iframe = iframe_1.iframe;
-var image_processor_1 = __webpack_require__(170);
-exports.imageProcessor = image_processor_1.imageProcessor;
-var image_properties_1 = __webpack_require__(171);
-exports.imageProperties = image_properties_1.imageProperties;
-var indent_1 = __webpack_require__(172);
-exports.indent = indent_1.indent;
-var inline_popup_1 = __webpack_require__(173);
-exports.inlinePopup = inline_popup_1.inlinePopup;
-var justify_1 = __webpack_require__(174);
-exports.justify = justify_1.justify;
-var limit_1 = __webpack_require__(175);
-exports.limit = limit_1.limit;
-var link_1 = __webpack_require__(176);
-exports.link = link_1.link;
-var media_1 = __webpack_require__(177);
-exports.media = media_1.media;
-var mobile_1 = __webpack_require__(178);
-exports.mobile = mobile_1.mobile;
-var orderedlist_1 = __webpack_require__(179);
-exports.orderedlist = orderedlist_1.orderedlist;
-var placeholder_1 = __webpack_require__(180);
-exports.placeholder = placeholder_1.placeholder;
-var redoundo_1 = __webpack_require__(181);
-exports.redoundo = redoundo_1.redoundo;
-var resizer_1 = __webpack_require__(182);
-exports.resizer = resizer_1.resizer;
-var search_1 = __webpack_require__(183);
-exports.search = search_1.search;
-var size_1 = __webpack_require__(184);
-exports.size = size_1.size;
-var source_1 = __webpack_require__(185);
-exports.source = source_1.source;
-var stat_1 = __webpack_require__(186);
-exports.stat = stat_1.stat;
-var sticky_1 = __webpack_require__(187);
-exports.sticky = sticky_1.sticky;
-var symbols_1 = __webpack_require__(188);
-exports.symbols = symbols_1.symbols;
-var table_keyboard_navigation_1 = __webpack_require__(189);
-exports.tableKeyboardNavigation = table_keyboard_navigation_1.tableKeyboardNavigation;
-var table_1 = __webpack_require__(190);
-exports.table = table_1.TableProcessor;
-var xpath_1 = __webpack_require__(191);
-exports.xpath = xpath_1.xpath;
-
-
-/***/ }),
-/* 151 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var async_1 = __webpack_require__(5);
-var size_1 = __webpack_require__(23);
-var icon_1 = __webpack_require__(6);
-Config_1.Config.prototype.addNewLine = true;
-Config_1.Config.prototype.addNewLineOnDBLClick = true;
-Config_1.Config.prototype.addNewLineTagsTriggers = [
-    'table',
-    'iframe',
-    'img',
-    'hr',
-    'jodit'
-];
-function addNewLine(editor) {
-    if (!editor.options.addNewLine) {
-        return;
-    }
-    var line = editor.create.fromHTML('<div role="button" tabIndex="-1" title="' +
-        editor.i18n('Break') +
-        '" class="jodit-add-new-line"><span>' +
-        icon_1.ToolbarIcon.getIcon('enter') +
-        '</span></div>');
-    var delta = 10;
-    var isMatchedTag = new RegExp('^(' + editor.options.addNewLineTagsTriggers.join('|') + ')$', 'i');
-    var timeout;
-    var hidden = false;
-    var preview = false;
-    var current;
-    var lineInFocus = false;
-    var show = function () {
-        if (editor.options.readonly || editor.isLocked()) {
-            return;
-        }
-        if (editor.container.classList.contains('jodit_popup_active')) {
-            return;
-        }
-        clearTimeout(timeout);
-        line.classList.toggle('jodit-add-new-line_after', !preview);
-        line.style.display = 'block';
-        line.style.width = editor.editor.clientWidth + 'px';
-        hidden = false;
-    };
-    var hideForce = function () {
-        clearTimeout(timeout);
-        lineInFocus = false;
-        line.style.display = 'none';
-        hidden = true;
-    };
-    var canGetFocus = function (elm) {
-        return (elm !== null &&
-            Dom_1.Dom.isBlock(elm, editor.editorWindow) &&
-            !/^(img|table|iframe|hr)$/i.test(elm.nodeName));
-    };
-    var hide = function () {
-        if (hidden || lineInFocus) {
-            return;
-        }
-        clearTimeout(timeout);
-        timeout = async_1.setTimeout(hideForce, 500);
-    };
-    editor.events
-        .on('beforeDestruct', function () {
-        Dom_1.Dom.safeRemove(line);
-    })
-        .on('afterInit', function () {
-        editor.container.appendChild(line);
-        editor.events
-            .on(line, 'mousemove', function (e) {
-            e.stopPropagation();
-        })
-            .on(line, 'mousedown touchstart', function (e) {
-            var p = editor.editorDocument.createElement(editor.options.enter);
-            if (preview && current && current.parentNode) {
-                current.parentNode.insertBefore(p, current);
-            }
-            else {
-                editor.editor.appendChild(p);
-            }
-            editor.selection.setCursorIn(p);
-            editor.events.fire('synchro');
-            hideForce();
-            e.preventDefault();
-        });
-    })
-        .on('afterInit', function () {
-        editor.events
-            .on(editor.editor, 'scroll', function () {
-            hideForce();
-        })
-            .on(editor.container, 'mouseleave', hide)
-            .on(line, 'mouseenter', function () {
-            clearTimeout(timeout);
-            lineInFocus = true;
-        })
-            .on(line, 'mouseleave', function () {
-            lineInFocus = false;
-        })
-            .on(editor.editor, 'dblclick', function (e) {
-            if (!editor.options.readonly &&
-                editor.options.addNewLineOnDBLClick &&
-                e.target === editor.editor &&
-                editor.selection.isCollapsed()) {
-                var editorBound = size_1.offset(editor.editor, editor, editor.editorDocument);
-                var top_1 = e.pageY - editor.editorWindow.pageYOffset;
-                var p = editor.editorDocument.createElement(editor.options.enter);
-                if (Math.abs(top_1 - editorBound.top) <
-                    Math.abs(top_1 - (editorBound.height + editorBound.top)) &&
-                    editor.editor.firstChild) {
-                    editor.editor.insertBefore(p, editor.editor.firstChild);
-                }
-                else {
-                    editor.editor.appendChild(p);
-                }
-                editor.selection.setCursorIn(p);
-                editor.setEditorValue();
-                hideForce();
-                e.preventDefault();
-            }
-        })
-            .on(editor.editor, 'mousemove', async_1.debounce(function (e) {
-            var currentElement = editor.editorDocument.elementFromPoint(e.pageX - editor.editorWindow.pageXOffset, e.pageY - editor.editorWindow.pageYOffset);
-            if (currentElement &&
-                Dom_1.Dom.isOrContains(line, currentElement)) {
-                return;
-            }
-            if (!currentElement ||
-                !Dom_1.Dom.isOrContains(editor.editor, currentElement)) {
-                return;
-            }
-            if (!currentElement ||
-                !currentElement.nodeName.match(isMatchedTag) ||
-                !Dom_1.Dom.isOrContains(editor.editor, currentElement)) {
-                currentElement = Dom_1.Dom.closest(currentElement, isMatchedTag, editor.editor);
-                if (!currentElement) {
-                    hide();
-                    return;
-                }
-            }
-            if (isMatchedTag.test(currentElement.nodeName)) {
-                var parentBox = Dom_1.Dom.up(currentElement, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-                if (parentBox && parentBox !== editor.editor) {
-                    currentElement = parentBox;
-                }
-            }
-            var editorBound = size_1.offset(editor.editor, editor, editor.editorDocument);
-            var position = size_1.offset(currentElement, editor, editor.editorDocument);
-            var top = false;
-            if (Math.abs(e.pageY - position.top) < delta) {
-                top = position.top;
-                if (top - editorBound.top >= 20) {
-                    top -= 15;
-                }
-                preview = true;
-            }
-            if (Math.abs(e.pageY - (position.top + position.height)) < delta) {
-                top = position.top + position.height;
-                if (editorBound.top + editorBound.height - top >=
-                    25) {
-                    top += 15;
-                }
-                preview = false;
-            }
-            if (top !== false &&
-                ((preview &&
-                    !Dom_1.Dom.prev(currentElement, canGetFocus, editor.editor)) ||
-                    (!preview &&
-                        !Dom_1.Dom.next(currentElement, canGetFocus, editor.editor)))) {
-                line.style.top = top + 'px';
-                current = currentElement;
-                show();
-            }
-            else {
-                current = false;
-                hide();
-            }
-        }, editor.defaultTimeout));
-    });
-}
-exports.addNewLine = addNewLine;
-
-
-/***/ }),
-/* 152 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var async_1 = __webpack_require__(5);
-Config_1.Config.prototype.autofocus = false;
-function autofocus(editor) {
-    var timeout;
-    editor.events
-        .on('afterInit', function () {
-        if (editor.options.autofocus) {
-            if (editor.defaultTimeout) {
-                timeout = async_1.setTimeout(editor.selection.focus, 300);
-            }
-            else {
-                editor.selection.focus();
-            }
-        }
-    })
-        .on('mousedown', function (e) {
-        if (editor.isEditorMode() &&
-            e.target &&
-            Dom_1.Dom.isBlock(e.target, editor.editorWindow) &&
-            !e.target.childNodes.length) {
-            if (editor.editor === e.target) {
-                editor.selection.focus();
-            }
-            else {
-                editor.selection.setCursorIn(e.target);
-            }
-        }
-    })
-        .on('beforeDestruct', function () {
-        clearTimeout(timeout);
-    });
-}
-exports.autofocus = autofocus;
-
-
-/***/ }),
-/* 153 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-function backspace(editor) {
-    var removeEmptyBlocks = function (container) {
-        var box = container, parent;
-        helpers_1.normalizeNode(container);
-        do {
-            var html = box.innerHTML.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
-            if ((!html.length || html === '<br>') &&
-                !Dom_1.Dom.isCell(box, editor.editorWindow) &&
-                box.parentNode &&
-                container !== editor.editor) {
-                parent = box.parentNode;
-                Dom_1.Dom.safeRemove(box);
-            }
-            else {
-                break;
-            }
-            box = parent;
-        } while (box && box !== editor.editor);
-    };
-    var removeChar = function (box, toLeft, range) {
-        if (box.node &&
-            box.node.nodeType === Node.TEXT_NODE &&
-            typeof box.node.nodeValue === 'string') {
-            var value = box.node.nodeValue, startOffset = toLeft ? value.length : 0;
-            var increment = toLeft ? -1 : 1, startOffsetInRange = startOffset;
-            while (startOffset >= 0 &&
-                startOffset <= value.length &&
-                value[startOffset + (toLeft ? -1 : 0)] ===
-                    consts.INVISIBLE_SPACE) {
-                startOffset += increment;
-            }
-            if (startOffset !== startOffsetInRange) {
-                if (toLeft) {
-                    value =
-                        value.substr(0, startOffset) +
-                            value.substr(startOffsetInRange);
-                }
-                else {
-                    value =
-                        value.substr(0, startOffsetInRange) +
-                            value.substr(startOffset);
-                    startOffset = startOffsetInRange;
-                }
-                box.node.nodeValue = value;
-            }
-            range.setStart(box.node, startOffset);
-            range.collapse(true);
-            editor.selection.selectRange(range);
-            var nextElement = Dom_1.Dom.findInline(box.node, toLeft, editor.editor);
-            if (value.length) {
-                var setRange = false;
-                if (toLeft) {
-                    if (startOffset) {
-                        setRange = true;
-                    }
-                }
-                else {
-                    if (startOffset < value.length) {
-                        setRange = true;
-                    }
-                }
-                if (setRange) {
-                    return true;
-                }
-            }
-            else {
-                range.setStartBefore(box.node);
-                range.collapse(true);
-                editor.selection.selectRange(range);
-                Dom_1.Dom.safeRemove(box.node);
-                box.node = nextElement;
-            }
-            if (nextElement) {
-                if (Dom_1.Dom.isInlineBlock(nextElement)) {
-                    nextElement = toLeft
-                        ? nextElement.lastChild
-                        : nextElement.firstChild;
-                }
-                if (nextElement && nextElement.nodeType === Node.TEXT_NODE) {
-                    box.node = nextElement;
-                    return removeChar(box, toLeft, range);
-                }
-            }
-        }
-    };
-    var potentialRemovable = constants_1.MAY_BE_REMOVED_WITH_KEY;
-    var removePotential = function (node) {
-        if (node && potentialRemovable.test(node.nodeName)) {
-            Dom_1.Dom.safeRemove(node);
-            return false;
-        }
-    };
-    var removeInline = function (box, toLeft, range) {
-        if (box.node) {
-            var workElement = box.node;
-            var removeCharFlag = removeChar(box, toLeft, range);
-            if (removeCharFlag !== undefined) {
-                return true;
-            }
-            if (!box.node) {
-                box.node = workElement.parentNode;
-            }
-            if (box.node === editor.editor) {
-                return false;
-            }
-            var node = box.node;
-            if (removePotential(node) === false) {
-                return false;
-            }
-            if (node) {
-                node = toLeft ? node.previousSibling : node.nextSibling;
-            }
-            while (node &&
-                node.nodeType === Node.TEXT_NODE &&
-                node.nodeValue &&
-                node.nodeValue.match(/^[\n\r]+$/)) {
-                node = toLeft ? node.previousSibling : node.nextSibling;
-            }
-            return removePotential(node);
-        }
-    };
-    var isEmpty = function (node) {
-        if (node.nodeName.match(/^(TD|TH|TR|TABLE|LI)$/) !== null) {
-            return false;
-        }
-        if (Dom_1.Dom.isEmpty(node) ||
-            node.nodeName.match(potentialRemovable) !== null) {
-            return true;
-        }
-        if (node.nodeType === Node.TEXT_NODE && !Dom_1.Dom.isEmptyTextNode(node)) {
-            return false;
-        }
-        return node.childNodes.length
-            ? Array.from(node.childNodes).every(isEmpty)
-            : true;
-    };
-    editor.events
-        .on('afterCommand', function (command) {
-        if (command === 'delete') {
-            var current = editor.selection.current();
-            if (current &&
-                current.firstChild &&
-                current.firstChild.nodeName === 'BR') {
-                Dom_1.Dom.safeRemove(current.firstChild);
-            }
-            if (!helpers_1.trim(editor.editor.textContent || '') &&
-                !editor.editor.querySelector('img') &&
-                (!current || !Dom_1.Dom.closest(current, 'table', editor.editor))) {
-                editor.editor.innerHTML = '';
-                var node = editor.selection.setCursorIn(editor.editor);
-                Dom_1.Dom.safeRemove(node);
-            }
-        }
-    })
-        .on('keydown', function (event) {
-        if (event.which === consts.KEY_BACKSPACE ||
-            event.which === consts.KEY_DELETE) {
-            var toLeft = event.which === consts.KEY_BACKSPACE;
-            if (!editor.selection.isFocused()) {
-                editor.selection.focus();
-            }
-            if (!editor.selection.isCollapsed()) {
-                editor.execCommand('Delete');
-                return false;
-            }
-            var sel = editor.selection.sel, range = sel && sel.rangeCount ? sel.getRangeAt(0) : false;
-            if (!range) {
-                return false;
-            }
-            var fakeNode = editor.ownerDocument.createTextNode(consts.INVISIBLE_SPACE);
-            var marker = editor.editorDocument.createElement('span');
-            try {
-                range.insertNode(fakeNode);
-                if (!Dom_1.Dom.isOrContains(editor.editor, fakeNode)) {
-                    return false;
-                }
-                var container = Dom_1.Dom.up(fakeNode, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-                var workElement = Dom_1.Dom.findInline(fakeNode, toLeft, editor.editor);
-                var box = {
-                    node: workElement
-                };
-                var tryRemoveInline = void 0;
-                if (workElement) {
-                    tryRemoveInline = removeInline(box, toLeft, range);
-                }
-                else if (fakeNode.parentNode) {
-                    tryRemoveInline = removeInline({
-                        node: toLeft
-                            ? fakeNode.parentNode.previousSibling
-                            : fakeNode.parentNode.nextSibling
-                    }, toLeft, range);
-                }
-                if (tryRemoveInline !== undefined) {
-                    return tryRemoveInline ? undefined : false;
-                }
-                if (container && container.nodeName.match(/^(TD)$/)) {
-                    return false;
-                }
-                var prevBox = toLeft
-                    ? Dom_1.Dom.prev(box.node || fakeNode, function (node) {
-                        return Dom_1.Dom.isBlock(node, editor.editorWindow);
-                    }, editor.editor)
-                    : Dom_1.Dom.next(box.node || fakeNode, function (node) {
-                        return Dom_1.Dom.isBlock(node, editor.editorWindow);
-                    }, editor.editor);
-                if (!prevBox && container && container.parentNode) {
-                    prevBox = editor.create.inside.element(editor.options.enter);
-                    var boxNode = container;
-                    while (boxNode &&
-                        boxNode.parentNode &&
-                        boxNode.parentNode !== editor.editor) {
-                        boxNode = boxNode.parentNode;
-                    }
-                    boxNode.parentNode &&
-                        boxNode.parentNode.insertBefore(prevBox, boxNode);
-                }
-                else {
-                    if (prevBox && isEmpty(prevBox)) {
-                        Dom_1.Dom.safeRemove(prevBox);
-                        return false;
-                    }
-                }
-                if (prevBox) {
-                    var tmpNode = editor.selection.setCursorIn(prevBox, !toLeft);
-                    editor.selection.insertNode(marker, false, false);
-                    if (tmpNode.nodeType === Node.TEXT_NODE &&
-                        tmpNode.nodeValue === consts.INVISIBLE_SPACE) {
-                        Dom_1.Dom.safeRemove(tmpNode);
-                    }
-                }
-                if (container) {
-                    removeEmptyBlocks(container);
-                    if (prevBox && container.parentNode) {
-                        if (container.nodeName === prevBox.nodeName &&
-                            container.parentNode &&
-                            prevBox.parentNode &&
-                            container.parentNode !== editor.editor &&
-                            prevBox.parentNode !== editor.editor &&
-                            container.parentNode !==
-                                prevBox.parentNode &&
-                            container.parentNode.nodeName ===
-                                prevBox.parentNode.nodeName) {
-                            container = container.parentNode;
-                            prevBox = prevBox.parentNode;
-                        }
-                        Dom_1.Dom.moveContent(container, prevBox, !toLeft);
-                        helpers_1.normalizeNode(prevBox);
-                    }
-                    if (prevBox && prevBox.nodeName === 'LI') {
-                        var UL = Dom_1.Dom.closest(prevBox, 'Ul|OL', editor.editor);
-                        if (UL) {
-                            var nextBox = UL.nextSibling;
-                            if (nextBox &&
-                                nextBox.nodeName === UL.nodeName &&
-                                UL !== nextBox) {
-                                Dom_1.Dom.moveContent(nextBox, UL, !toLeft);
-                                Dom_1.Dom.safeRemove(nextBox);
-                            }
-                        }
-                    }
-                    removeEmptyBlocks(container);
-                    return false;
-                }
-            }
-            finally {
-                if (fakeNode.parentNode &&
-                    fakeNode.nodeValue === consts.INVISIBLE_SPACE) {
-                    var parent_1 = fakeNode.parentNode;
-                    Dom_1.Dom.safeRemove(fakeNode);
-                    if (!parent_1.firstChild &&
-                        parent_1.parentNode &&
-                        parent_1 !== editor.editor) {
-                        Dom_1.Dom.safeRemove(parent_1);
-                    }
-                }
-                if (marker &&
-                    Dom_1.Dom.isOrContains(editor.editor, marker, true)) {
-                    var tmpNode = editor.selection.setCursorBefore(marker);
-                    Dom_1.Dom.safeRemove(marker);
-                    if (tmpNode &&
-                        tmpNode.parentNode &&
-                        (Dom_1.Dom.findInline(tmpNode, true, tmpNode.parentNode) ||
-                            Dom_1.Dom.findInline(tmpNode, true, tmpNode.parentNode))) {
-                        Dom_1.Dom.safeRemove(tmpNode);
-                    }
-                }
-                editor.setEditorValue();
-            }
-            return false;
-        }
-    });
-}
-exports.backspace = backspace;
-
-
-/***/ }),
-/* 154 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-Config_1.Config.prototype.controls.subscript = {
-    tags: ['sub'],
-    tooltip: 'subscript'
-};
-Config_1.Config.prototype.controls.superscript = {
-    tags: ['sup'],
-    tooltip: 'superscript'
-};
-Config_1.Config.prototype.controls.bold = {
-    tagRegExp: /^(strong|b)$/i,
-    tags: ['strong', 'b'],
-    css: {
-        'font-weight': ['bold', '700']
-    },
-    tooltip: 'Bold'
-};
-Config_1.Config.prototype.controls.italic = {
-    tagRegExp: /^(em|i)$/i,
-    tags: ['em', 'i'],
-    css: {
-        'font-style': 'italic'
-    },
-    tooltip: 'Italic'
-};
-Config_1.Config.prototype.controls.underline = {
-    tagRegExp: /^(u)$/i,
-    tags: ['u'],
-    css: {
-        'text-decoration': 'underline'
-    },
-    tooltip: 'Underline'
-};
-Config_1.Config.prototype.controls.strikethrough = {
-    tagRegExp: /^(s)$/i,
-    tags: ['s'],
-    css: {
-        'text-decoration': 'line-through'
-    },
-    tooltip: 'Strike through'
-};
-function bold(editor) {
-    var callBack = function (command) {
-        var control = Config_1.Config.defaultOptions.controls[command], cssOptions = tslib_1.__assign({}, control.css), cssRules = {};
-        Object.keys(cssOptions).forEach(function (key) {
-            cssRules[key] = Array.isArray(cssOptions[key])
-                ? cssOptions[key][0]
-                : cssOptions[key];
-        });
-        editor.selection.applyCSS(cssRules, control.tags ? control.tags[0] : undefined, control.css);
-        editor.events.fire('synchro');
-        return false;
-    };
-    editor
-        .registerCommand('bold', {
-        exec: callBack,
-        hotkeys: ['ctrl+b', 'cmd+b']
-    })
-        .registerCommand('italic', {
-        exec: callBack,
-        hotkeys: ['ctrl+i', 'cmd+i']
-    })
-        .registerCommand('underline', {
-        exec: callBack,
-        hotkeys: ['ctrl+u', 'cmd+u']
-    })
-        .registerCommand('strikethrough', {
-        exec: callBack
-    });
-}
-exports.bold = bold;
-
-
-/***/ }),
-/* 155 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.cleanHTML = {
-    timeout: 300,
-    removeEmptyElements: true,
-    fillEmptyParagraph: true,
-    replaceNBSP: true,
-    cleanOnPaste: true,
-    replaceOldTags: {
-        i: 'em',
-        b: 'strong'
-    },
-    allowTags: false,
-    denyTags: false
-};
-Config_1.Config.prototype.controls.eraser = {
-    command: 'removeFormat',
-    tooltip: 'Clear Formatting'
-};
-function cleanHtml(editor) {
-    if (editor.options.cleanHTML.cleanOnPaste) {
-        editor.events.on('processPaste', function (event, html) {
-            return helpers_1.cleanFromWord(html);
-        });
-    }
-    var attributesReg = /([^\[]*)\[([^\]]+)]/, seperator = /[\s]*,[\s]*/, attrReg = /^(.*)[\s]*=[\s]*(.*)$/;
-    var getHash = function (tags) {
-        var tagsHash = {};
-        if (typeof tags === 'string') {
-            tags.split(seperator).map(function (elm) {
-                elm = helpers_1.trim(elm);
-                var attr = attributesReg.exec(elm), allowAttributes = {}, attributeMap = function (attrName) {
-                    attrName = helpers_1.trim(attrName);
-                    var val = attrReg.exec(attrName);
-                    if (val) {
-                        allowAttributes[val[1]] = val[2];
-                    }
-                    else {
-                        allowAttributes[attrName] = true;
-                    }
-                };
-                if (attr) {
-                    var attr2 = attr[2].split(seperator);
-                    if (attr[1]) {
-                        attr2.forEach(attributeMap);
-                        tagsHash[attr[1].toUpperCase()] = allowAttributes;
-                    }
-                }
-                else {
-                    tagsHash[elm.toUpperCase()] = true;
-                }
-            });
-            return tagsHash;
-        }
-        if (tags) {
-            Object.keys(tags).forEach(function (tagName) {
-                tagsHash[tagName.toUpperCase()] = tags[tagName];
-            });
-            return tagsHash;
-        }
-        return false;
-    };
-    var current;
-    var allowTagsHash = getHash(editor.options.cleanHTML.allowTags), denyTagsHash = getHash(editor.options.cleanHTML.denyTags);
-    var hasNotEmptyTextSibling = function (node, next) {
-        if (next === void 0) { next = false; }
-        var prev = next ? node.nextSibling : node.previousSibling;
-        while (prev) {
-            if (prev.nodeType === Node.ELEMENT_NODE ||
-                !Dom_1.Dom.isEmptyTextNode(prev)) {
-                return true;
-            }
-            prev = next ? prev.nextSibling : prev.previousSibling;
-        }
-        return false;
-    };
-    var isRemovableNode = function (node) {
-        if (node.nodeType !== Node.TEXT_NODE &&
-            ((allowTagsHash && !allowTagsHash[node.nodeName]) ||
-                (denyTagsHash && denyTagsHash[node.nodeName]))) {
-            return true;
-        }
-        if (current &&
-            node.nodeName === 'BR' &&
-            hasNotEmptyTextSibling(node) &&
-            !hasNotEmptyTextSibling(node, true) &&
-            Dom_1.Dom.up(node, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) !==
-                Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)) {
-            return true;
-        }
-        return (editor.options.cleanHTML.removeEmptyElements &&
-            current !== false &&
-            node.nodeType === Node.ELEMENT_NODE &&
-            node.nodeName.match(constants_1.IS_INLINE) !== null &&
-            !editor.selection.isMarker(node) &&
-            helpers_1.trim(node.innerHTML).length === 0 &&
-            !Dom_1.Dom.isOrContains(node, current));
-    };
-    editor.events
-        .on('change afterSetMode afterInit mousedown keydown', helpers_1.debounce(function () {
-        if (!editor.isDestructed &&
-            editor.isEditorMode() &&
-            editor.selection) {
-            current = editor.selection.current();
-            var node = null, work_1 = false, i_1 = 0;
-            var remove_1 = [], replaceOldTags = editor.options.cleanHTML.replaceOldTags;
-            if (replaceOldTags && current) {
-                var tags = Object.keys(replaceOldTags).join('|');
-                if (editor.selection.isCollapsed()) {
-                    var oldParent = Dom_1.Dom.closest(current, tags, editor.editor);
-                    if (oldParent) {
-                        var selInfo = editor.selection.save(), tagName = replaceOldTags[oldParent.nodeName.toLowerCase()] || replaceOldTags[oldParent.nodeName];
-                        Dom_1.Dom.replace(oldParent, tagName, true, false, editor.editorDocument);
-                        editor.selection.restore(selInfo);
-                    }
-                }
-            }
-            var checkNode_1 = function (nodeElm) {
-                if (nodeElm) {
-                    if (isRemovableNode(nodeElm)) {
-                        remove_1.push(nodeElm);
-                        return checkNode_1(nodeElm.nextSibling);
-                    }
-                    if (editor.options.cleanHTML.fillEmptyParagraph &&
-                        Dom_1.Dom.isBlock(nodeElm, editor.editorWindow) &&
-                        Dom_1.Dom.isEmpty(nodeElm, /^(img|svg|canvas|input|textarea|form|br)$/)) {
-                        var br = editor.create.inside.element('br');
-                        nodeElm.appendChild(br);
-                    }
-                    if (allowTagsHash &&
-                        allowTagsHash[nodeElm.nodeName] !== true) {
-                        var attributes = nodeElm
-                            .attributes;
-                        if (attributes && attributes.length) {
-                            var removeAttrs = [];
-                            for (i_1 = 0; i_1 < attributes.length; i_1 += 1) {
-                                if (!allowTagsHash[nodeElm.nodeName][attributes[i_1].name] ||
-                                    (allowTagsHash[nodeElm.nodeName][attributes[i_1].name] !== true &&
-                                        allowTagsHash[nodeElm.nodeName][attributes[i_1].name] !== attributes[i_1].value)) {
-                                    removeAttrs.push(attributes[i_1].name);
-                                }
-                            }
-                            if (removeAttrs.length) {
-                                work_1 = true;
-                            }
-                            removeAttrs.forEach(function (attr) {
-                                nodeElm.removeAttribute(attr);
-                            });
-                        }
-                    }
-                    checkNode_1(nodeElm.firstChild);
-                    checkNode_1(nodeElm.nextSibling);
-                }
-            };
-            if (editor.editor.firstChild) {
-                node = editor.editor.firstChild;
-            }
-            checkNode_1(node);
-            remove_1.forEach(Dom_1.Dom.safeRemove);
-            if (remove_1.length || work_1) {
-                editor.events && editor.events.fire('syncho');
-            }
-        }
-    }, editor.options.cleanHTML.timeout))
-        .on('keyup', function () {
-        if (editor.options.readonly) {
-            return;
-        }
-        var currentNode = editor.selection.current();
-        if (currentNode) {
-            var currentParagraph = Dom_1.Dom.up(currentNode, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-            if (currentParagraph) {
-                Dom_1.Dom.all(currentParagraph, function (node) {
-                    if (node && node.nodeType === Node.TEXT_NODE) {
-                        if (node.nodeValue !== null &&
-                            consts.INVISIBLE_SPACE_REG_EXP.test(node.nodeValue) &&
-                            node.nodeValue.replace(consts.INVISIBLE_SPACE_REG_EXP, '').length !== 0) {
-                            node.nodeValue = node.nodeValue.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
-                            if (node === currentNode &&
-                                editor.selection.isCollapsed()) {
-                                editor.selection.setCursorAfter(node);
-                            }
-                        }
-                    }
-                });
-            }
-        }
-    })
-        .on('afterCommand', function (command) {
-        var sel = editor.selection;
-        var hr, node;
-        switch (command.toLowerCase()) {
-            case 'inserthorizontalrule':
-                hr = editor.editor.querySelector('hr[id=null]');
-                if (hr) {
-                    node = Dom_1.Dom.next(hr, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor, false);
-                    if (!node) {
-                        node = editor.create.inside.element(editor.options.enter);
-                        if (node) {
-                            Dom_1.Dom.after(hr, node);
-                        }
-                    }
-                    sel.setCursorIn(node);
-                }
-                break;
-            case 'removeformat':
-                node = sel.current();
-                var clean_1 = function (elm) {
-                    switch (elm.nodeType) {
-                        case Node.ELEMENT_NODE:
-                            Dom_1.Dom.each(elm, clean_1);
-                            if (elm.nodeName === 'FONT') {
-                                Dom_1.Dom.unwrap(elm);
-                            }
-                            else {
-                                [].slice
-                                    .call(elm.attributes)
-                                    .forEach(function (attr) {
-                                    if ([
-                                        'src',
-                                        'href',
-                                        'rel',
-                                        'content'
-                                    ].indexOf(attr.name.toLowerCase()) === -1) {
-                                        elm.removeAttribute(attr.name);
-                                    }
-                                });
-                                helpers_1.normalizeNode(elm);
-                            }
-                            break;
-                        case Node.TEXT_NODE:
-                            if (editor.options.cleanHTML.replaceNBSP &&
-                                elm.nodeType === Node.TEXT_NODE &&
-                                elm.nodeValue !== null &&
-                                elm.nodeValue.match(consts.SPACE_REG_EXP)) {
-                                elm.nodeValue = elm.nodeValue.replace(consts.SPACE_REG_EXP, ' ');
-                            }
-                            break;
-                        default:
-                            Dom_1.Dom.safeRemove(elm);
-                    }
-                };
-                if (!sel.isCollapsed()) {
-                    editor.selection.eachSelection(function (currentNode) {
-                        clean_1(currentNode);
-                    });
-                }
-                else {
-                    while (node &&
-                        node.nodeType !== Node.ELEMENT_NODE &&
-                        node !== editor.editor) {
-                        clean_1(node);
-                        if (node) {
-                            node = node.parentNode;
-                        }
-                    }
-                }
-                break;
-        }
-    });
-}
-exports.cleanHtml = cleanHtml;
-
-
-/***/ }),
-/* 156 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-tslib_1.__exportStar(__webpack_require__(68), exports);
-tslib_1.__exportStar(__webpack_require__(69), exports);
-tslib_1.__exportStar(__webpack_require__(158), exports);
-__webpack_require__(159);
-
-
-/***/ }),
-/* 157 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.nl2br = function (html) {
-    return html.replace(/([^>])([\n\r]+)/g, '$1<br/>$2');
-};
-
-
-/***/ }),
-/* 158 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var constants_1 = __webpack_require__(3);
-var dialog_1 = __webpack_require__(16);
-var Plugin_1 = __webpack_require__(7);
-var Dom_1 = __webpack_require__(0);
-var setTimeout_1 = __webpack_require__(18);
-var pasteStorage = (function (_super) {
-    tslib_1.__extends(pasteStorage, _super);
-    function pasteStorage() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.currentIndex = 0;
-        _this.list = [];
-        _this.container = null;
-        _this.listBox = null;
-        _this.previewBox = null;
-        _this.dialog = null;
-        _this.paste = function () {
-            _this.jodit.selection.focus();
-            _this.jodit.selection.insertHTML(_this.list[_this.currentIndex]);
-            if (_this.currentIndex !== 0) {
-                var buffer = _this.list[0];
-                _this.list[0] = _this.list[_this.currentIndex];
-                _this.list[_this.currentIndex] = buffer;
-            }
-            _this.dialog && _this.dialog.close();
-            _this.jodit.setEditorValue();
-        };
-        _this.onKeyDown = function (e) {
-            var index = _this.currentIndex;
-            if ([constants_1.KEY_UP, constants_1.KEY_DOWN, constants_1.KEY_ENTER].indexOf(e.which) === -1) {
-                return;
-            }
-            if (e.which === constants_1.KEY_UP) {
-                if (index === 0) {
-                    index = _this.list.length - 1;
-                }
-                else {
-                    index -= 1;
-                }
-            }
-            if (e.which === constants_1.KEY_DOWN) {
-                if (index === _this.list.length - 1) {
-                    index = 0;
-                }
-                else {
-                    index += 1;
-                }
-            }
-            if (e.which === constants_1.KEY_ENTER) {
-                _this.paste();
-                return;
-            }
-            if (index !== _this.currentIndex) {
-                _this.selectIndex(index);
-            }
-            e.stopImmediatePropagation();
-            e.preventDefault();
-        };
-        _this.selectIndex = function (index) {
-            if (_this.listBox) {
-                Array.from((_this.listBox.childNodes)).forEach(function (a, i) {
-                    a.classList.remove('jodit_active');
-                    if (index === i && _this.previewBox) {
-                        a.classList.add('jodit_active');
-                        _this.previewBox.innerHTML = _this.list[index];
-                        a.focus();
-                    }
-                });
-            }
-            _this.currentIndex = index;
-        };
-        _this.showDialog = function () {
-            if (_this.list.length < 2) {
-                return;
-            }
-            _this.dialog || _this.createDialog();
-            if (_this.listBox) {
-                _this.listBox.innerHTML = '';
-            }
-            if (_this.previewBox) {
-                _this.previewBox.innerHTML = '';
-            }
-            _this.list.forEach(function (html, index) {
-                var a = _this.jodit.ownerDocument.createElement('a');
-                a.textContent = index + 1 + '. ' + html.replace(constants_1.SPACE_REG_EXP, '');
-                a.addEventListener('keydown', _this.onKeyDown);
-                a.setAttribute('href', 'javascript:void(0)');
-                a.setAttribute('data-index', index.toString());
-                a.setAttribute('tab-index', '-1');
-                _this.listBox && _this.listBox.appendChild(a);
-            });
-            _this.dialog && _this.dialog.open();
-            setTimeout_1.setTimeout(function () {
-                _this.selectIndex(0);
-            }, 100);
-        };
-        return _this;
-    }
-    pasteStorage.prototype.createDialog = function () {
-        var _this = this;
-        this.dialog = new dialog_1.Dialog(this.jodit);
-        var pasteButton = this.jodit.create.fromHTML('<a href="javascript:void(0)" style="float:right;" class="jodit_button">' +
-            '<span>' +
-            this.jodit.i18n('Paste') +
-            '</span>' +
-            '</a>');
-        pasteButton.addEventListener('click', this.paste);
-        var cancelButton = this.jodit.create.fromHTML('<a href="javascript:void(0)" style="float:right; margin-right: 10px;" class="jodit_button">' +
-            '<span>' +
-            this.jodit.i18n('Cancel') +
-            '</span>' +
-            '</a>');
-        cancelButton.addEventListener('click', this.dialog.close);
-        this.container = this.jodit.ownerDocument.createElement('div');
-        this.container.classList.add('jodit_paste_storage');
-        this.listBox = this.jodit.ownerDocument.createElement('div');
-        this.previewBox = this.jodit.ownerDocument.createElement('div');
-        this.container.appendChild(this.listBox);
-        this.container.appendChild(this.previewBox);
-        this.dialog.setTitle(this.jodit.i18n('Choose Content to Paste'));
-        this.dialog.setContent(this.container);
-        this.dialog.setFooter([pasteButton, cancelButton]);
-        this.jodit.events.on(this.listBox, 'click dblclick', function (e) {
-            var a = e.target;
-            if (a && a.nodeName === 'A' && a.hasAttribute('data-index')) {
-                _this.selectIndex(parseInt(a.getAttribute('data-index') || '0', 10));
-            }
-            if (e.type === 'dblclick') {
-                _this.paste();
-            }
-            return false;
-        }, 'a');
-    };
-    pasteStorage.prototype.afterInit = function () {
-        var _this = this;
-        this.jodit.events.on('afterCopy', function (html) {
-            if (_this.list.indexOf(html) !== -1) {
-                _this.list.splice(_this.list.indexOf(html), 1);
-            }
-            _this.list.unshift(html);
-            if (_this.list.length > 5) {
-                _this.list.length = 5;
-            }
-        });
-        this.jodit.registerCommand('showPasteStorage', {
-            exec: this.showDialog,
-            hotkeys: ['ctrl+shift+v', 'cmd+shift+v']
-        });
-    };
-    pasteStorage.prototype.beforeDestruct = function () {
-        this.dialog && this.dialog.destruct();
-        Dom_1.Dom.safeRemove(this.previewBox);
-        Dom_1.Dom.safeRemove(this.listBox);
-        Dom_1.Dom.safeRemove(this.container);
-        this.container = null;
-        this.listBox = null;
-        this.previewBox = null;
-        this.dialog = null;
-        this.list = [];
-    };
-    return pasteStorage;
-}(Plugin_1.Plugin));
-exports.pasteStorage = pasteStorage;
-
-
-/***/ }),
-/* 159 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-var pluginKey = 'copyformat';
-var copyStyles = [
-    'fontWeight',
-    'fontStyle',
-    'fontSize',
-    'color',
-    'margin',
-    'padding',
-    'borderWidth',
-    'borderStyle',
-    'borderColor',
-    'borderRadius',
-    'backgroundColor',
-    'textDecorationLine',
-    'fontFamily'
-];
-var getStyle = function (editor, key, box, defaultStyles) {
-    var result = helpers_1.css(box, key);
-    if (result === defaultStyles[key]) {
-        if (box.parentNode &&
-            box !== editor.editor &&
-            box.parentNode !== editor.editor) {
-            result = getStyle(editor, key, box.parentNode, defaultStyles);
-        }
-        else {
-            result = undefined;
-        }
-    }
-    return result;
-};
-var getStyles = function (editor, box, defaultStyles) {
-    var result = {};
-    if (box) {
-        copyStyles.forEach(function (key) {
-            result[key] = getStyle(editor, key, box, defaultStyles);
-            if (key.match(/border(Style|Color)/) && !result.borderWidth) {
-                result[key] = undefined;
-            }
-        });
-    }
-    return result;
-};
-Config_1.Config.prototype.controls.copyformat = {
-    exec: function (editor, current) {
-        if (current) {
-            if (editor.buffer.exists(pluginKey)) {
-                editor.buffer.set(pluginKey, false);
-                editor.events.off(editor.editor, 'mouseup.' + pluginKey);
-            }
-            else {
-                var defaultStyles_1 = {}, box = Dom_1.Dom.up(current, function (elm) {
-                    return elm && elm.nodeType !== Node.TEXT_NODE;
-                }, editor.editor) || editor.editor;
-                var ideal_1 = editor.create.inside.span();
-                editor.editor.appendChild(ideal_1);
-                copyStyles.forEach(function (key) {
-                    defaultStyles_1[key] = helpers_1.css(ideal_1, key);
-                });
-                if (ideal_1 !== editor.editor) {
-                    Dom_1.Dom.safeRemove(ideal_1);
-                }
-                var format_1 = getStyles(editor, box, defaultStyles_1);
-                var onMouseDown = function () {
-                    editor.buffer.set(pluginKey, false);
-                    var currentNode = editor.selection.current();
-                    if (currentNode) {
-                        if (currentNode.nodeName === 'IMG') {
-                            helpers_1.css(currentNode, format_1);
-                        }
-                        else {
-                            editor.selection.applyCSS(format_1);
-                        }
-                    }
-                    editor.events.off(editor.editor, 'mouseup.' + pluginKey);
-                };
-                editor.events.on(editor.editor, 'mouseup.' + pluginKey, onMouseDown);
-                editor.buffer.set(pluginKey, true);
-            }
-        }
-    },
-    isActive: function (editor) { return !!editor.buffer.get(pluginKey); },
-    tooltip: 'Paint format'
-};
-
-
-/***/ }),
-/* 160 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Widget_1 = __webpack_require__(17);
-var TabsWidget = Widget_1.Widget.TabsWidget;
-var ColorPickerWidget = Widget_1.Widget.ColorPickerWidget;
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.controls.brush = {
-    isActive: function (editor, control, button) {
-        if (!button) {
-            return true;
-        }
-        var current = editor.selection.current(), icon = button.container.querySelector('svg');
-        if (icon && icon.style.fill) {
-            icon.style.removeProperty('fill');
-        }
-        if (current && !button.isDisable()) {
-            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
-                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                    (elm &&
-                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
-                        elm.nodeType === Node.ELEMENT_NODE));
-            }, editor.editor) || editor.editor;
-            var colorHEX = helpers_1.css(currentBpx, 'color').toString(), bgHEX = helpers_1.css(currentBpx, 'background-color').toString();
-            if (colorHEX !== helpers_1.css(editor.editor, 'color').toString()) {
-                icon && (icon.style.fill = colorHEX);
-                return true;
-            }
-            if (bgHEX !== helpers_1.css(editor.editor, 'background-color').toString()) {
-                icon && (icon.style.fill = bgHEX);
-                return true;
-            }
-        }
-        return false;
-    },
-    popup: function (editor, current, self, close) {
-        var colorHEX = '', bg_color = '', tabs, currentElement = null;
-        if (current &&
-            current !== editor.editor &&
-            Dom_1.Dom.isNode(current, editor.editorWindow) &&
-            current.nodeType === Node.ELEMENT_NODE) {
-            colorHEX = helpers_1.css(current, 'color').toString();
-            bg_color = helpers_1.css(current, 'background-color').toString();
-            currentElement = current;
-        }
-        var backgroundTag = ColorPickerWidget(editor, function (value) {
-            if (!currentElement) {
-                editor.execCommand('background', false, value);
-            }
-            else {
-                currentElement.style.backgroundColor = value;
-            }
-            close();
-        }, bg_color);
-        var colorTab = ColorPickerWidget(editor, function (value) {
-            if (!currentElement) {
-                editor.execCommand('forecolor', false, value);
-            }
-            else {
-                currentElement.style.color = value;
-            }
-            close();
-        }, colorHEX);
-        if (editor.options.colorPickerDefaultTab === 'background') {
-            tabs = {
-                Background: backgroundTag,
-                Text: colorTab
-            };
-        }
-        else {
-            tabs = {
-                Text: colorTab,
-                Background: backgroundTag
-            };
-        }
-        return TabsWidget(editor, tabs, currentElement);
-    },
-    tooltip: 'Fill color or set the text color'
-};
-function color(editor) {
-    var callback = function (command, second, third) {
-        var colorHEX = helpers_1.normalizeColor(third);
-        switch (command) {
-            case 'background':
-                editor.selection.applyCSS({
-                    backgroundColor: !colorHEX ? '' : colorHEX
-                });
-                break;
-            case 'forecolor':
-                editor.selection.applyCSS({
-                    color: !colorHEX ? '' : colorHEX
-                });
-                break;
-        }
-        editor.setEditorValue();
-        return false;
-    };
-    editor
-        .registerCommand('forecolor', callback)
-        .registerCommand('background', callback);
-}
-exports.color = color;
-
-
-/***/ }),
-/* 161 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-var Plugin_1 = __webpack_require__(7);
-var DragAndDrop = (function (_super) {
-    tslib_1.__extends(DragAndDrop, _super);
-    function DragAndDrop() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.isFragmentFromEditor = false;
-        _this.isCopyMode = false;
-        _this.startDragPoint = { x: 0, y: 0 };
-        _this.draggable = null;
-        _this.bufferRange = null;
-        _this.onDragEnd = function () {
-            if (_this.draggable) {
-                Dom_1.Dom.safeRemove(_this.draggable);
-                _this.draggable = null;
-            }
-            _this.isCopyMode = false;
-        };
-        _this.onDrag = function (event) {
-            if (_this.draggable) {
-                if (!_this.draggable.parentNode) {
-                    _this.jodit.ownerDocument.body.appendChild(_this.draggable);
-                }
-                _this.jodit.events.fire('hidePopup');
-                helpers_1.css(_this.draggable, {
-                    left: event.clientX + 20,
-                    top: event.clientY + 20
-                });
-                _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        };
-        _this.onDrop = function (event) {
-            if (!event.dataTransfer ||
-                !event.dataTransfer.files ||
-                !event.dataTransfer.files.length) {
-                if (!_this.isFragmentFromEditor && !_this.draggable) {
-                    _this.jodit.events.fire('paste', event);
-                    event.preventDefault();
-                    event.stopPropagation();
-                    return false;
-                }
-                var sel = _this.jodit.selection.sel;
-                var range = _this.bufferRange ||
-                    (sel && sel.rangeCount ? sel.getRangeAt(0) : null);
-                var fragment = null;
-                if (!_this.draggable && range) {
-                    fragment = _this.isCopyMode
-                        ? range.cloneContents()
-                        : range.extractContents();
-                }
-                else if (_this.draggable) {
-                    if (_this.isCopyMode) {
-                        var _a = _this.draggable.getAttribute('data-is-file') === '1'
-                            ? ['a', 'href']
-                            : ['img', 'src'], tagName = _a[0], attr = _a[1];
-                        fragment = _this.jodit.editorDocument.createElement(tagName);
-                        fragment.setAttribute(attr, _this.draggable.getAttribute('data-src') ||
-                            _this.draggable.getAttribute('src') ||
-                            '');
-                        if (tagName === 'a') {
-                            fragment.textContent = fragment.getAttribute(attr) || '';
-                        }
-                    }
-                    else {
-                        fragment = helpers_1.dataBind(_this.draggable, 'target');
-                    }
-                }
-                else if (_this.getText(event)) {
-                    fragment = _this.jodit.create.inside.fromHTML(_this.getText(event));
-                }
-                sel && sel.removeAllRanges();
-                _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
-                if (fragment) {
-                    _this.jodit.selection.insertNode(fragment, false, false);
-                    if (range && fragment.firstChild && fragment.lastChild) {
-                        range.setStartBefore(fragment.firstChild);
-                        range.setEndAfter(fragment.lastChild);
-                        _this.jodit.selection.selectRange(range);
-                        _this.jodit.events.fire('synchro');
-                    }
-                    if (fragment.nodeName === 'IMG' && _this.jodit.events) {
-                        _this.jodit.events.fire('afterInsertImage', fragment);
-                    }
-                }
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            _this.isFragmentFromEditor = false;
-        };
-        _this.onDragStart = function (event) {
-            var target = event.target;
-            _this.onDragEnd();
-            _this.isFragmentFromEditor = Dom_1.Dom.isOrContains(_this.jodit.editor, target, true);
-            _this.isCopyMode = _this.isFragmentFromEditor ? helpers_1.ctrlKey(event) : true;
-            if (_this.isFragmentFromEditor) {
-                var sel = _this.jodit.selection.sel;
-                var range = sel && sel.rangeCount ? sel.getRangeAt(0) : null;
-                if (range) {
-                    _this.bufferRange = range.cloneRange();
-                }
-            }
-            else {
-                _this.bufferRange = null;
-            }
-            _this.startDragPoint.x = event.clientX;
-            _this.startDragPoint.y = event.clientY;
-            if (target.nodeType === Node.ELEMENT_NODE &&
-                target.matches('.jodit_filebrowser_files_item')) {
-                target = target.querySelector('img');
-            }
-            if (target.nodeName === 'IMG') {
-                _this.draggable = target.cloneNode(true);
-                helpers_1.dataBind(_this.draggable, 'target', target);
-                helpers_1.css(_this.draggable, {
-                    'z-index': 100000000000000,
-                    'pointer-events': 'none',
-                    position: 'fixed',
-                    display: 'inlin-block',
-                    left: _this.startDragPoint.x,
-                    top: _this.startDragPoint.y,
-                    width: target.offsetWidth,
-                    height: target.offsetHeight
-                });
-            }
-        };
-        _this.getDataTransfer = function (event) {
-            return event.dataTransfer || new DataTransfer();
-        };
-        _this.getText = function (event) {
-            var dt = _this.getDataTransfer(event);
-            return dt.getData(constants_1.TEXT_HTML) || dt.getData(constants_1.TEXT_PLAIN);
-        };
-        return _this;
-    }
-    DragAndDrop.prototype.afterInit = function () {
-        this.jodit.events
-            .on(window, 'dragover', this.onDrag)
-            .on([window, this.jodit.editorDocument, this.jodit.editor], 'dragstart', this.onDragStart)
-            .on('drop', this.onDrop)
-            .on(window, 'dragend drop mouseup', this.onDragEnd);
-    };
-    DragAndDrop.prototype.beforeDestruct = function () {
-        this.onDragEnd();
-    };
-    return DragAndDrop;
-}(Plugin_1.Plugin));
-exports.DragAndDrop = DragAndDrop;
-
-
-/***/ }),
-/* 162 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var helpers_1 = __webpack_require__(4);
-var Plugin_1 = __webpack_require__(7);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.draggableTags = ['img', 'a', 'jodit-media', 'jodit'];
-var DragAndDropElement = (function (_super) {
-    tslib_1.__extends(DragAndDropElement, _super);
-    function DragAndDropElement() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.dragList = [];
-        _this.isCopyMode = false;
-        _this.draggable = null;
-        _this.wasMoved = false;
-        _this.timeout = 0;
-        _this.onDrag = helpers_1.throttle(function (event) {
-            if (!_this.draggable) {
-                return;
-            }
-            _this.wasMoved = true;
-            _this.jodit.events.fire('hidePopup hideResizer');
-            if (!_this.draggable.parentNode) {
-                _this.jodit.ownerDocument.body.appendChild(_this.draggable);
-            }
-            helpers_1.css(_this.draggable, {
-                left: event.clientX + 20,
-                top: event.clientY + 20
-            });
-            _this.jodit.selection.insertCursorAtPoint(event.clientX, event.clientY);
-        }, _this.jodit.defaultTimeout);
-        _this.onDragStart = function (event) {
-            var target = event.target, last = null;
-            if (!_this.dragList.length) {
-                return;
-            }
-            do {
-                if (_this.dragList.indexOf(target.nodeName.toLowerCase()) !== -1) {
-                    if (!last ||
-                        (target.firstChild === last && target.lastChild === last)) {
-                        last = target;
-                    }
-                }
-                target = target.parentNode;
-            } while (target && target !== _this.jodit.editor);
-            if (!last) {
-                return;
-            }
-            _this.isCopyMode = helpers_1.ctrlKey(event);
-            _this.onDragEnd();
-            _this.timeout = helpers_1.setTimeout(function (lastNode) {
-                if (!lastNode) {
-                    return;
-                }
-                _this.draggable = lastNode.cloneNode(true);
-                helpers_1.dataBind(_this.draggable, 'target', lastNode);
-                helpers_1.css(_this.draggable, {
-                    'z-index': 100000000000000,
-                    'pointer-events': 'none',
-                    position: 'fixed',
-                    display: 'inlin-block',
-                    left: event.clientX,
-                    top: event.clientY,
-                    width: lastNode.offsetWidth,
-                    height: lastNode.offsetHeight
-                });
-            }, _this.jodit.defaultTimeout, last);
-            event.preventDefault();
-        };
-        _this.onDragEnd = function () {
-            window.clearTimeout(_this.timeout);
-            if (_this.draggable) {
-                Dom_1.Dom.safeRemove(_this.draggable);
-                _this.draggable = null;
-                _this.wasMoved = false;
-            }
-        };
-        _this.onDrop = function () {
-            if (!_this.draggable || !_this.wasMoved) {
-                _this.onDragEnd();
-                return;
-            }
-            var fragment = helpers_1.dataBind(_this.draggable, 'target');
-            _this.onDragEnd();
-            if (_this.isCopyMode) {
-                fragment = fragment.cloneNode(true);
-            }
-            _this.jodit.selection.insertNode(fragment, true, false);
-            if (fragment.nodeName === 'IMG' && _this.jodit.events) {
-                _this.jodit.events.fire('afterInsertImage', fragment);
-            }
-            _this.jodit.events.fire('synchro');
-        };
-        return _this;
-    }
-    DragAndDropElement.prototype.afterInit = function () {
-        this.dragList = this.jodit.options.draggableTags
-            ? helpers_1.splitArray(this.jodit.options.draggableTags)
-                .filter(function (item) { return item; })
-                .map(function (item) { return item.toLowerCase(); })
-            : [];
-        if (!this.dragList.length) {
-            return;
-        }
-        this.jodit.events
-            .on(this.jodit.editor, 'mousemove touchmove', this.onDrag)
-            .on(this.jodit.editor, 'mousedown touchstart dragstart', this.onDragStart)
-            .on('mouseup touchend', this.onDrop)
-            .on(window, 'mouseup touchend', this.onDragEnd);
-    };
-    DragAndDropElement.prototype.beforeDestruct = function () {
-        this.onDragEnd();
-    };
-    return DragAndDropElement;
-}(Plugin_1.Plugin));
-exports.DragAndDropElement = DragAndDropElement;
-
-
-/***/ }),
-/* 163 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-exports.insertParagraph = function (editor, fake, wrapperTag, style) {
-    var p = editor.create.inside.element(wrapperTag), helper_node = editor.create.inside.element('br');
-    p.appendChild(helper_node);
-    if (style && style.cssText) {
-        p.setAttribute('style', style.cssText);
-    }
-    editor.selection.insertNode(p, false, false);
-    editor.selection.setCursorBefore(helper_node);
-    var range = editor.editorDocument.createRange();
-    range.setStartBefore(wrapperTag.toLowerCase() !== 'br' ? helper_node : p);
-    range.collapse(true);
-    editor.selection.selectRange(range);
-    Dom_1.Dom.safeRemove(fake);
-    helpers_1.scrollIntoView(p, editor.editor, editor.editorDocument);
-    editor.events && editor.events.fire('synchro');
-    return p;
-};
-function enter(editor) {
-    if (!editor.options.enterBlock) {
-        editor.options.enterBlock =
-            editor.options.enter.toLowerCase() === 'br'
-                ? consts.PARAGRAPH
-                : editor.options.enter.toLowerCase();
-    }
-    editor.events.on('keydown', function (event) {
-        if (event.which === consts.KEY_ENTER) {
-            var beforeEnter = editor.events.fire('beforeEnter', event);
-            if (beforeEnter !== undefined) {
-                return beforeEnter;
-            }
-            if (!editor.selection.isCollapsed()) {
-                editor.execCommand('Delete');
-            }
-            editor.selection.focus();
-            var current = editor.selection.current(false);
-            var sel = editor.selection.sel;
-            var range = editor.selection.range;
-            if (!current || current === editor.editor) {
-                editor.selection.current();
-                current = editor.create.inside.text(consts.INVISIBLE_SPACE);
-                if (sel && sel.rangeCount) {
-                    range.insertNode(current);
-                }
-                else {
-                    editor.editor.appendChild(current);
-                }
-                range.selectNode(current);
-                range.collapse(false);
-                if (sel) {
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                }
-            }
-            var currentBox = current
-                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
-                : false;
-            var isLi = currentBox && currentBox.nodeName === 'LI';
-            if (!isLi &&
-                (editor.options.enter.toLowerCase() ===
-                    consts.BR.toLowerCase() ||
-                    event.shiftKey ||
-                    Dom_1.Dom.closest(current, 'PRE|BLOCKQUOTE', editor.editor))) {
-                var br = editor.create.inside.element('br');
-                editor.selection.insertNode(br, true);
-                helpers_1.scrollIntoView(br, editor.editor, editor.editorDocument);
-                return false;
-            }
-            if (!currentBox &&
-                current &&
-                !Dom_1.Dom.prev(current, function (elm) {
-                    return Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                        (!!elm && Dom_1.Dom.isImage(elm, editor.editorWindow));
-                }, editor.editor)) {
-                var needWrap_1 = current;
-                Dom_1.Dom.up(needWrap_1, function (node) {
-                    if (node &&
-                        node.hasChildNodes() &&
-                        node !== editor.editor) {
-                        needWrap_1 = node;
-                    }
-                }, editor.editor);
-                currentBox = Dom_1.Dom.wrapInline(needWrap_1, editor.options.enter, editor);
-                if (Dom_1.Dom.isEmpty(currentBox)) {
-                    var helper_node = editor.editorDocument.createElement('br');
-                    currentBox.appendChild(helper_node);
-                    editor.selection.setCursorBefore(helper_node);
-                }
-                range =
-                    sel && sel.rangeCount
-                        ? sel.getRangeAt(0)
-                        : editor.editorDocument.createRange();
-            }
-            var fake = false, insertNew = false;
-            if (currentBox) {
-                if (!Dom_1.Dom.canSplitBlock(currentBox, editor.editorWindow)) {
-                    var br = editor.create.inside.element('br');
-                    editor.selection.insertNode(br, false);
-                    editor.selection.setCursorAfter(br);
-                    return false;
-                }
-                if (isLi) {
-                    if (Dom_1.Dom.isEmpty(currentBox)) {
-                        var fakeTextNode = false;
-                        var ul = Dom_1.Dom.closest(currentBox, 'ol|ul', editor.editor);
-                        if (!Dom_1.Dom.prev(currentBox, function (elm) {
-                            return elm && elm.nodeName === 'LI';
-                        }, ul)) {
-                            fakeTextNode = editor.selection.setCursorBefore(ul);
-                        }
-                        else if (!Dom_1.Dom.next(currentBox, function (elm) {
-                            return elm && elm.nodeName === 'LI';
-                        }, ul)) {
-                            fakeTextNode = editor.selection.setCursorAfter(ul);
-                        }
-                        else {
-                            var leftRange = editor.editorDocument.createRange();
-                            leftRange.setStartBefore(ul);
-                            leftRange.setEndAfter(currentBox);
-                            var fragment = leftRange.extractContents();
-                            if (ul.parentNode) {
-                                ul.parentNode.insertBefore(fragment, ul);
-                            }
-                            fakeTextNode = editor.selection.setCursorBefore(ul);
-                        }
-                        Dom_1.Dom.safeRemove(currentBox);
-                        exports.insertParagraph(editor, fakeTextNode, editor.options.enter);
-                        if (!helpers_1.$$('li', ul).length) {
-                            Dom_1.Dom.safeRemove(ul);
-                        }
-                        return false;
-                    }
-                }
-                if (editor.selection.cursorInTheEdge(true, currentBox)) {
-                    fake = editor.selection.setCursorBefore(currentBox);
-                    exports.insertParagraph(editor, fake, isLi ? 'li' : editor.options.enter, currentBox.style);
-                    currentBox &&
-                        editor.selection.setCursorIn(currentBox, true);
-                    return false;
-                }
-                if (editor.selection.cursorInTheEdge(false, currentBox) ===
-                    false) {
-                    var leftRange = editor.editorDocument.createRange();
-                    leftRange.setStartBefore(currentBox);
-                    leftRange.setEnd(range.startContainer, range.startOffset);
-                    var fragment = leftRange.extractContents();
-                    if (currentBox.parentNode) {
-                        currentBox.parentNode.insertBefore(fragment, currentBox);
-                    }
-                    editor.selection.setCursorIn(currentBox, true);
-                }
-                else {
-                    fake = editor.selection.setCursorAfter(currentBox);
-                }
-            }
-            else {
-                insertNew = true;
-            }
-            if (insertNew || fake) {
-                exports.insertParagraph(editor, fake, isLi ? 'li' : editor.options.enter, currentBox ? currentBox.style : void 0);
-            }
-            return false;
-        }
-    });
-}
-exports.enter = enter;
-
-
-/***/ }),
-/* 164 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var async_1 = __webpack_require__(5);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.showMessageErrors = true;
-Config_1.Config.prototype.showMessageErrorTime = 3000;
-Config_1.Config.prototype.showMessageErrorOffsetPx = 3;
-function errorMessages(editor) {
-    if (editor.options.showMessageErrors) {
-        var height_1;
-        var messagesBox_1 = editor.create.div('jodit_error_box_for_messages'), recalcOffsets_1 = function () {
-            height_1 = 5;
-            Array.from((messagesBox_1.childNodes)).forEach(function (elm) {
-                helpers_1.css(messagesBox_1, 'bottom', height_1 + 'px');
-                height_1 +=
-                    elm.offsetWidth +
-                        editor.options.showMessageErrorOffsetPx;
-            });
-        };
-        editor.workplace.appendChild(messagesBox_1);
-        editor.events
-            .on('beforeDestruct', function () {
-            Dom_1.Dom.safeRemove(messagesBox_1);
-        })
-            .on('errorMessage', function (message, className, timeout) {
-            var newmessage = editor.create.div('active ' + (className || ''), message);
-            messagesBox_1.appendChild(newmessage);
-            recalcOffsets_1();
-            async_1.setTimeout(function () {
-                newmessage.classList.remove('active');
-                async_1.setTimeout(function () {
-                    Dom_1.Dom.safeRemove(newmessage);
-                    recalcOffsets_1();
-                }, 300);
-            }, timeout || editor.options.showMessageErrorTime);
-        });
-    }
-}
-exports.errorMessages = errorMessages;
-
-
-/***/ }),
-/* 165 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.controls.fontsize = {
-    command: 'fontSize',
-    list: [
-        '8',
-        '9',
-        '10',
-        '11',
-        '12',
-        '14',
-        '16',
-        '18',
-        '24',
-        '30',
-        '36',
-        '48',
-        '60',
-        '72',
-        '96'
-    ],
-    template: function (editor, key, value) { return value; },
-    tooltip: 'Font size',
-    isActiveChild: function (editor, control) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
-                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                    (elm &&
-                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
-                        elm.nodeType === Node.ELEMENT_NODE));
-            }, editor.editor) || editor.editor;
-            var fontSize = helpers_1.css(currentBpx, 'font-size');
-            return Boolean(fontSize &&
-                control.args &&
-                control.args[1].toString() === fontSize.toString());
-        }
-        return false;
-    },
-    isActive: function (editor) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
-                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                    (elm &&
-                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
-                        elm.nodeType === Node.ELEMENT_NODE));
-            }, editor.editor) || editor.editor;
-            return (helpers_1.css(currentBpx, 'font-size').toString() !==
-                helpers_1.css(editor.editor, 'font-size').toString());
-        }
-        return false;
-    }
-};
-Config_1.Config.prototype.controls.font = {
-    command: 'fontname',
-    exec: function (editor, event, control) {
-        editor.execCommand(control.command, false, control.args ? control.args[0] : undefined);
-    },
-    list: {
-        'Helvetica,sans-serif': 'Helvetica',
-        'Arial,Helvetica,sans-serif': 'Arial',
-        'Georgia,serif': 'Georgia',
-        'Impact,Charcoal,sans-serif': 'Impact',
-        'Tahoma,Geneva,sans-serif': 'Tahoma',
-        "'Times New Roman',Times,serif": 'Times New Roman',
-        'Verdana,Geneva,sans-serif': 'Verdana'
-    },
-    template: function (editor, key, value) {
-        return "<span style=\"font-family: " + key + "\">" + value + "</span>";
-    },
-    isActiveChild: function (editor, control) {
-        var current = editor.selection.current(), normFonts = function (fontValue) {
-            return fontValue
-                .toLowerCase()
-                .replace(/['"]+/g, '')
-                .replace(/[^a-z0-9]+/g, ',');
-        };
-        if (current) {
-            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
-                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                    (elm &&
-                        Dom_1.Dom.isNode(elm, editor.editorWindow) &&
-                        elm.nodeType === Node.ELEMENT_NODE));
-            }, editor.editor) || editor.editor;
-            var fontFamily = helpers_1.css(currentBpx, 'font-family').toString();
-            return Boolean(fontFamily &&
-                control.args &&
-                normFonts(control.args[0].toString()) ===
-                    normFonts(fontFamily));
-        }
-        return false;
-    },
-    isActive: function (editor) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBpx = Dom_1.Dom.closest(current, function (elm) {
-                return (Dom_1.Dom.isBlock(elm, editor.editorWindow) ||
-                    (Dom_1.Dom.isNode(elm, editor.editorWindow) &&
-                        elm &&
-                        elm.nodeType === Node.ELEMENT_NODE));
-            }, editor.editor) || editor.editor;
-            return (helpers_1.css(currentBpx, 'font-family').toString() !==
-                helpers_1.css(editor.editor, 'font-family').toString());
-        }
-        return false;
-    },
-    tooltip: 'Font family'
-};
-function font(editor) {
-    var callback = function (command, second, third) {
-        switch (command) {
-            case 'fontsize':
-                editor.selection.applyCSS({
-                    fontSize: helpers_1.normalizeSize(third)
-                });
-                break;
-            case 'fontname':
-                editor.selection.applyCSS({
-                    fontFamily: third
-                });
-                break;
-        }
-        editor.events.fire('synchro');
-        return false;
-    };
-    editor
-        .registerCommand('fontsize', callback)
-        .registerCommand('fontname', callback);
-}
-exports.font = font;
-
-
-/***/ }),
-/* 166 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.controls.paragraph = {
-    command: 'formatBlock',
-    getLabel: function (editor, btn, button) {
-        var current = editor.selection.current();
-        if (current && editor.options.textIcons) {
-            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor, currentValue = currentBox.nodeName.toLowerCase(), list = btn.list;
-            if (button &&
-                btn.data &&
-                btn.data.currentValue !== currentValue &&
-                btn.list &&
-                list[currentValue]) {
-                button.textBox.innerHTML = "<span>" + editor.i18n(list[currentValue]) + "</span>";
-                button.textBox.firstChild.classList.add('jodit_icon');
-                btn.data.currentValue = currentValue;
-            }
-        }
-        return false;
-    },
-    exec: function (editor, event, control) {
-        editor.execCommand(control.command, false, control.args ? control.args[0] : undefined);
-    },
-    data: {
-        currentValue: 'left'
-    },
-    list: {
-        p: 'Normal',
-        h1: 'Heading 1',
-        h2: 'Heading 2',
-        h3: 'Heading 3',
-        h4: 'Heading 4',
-        blockquote: 'Quote'
-    },
-    isActiveChild: function (editor, control) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-            return (currentBox &&
-                currentBox !== editor.editor &&
-                control.args !== undefined &&
-                currentBox.nodeName.toLowerCase() === control.args[0]);
-        }
-        return false;
-    },
-    isActive: function (editor, control) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBpx = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-            return (currentBpx &&
-                currentBpx !== editor.editor &&
-                control.list !== undefined &&
-                currentBpx.nodeName.toLowerCase() !== 'p' &&
-                control.list[currentBpx.nodeName.toLowerCase()] !== undefined);
-        }
-        return false;
-    },
-    template: function (editor, key, value) {
-        return ('<' +
-            key +
-            ' class="jodit_list_element"><span>' +
-            editor.i18n(value) +
-            '</span></' +
-            key +
-            '></li>');
-    },
-    tooltip: 'Insert format block'
-};
-function formatBlock(editor) {
-    editor.registerCommand('formatblock', function (command, second, third) {
-        editor.selection.focus();
-        var work = false;
-        editor.selection.eachSelection(function (current) {
-            var selectionInfo = editor.selection.save();
-            var currentBox = current
-                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
-                : false;
-            if ((!currentBox || currentBox.nodeName === 'LI') && current) {
-                currentBox = Dom_1.Dom.wrapInline(current, editor.options.enter, editor);
-            }
-            if (!currentBox) {
-                editor.selection.restore(selectionInfo);
-                return;
-            }
-            if (!currentBox.tagName.match(/TD|TH|TBODY|TABLE|THEAD/i)) {
-                if (third === editor.options.enterBlock.toLowerCase() &&
-                    currentBox.parentNode &&
-                    currentBox.parentNode.nodeName === 'LI') {
-                    Dom_1.Dom.unwrap(currentBox);
-                }
-                else {
-                    Dom_1.Dom.replace(currentBox, third, true, false, editor.editorDocument);
-                }
-            }
-            else {
-                if (!editor.selection.isCollapsed()) {
-                    editor.selection.applyCSS({}, third);
-                }
-                else {
-                    Dom_1.Dom.wrapInline(current, third, editor);
-                }
-            }
-            work = true;
-            editor.selection.restore(selectionInfo);
-        });
-        if (!work) {
-            var currentBox = editor.editorDocument.createElement(third);
-            currentBox.innerHTML = consts.INVISIBLE_SPACE;
-            editor.selection.insertNode(currentBox, false);
-            editor.selection.setCursorIn(currentBox);
-        }
-        editor.setEditorValue();
-        return false;
-    });
-}
-exports.formatBlock = formatBlock;
-
-
-/***/ }),
-/* 167 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var helpers_1 = __webpack_require__(4);
-var icon_1 = __webpack_require__(6);
-Config_1.Config.prototype.fullsize = false;
-Config_1.Config.prototype.globalFullsize = true;
-Config_1.Config.prototype.controls.fullsize = {
-    exec: function (editor) {
-        editor.toggleFullSize();
-    },
-    isActive: function (editor) { return editor.isFullSize(); },
-    getLabel: function (editor, btn, button) {
-        var mode = editor.isFullSize() ? 'shrink' : 'fullsize';
-        if (button) {
-            button.textBox.innerHTML = !editor.options.textIcons
-                ? icon_1.ToolbarIcon.getIcon(mode)
-                : "<span>" + editor.i18n(mode) + "</span>";
-            button.textBox.firstChild.classList.add('jodit_icon');
-        }
-    },
-    tooltip: 'Open editor in fullsize',
-    mode: consts.MODE_SOURCE + consts.MODE_WYSIWYG
-};
-function fullsize(editor) {
-    var shown = false, oldHeight = 0, oldWidth = 0, wasToggled = false;
-    var resize = function () {
-        if (editor.events) {
-            if (shown) {
-                oldHeight = helpers_1.css(editor.container, 'height');
-                oldWidth = helpers_1.css(editor.container, 'width');
-                helpers_1.css(editor.container, {
-                    height: editor.ownerWindow.innerHeight,
-                    width: editor.ownerWindow.innerWidth
-                });
-                wasToggled = true;
-            }
-            else if (wasToggled) {
-                helpers_1.css(editor.container, {
-                    height: oldHeight || 'auto',
-                    width: oldWidth || 'auto'
-                });
-            }
-        }
-    }, toggle = function (enable) {
-        var _a, _b;
-        if (!editor.container) {
-            return;
-        }
-        if (enable === undefined) {
-            enable = !editor.container.classList.contains('jodit_fullsize');
-        }
-        editor.options.fullsize = enable;
-        shown = enable;
-        editor.container.classList.toggle('jodit_fullsize', enable);
-        if (editor.toolbar) {
-            if (!enable) {
-                (_a = editor.toolbar.getParentContainer()) === null || _a === void 0 ? void 0 : _a.appendChild(editor.toolbar.container);
-            }
-            else {
-                (_b = editor.container.querySelector('.jodit_toolbar_container')) === null || _b === void 0 ? void 0 : _b.appendChild(editor.toolbar.container);
-            }
-            helpers_1.css(editor.toolbar.container, 'width', 'auto');
-        }
-        if (editor.options.globalFullsize) {
-            var node = editor.container.parentNode;
-            while (node && node.nodeType !== Node.DOCUMENT_NODE) {
-                node.classList.toggle('jodit_fullsize_box', enable);
-                node = node.parentNode;
-            }
-            resize();
-        }
-        editor.events.fire('afterResize');
-    };
-    if (editor.options.globalFullsize) {
-        editor.events.on(editor.ownerWindow, 'resize', resize);
-    }
-    editor.events
-        .on('afterInit afterOpen', function () {
-        var _a, _b;
-        editor.toggleFullSize((_b = (_a = editor) === null || _a === void 0 ? void 0 : _a.options) === null || _b === void 0 ? void 0 : _b.fullsize);
-    })
-        .on('toggleFullSize', toggle)
-        .on('beforeDestruct beforeClose', function () {
-        toggle(false);
-    })
-        .on('beforeDestruct', function () {
-        editor.events &&
-            editor.events.off(editor.ownerWindow, 'resize', resize);
-    });
-}
-exports.fullsize = fullsize;
-
-
-/***/ }),
-/* 168 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var Plugin_1 = __webpack_require__(7);
-var normalize_1 = __webpack_require__(19);
-Config_1.Config.prototype.commandToHotkeys = {
-    removeFormat: ['ctrl+shift+m', 'cmd+shift+m'],
-    insertOrderedList: ['ctrl+shift+7', 'cmd+shift+7'],
-    insertUnorderedList: ['ctrl+shift+8, cmd+shift+8'],
-    selectall: ['ctrl+a', 'cmd+a']
-};
-var hotkeys = (function (_super) {
-    tslib_1.__extends(hotkeys, _super);
-    function hotkeys() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.onKeyPress = function (event) {
-            var special = _this.specialKeys[event.which], character = (event.key || String.fromCharCode(event.which)).toLowerCase();
-            var modif = [special || character];
-            ['alt', 'ctrl', 'shift', 'meta'].forEach(function (specialKey) {
-                if (event[specialKey + 'Key'] && special !== specialKey) {
-                    modif.push(specialKey);
-                }
-            });
-            return normalize_1.normalizeKeyAliases(modif.join('+'));
-        };
-        _this.specialKeys = {
-            8: 'backspace',
-            9: 'tab',
-            10: 'return',
-            13: 'return',
-            16: 'shift',
-            17: 'ctrl',
-            18: 'alt',
-            19: 'pause',
-            20: 'capslock',
-            27: 'esc',
-            32: 'space',
-            33: 'pageup',
-            34: 'pagedown',
-            35: 'end',
-            36: 'home',
-            37: 'left',
-            38: 'up',
-            39: 'right',
-            40: 'down',
-            45: 'insert',
-            46: 'del',
-            59: ';',
-            61: '=',
-            91: 'meta',
-            96: '0',
-            97: '1',
-            98: '2',
-            99: '3',
-            100: '4',
-            101: '5',
-            102: '6',
-            103: '7',
-            104: '8',
-            105: '9',
-            106: '*',
-            107: '+',
-            109: '-',
-            110: '.',
-            111: '/',
-            112: 'f1',
-            113: 'f2',
-            114: 'f3',
-            115: 'f4',
-            116: 'f5',
-            117: 'f6',
-            118: 'f7',
-            119: 'f8',
-            120: 'f9',
-            121: 'f10',
-            122: 'f11',
-            123: 'f12',
-            144: 'numlock',
-            145: 'scroll',
-            173: '-',
-            186: ';',
-            187: '=',
-            188: ',',
-            189: '-',
-            190: '.',
-            191: '/',
-            192: '`',
-            219: '[',
-            220: '\\',
-            221: ']',
-            222: "'"
-        };
-        return _this;
-    }
-    hotkeys.prototype.afterInit = function (editor) {
-        var _this = this;
-        var commands = Object.keys(editor.options.commandToHotkeys);
-        commands.forEach(function (commandName) {
-            var shortcuts = editor.options.commandToHotkeys[commandName];
-            if (shortcuts) {
-                editor.registerHotkeyToCommand(shortcuts, commandName);
-            }
-        });
-        var itIsHotkey = false;
-        editor.events
-            .on('keydown.hotkeys', function (event) {
-            var shortcut = _this.onKeyPress(event);
-            var resultOfFire = _this.jodit.events.fire(shortcut + '.hotkey', event.type);
-            if (resultOfFire === false) {
-                itIsHotkey = true;
-                editor.events.stopPropagation('keydown');
-                return false;
-            }
-        }, void 0, void 0, true)
-            .on('keyup.hotkeys', function () {
-            if (itIsHotkey) {
-                itIsHotkey = false;
-                editor.events.stopPropagation('keyup');
-                return false;
-            }
-        }, void 0, void 0, true);
-    };
-    hotkeys.prototype.beforeDestruct = function (jodit) {
-        if (jodit.events) {
-            jodit.events.off('.hotkeys');
-        }
-    };
-    return hotkeys;
-}(Plugin_1.Plugin));
-exports.hotkeys = hotkeys;
-
-
-/***/ }),
-/* 169 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var defaultLanguage_1 = __webpack_require__(38);
-var async_1 = __webpack_require__(5);
-var css_1 = __webpack_require__(11);
-Config_1.Config.prototype.iframeBaseUrl = '';
-Config_1.Config.prototype.iframeDefaultSrc = 'about:blank';
-Config_1.Config.prototype.iframeStyle =
-    'html{' +
-        'margin: 0px;' +
-        'min-height: 100%;' +
-        '}' +
-        'body{' +
-        'box-sizing: border-box;' +
-        'font-size: 13px;' +
-        '    line-height: 1.6;' +
-        'padding:10px;' +
-        'background:transparent;' +
-        'color:#000;' +
-        'position:' +
-        'relative;' +
-        'z-index: 2;' +
-        'user-select:auto;' +
-        'margin:0px;' +
-        'overflow:auto;' +
-        '}' +
-        'table{' +
-        'width:100%;' +
-        'border: none;' +
-        'border-collapse:collapse;' +
-        'empty-cells: show;' +
-        'max-width: 100%;' +
-        '}' +
-        'th,td{' +
-        'padding: 2px 5px;' +
-        'border:1px solid #ccc;' +
-        '-webkit-user-select:text;' +
-        '-moz-user-select:text;' +
-        '-ms-user-select:text;' +
-        'user-select:text' +
-        '}' +
-        'td[data-jodit-selected-cell],' +
-        'th[data-jodit-selected-cell]{' +
-        'border: 1px double #1e88e5' +
-        '}' +
-        'p{' +
-        'margin-top:0;' +
-        '}' +
-        '.jodit_editor .jodit_iframe_wrapper{' +
-        'display: block;' +
-        'clear: both;' +
-        'user-select: none;' +
-        'position: relative;' +
-        '}' +
-        '.jodit_editor .jodit_iframe_wrapper:after {' +
-        'position:absolute;' +
-        'content:"";' +
-        'z-index:1;' +
-        'top:0;' +
-        'left:0;' +
-        'right: 0;' +
-        'bottom: 0;' +
-        'cursor: pointer;' +
-        'display: block;' +
-        'background: rgba(0, 0, 0, 0);' +
-        '} ' +
-        '.jodit_disabled{' +
-        'user-select: none;' +
-        '-o-user-select: none;' +
-        '-moz-user-select: none;' +
-        '-khtml-user-select: none;' +
-        '-webkit-user-select: none;' +
-        '-ms-user-select: none' +
-        '}';
-Config_1.Config.prototype.iframeCSSLinks = [];
-function iframe(editor) {
-    var _this = this;
-    editor.events
-        .on('afterSetMode', function () {
-        if (editor.isEditorMode()) {
-            editor.selection.focus();
-        }
-    })
-        .on('generateDocumentStructure.iframe', function (__doc, jodit) {
-        var doc = __doc || jodit.iframe.contentWindow.document;
-        doc.open();
-        doc.write('<!DOCTYPE html>' +
-            '<html dir="' +
-            jodit.options.direction +
-            '" class="jodit" ' +
-            'lang="' +
-            defaultLanguage_1.defaultLanguage(jodit.options.language) +
-            '">' +
-            '<head>' +
-            '<title>Jodit Editor</title>' +
-            (jodit.options.iframeBaseUrl
-                ? '<base href="' +
-                    jodit.options.iframeBaseUrl +
-                    '"/>'
-                : '') +
-            '</head>' +
-            '<body class="jodit_wysiwyg" style="outline:none" contenteditable="true"></body>' +
-            '</html>');
-        doc.close();
-        if (jodit.options.iframeCSSLinks) {
-            jodit.options.iframeCSSLinks.forEach(function (href) {
-                var link = doc.createElement('link');
-                link.setAttribute('rel', 'stylesheet');
-                link.setAttribute('href', href);
-                doc.head && doc.head.appendChild(link);
-            });
-        }
-        if (jodit.options.iframeStyle) {
-            var style = doc.createElement('style');
-            style.innerHTML = jodit.options.iframeStyle;
-            doc.head && doc.head.appendChild(style);
-        }
-    })
-        .on('createEditor', function () { return tslib_1.__awaiter(_this, void 0, void 0, function () {
-        var iframe, doc, resizeIframe;
-        return tslib_1.__generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (!editor.options.iframe) {
-                        return [2];
-                    }
-                    delete editor.editor;
-                    iframe = editor.create.element('iframe');
-                    iframe.style.display = 'block';
-                    iframe.src = 'about:blank';
-                    iframe.className = 'jodit_wysiwyg_iframe';
-                    iframe.setAttribute('allowtransparency', 'true');
-                    iframe.setAttribute('tabindex', editor.options.tabIndex.toString());
-                    iframe.setAttribute('frameborder', '0');
-                    editor.workplace.appendChild(iframe);
-                    editor.iframe = iframe;
-                    return [4, editor.events.fire('generateDocumentStructure.iframe', null, editor)];
-                case 1:
-                    _a.sent();
-                    doc = editor.iframe.contentWindow.document;
-                    editor.editorDocument = doc;
-                    editor.editorWindow = editor.iframe.contentWindow;
-                    editor.create.inside.setDocument(doc);
-                    editor.editor = doc.body;
-                    if (editor.options.height === 'auto') {
-                        doc.documentElement &&
-                            (doc.documentElement.style.overflowY = 'hidden');
-                        resizeIframe = async_1.throttle(function () {
-                            if (editor.editor &&
-                                editor.iframe &&
-                                editor.options.height === 'auto') {
-                                css_1.css(editor.iframe, 'height', editor.editor.offsetHeight);
-                            }
-                        }, editor.defaultTimeout / 2);
-                        editor.events
-                            .on('change afterInit afterSetMode resize', resizeIframe)
-                            .on([
-                            editor.iframe,
-                            editor.editorWindow,
-                            doc.documentElement
-                        ], 'load', resizeIframe)
-                            .on(doc, 'readystatechange DOMContentLoaded', resizeIframe);
-                    }
-                    (function (e) {
-                        e.matches || (e.matches = Element.prototype.matches);
-                    })(editor.editorWindow.Element.prototype);
-                    if (editor.editorDocument.documentElement) {
-                        editor.events
-                            .on(editor.editorDocument.documentElement, 'mousedown touchend', function () {
-                            if (!editor.selection.isFocused()) {
-                                editor.selection.focus();
-                                editor.selection.setCursorIn(editor.editor);
-                            }
-                        })
-                            .on(editor.editorWindow, 'mousedown touchstart keydown keyup touchend click mouseup mousemove scroll', function (e) {
-                            editor.events &&
-                                editor.events.fire &&
-                                editor.events.fire(editor.ownerWindow, e);
-                        });
-                    }
-                    return [2, false];
-            }
-        });
-    }); });
-}
-exports.iframe = iframe;
-
-
-/***/ }),
-/* 170 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var helpers_1 = __webpack_require__(4);
-var JODIT_IMAGE_PROCESSOR_BINDED = '__jodit_imageprocessor_binded';
-function imageProcessor(editor) {
-    editor.events.on('change afterInit', helpers_1.debounce(function () {
-        if (editor.editor) {
-            helpers_1.$$('img', editor.editor).forEach(function (elm) {
-                if (!elm[JODIT_IMAGE_PROCESSOR_BINDED]) {
-                    elm[JODIT_IMAGE_PROCESSOR_BINDED] = true;
-                    if (!elm.complete) {
-                        elm.addEventListener('load', function ElementOnLoad() {
-                            editor.events &&
-                                editor.events.fire &&
-                                editor.events.fire('resize');
-                            elm.removeEventListener('load', ElementOnLoad);
-                        });
-                    }
-                    editor.events.on(elm, 'mousedown touchstart', function () {
-                        editor.selection.select(elm);
-                    });
-                }
-            });
-        }
-    }, editor.defaultTimeout));
-}
-exports.imageProcessor = imageProcessor;
-
-
-/***/ }),
-/* 171 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var dialog_1 = __webpack_require__(14);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-var icon_1 = __webpack_require__(6);
-var Widget_1 = __webpack_require__(17);
-var TabsWidget = Widget_1.Widget.TabsWidget;
-var FileSelectorWidget = Widget_1.Widget.FileSelectorWidget;
-var popup_1 = __webpack_require__(28);
-Config_1.Config.prototype.image = {
-    openOnDblClick: true,
-    editSrc: true,
-    useImageEditor: true,
-    editTitle: true,
-    editAlt: true,
-    editLink: true,
-    editSize: true,
-    editBorderRadius: true,
-    editMargins: true,
-    editClass: true,
-    editStyle: true,
-    editId: true,
-    editAlign: true,
-    showPreview: true,
-    selectImageAfterClose: true
-};
-function imageProperties(editor) {
-    var i18n = editor.i18n, gi = icon_1.ToolbarIcon.getIcon, opt = editor.options, dom = editor.create.fromHTML.bind(editor.create);
-    var open = function (e) {
-        var _this = this;
-        if (opt.readonly) {
-            return;
-        }
-        e && e.stopImmediatePropagation();
-        var image = this, dialog = new dialog_1.Dialog(editor), check = dom("<a href=\"javascript:void(0)\" class=\"jodit_button  jodit_status_success\">" + gi('check') + "<span>" + i18n('Ok') + "</span></a>"), buttons = {
-            remove: dom("<a href=\"javascript:void(0)\" class=\"jodit_button\">" + gi('bin') + "<span>" + i18n('Delete') + "</span></a>")
-        }, prop = dom("<form class=\"jodit_properties\">\n\t\t\t\t\t\t\t\t<div class=\"jodit_grid\">\n\t\t\t\t\t\t\t\t\t<div class=\"jodit_col-lg-2-5\">\n\t\t\t\t\t\t\t\t\t\t<div class=\"jodit_properties_view_box\">\n\t\t\t\t\t\t\t\t\t\t\t<div style=\"" + (!opt.image.showPreview
-            ? 'display:none'
-            : '') + "\" class=\"jodit_properties_image_view\">\n\t\t\t\t\t\t\t\t\t\t\t\t<img class=\"imageViewSrc\" src=\"\" alt=\"\"/>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editSize
-            ? 'display:none'
-            : '') + "\" class=\"jodit_form_group jodit_properties_image_sizes\">\n\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"number\" class=\"imageWidth jodit_input\"/>\n\t\t\t\t\t\t\t\t\t\t\t\t<a class=\"jodit_lock_helper jodit_lock_size\" href=\"javascript:void(0)\">" + gi('lock') + "</a>\n\t\t\t\t\t\t\t\t\t\t\t\t<input type=\"number\" class=\"imageHeight jodit_input\"/>\n\t\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t\t<div class=\"jodit_col-lg-3-5 tabsbox\"></div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</form>"), positionTab = dom("<div style=\"" + (!opt.image.editMargins ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Margins') + "</label>\n\t\t\t\t\t\t\t\t<div class=\"jodit_grid jodit_vertical_middle\">\n\t\t\t\t\t\t\t\t\t<input class=\"jodit_col-lg-1-5 margins marginTop jodit_input\" data-id=\"marginTop\" type=\"text\" placeholder=\"" + i18n('top') + "\"/>\n\t\t\t\t\t\t\t\t\t<a style=\"text-align: center;\" class=\"jodit_lock_helper jodit_lock_margin jodit_col-lg-1-5\" href=\"javascript:void(0)\">" + gi('lock') + "</a>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginRight jodit_input\" data-id=\"marginRight\" type=\"text\" placeholder=\"" + i18n('right') + "\"/>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginBottom jodit_input\" data-id=\"marginBottom\" type=\"text\" placeholder=\"" + i18n('bottom') + "\"/>\n\t\t\t\t\t\t\t\t\t<input disabled=\"true\" class=\"jodit_col-lg-1-5 margins marginLeft jodit_input\" data-id=\"marginLeft\" type=\"text\" placeholder=\"" + i18n('left') + "\"/>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editStyle ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Styles') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"style jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editClass ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"classes\">" + i18n('Classes') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"classes jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editId ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"id\">Id</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"id jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\tstyle=\"" + (!opt.image.editBorderRadius ? 'display:none' : '') + "\"\n\t\t\t\t\t\t\t\tclass=\"jodit_form_group\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t<label for=\"border_radius\">" + i18n('Border radius') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"number\" class=\"border_radius jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\tstyle=\"" + (!opt.image.editAlign ? 'display:none' : '') + "\"\n\t\t\t\t\t\t\t\tclass=\"jodit_form_group\"\n\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t<label for=\"align\">" + i18n('Align') + "</label>\n\t\t\t\t\t\t\t\t<select class=\"select align jodit_select\">\n\t\t\t\t\t\t\t\t\t<option value=\"\">" + i18n('--Not Set--') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"left\">" + i18n('Left') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"center\">" + i18n('Center') + "</option>\n\t\t\t\t\t\t\t\t\t<option value=\"right\">" + i18n('Right') + "</option>\n\t\t\t\t\t\t\t\t</select>\n\t\t\t\t\t\t\t</div>"), hasFbUrl = opt.filebrowser.ajax.url || opt.uploader.url, hasEditor = opt.image.useImageEditor, mainTab = dom("<div style=\"" + (!opt.image.editSrc ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label>" + i18n('Src') + "</label>\n\t\t\t\t\t\t\t\t<div class=\"jodit_input_group\">\n\t\t\t\t\t\t\t\t\t<input class=\"jodit_input imageSrc\" type=\"text\"/>\n\t\t\t\t\t\t\t\t\t<div\n\t\t\t\t\t\t\t\t\t\tclass=\"jodit_input_group-buttons\"\n\t\t\t\t\t\t\t\t\t\tstyle=\"" + (hasFbUrl ? '' : 'display: none') + "\"\n\t\t\t\t\t\t\t\t\t>\n\t\t\t\t\t\t\t\t\t\t\t<a class=\"jodit_button jodit_rechange\" href=\"javascript:void(0)\">" + gi('image') + "</a>\n\t\t\t\t\t\t\t\t\t\t\t<a\n\t\t\t\t\t\t\t\t\t\t\t\tclass=\"jodit_button jodit_use_image_editor\" href=\"javascript:void(0)\"\n\t\t\t\t\t\t\t\t\t\t\t\tstyle=\"" + (hasEditor ? '' : 'display: none') + "\"\n\t\t\t\t\t\t\t\t\t\t\t>" + gi('crop') + "</a>\n\t\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editTitle ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageTitle\">" + i18n('Title') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageTitle jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editAlt ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageAlt\">" + i18n('Alternative') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageAlt jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editLink ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<label for=\"imageLink\">" + i18n('Link') + "</label>\n\t\t\t\t\t\t\t\t<input type=\"text\" class=\"imageLink jodit_input\"/>\n\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t<div style=\"" + (!opt.image.editLink ? 'display:none' : '') + "\" class=\"jodit_form_group\">\n\t\t\t\t\t\t\t\t<div class=\"jodit_vertical_middle\">\n\t\t\t\t\t\t\t\t\t<input type=\"checkbox\" class=\"imageLinkOpenInNewTab jodit_checkbox\"/>\n\t\t\t\t\t\t\t\t\t" + i18n('Open link in new tab') + "\n\t\t\t\t\t\t\t\t</div>\n\t\t\t\t\t\t\t</div>"), ratio = image.naturalWidth / image.naturalHeight || 1, $w = prop.querySelector('.imageWidth'), $h = prop.querySelector('.imageHeight'), updateAlign = function () {
-            if (image.style.cssFloat &&
-                ['left', 'right'].indexOf(image.style.cssFloat.toLowerCase()) !== -1) {
-                helpers_1.val(prop, '.align', helpers_1.css(image, 'float'));
-            }
-            else {
-                if (helpers_1.css(image, 'display') === 'block' &&
-                    image.style.marginLeft === 'auto' &&
-                    image.style.marginRight === 'auto') {
-                    helpers_1.val(prop, '.align', 'center');
-                }
-            }
-        }, updateBorderRadius = function () {
-            helpers_1.val(prop, '.border_radius', (parseInt(image.style.borderRadius || '0', 10) || '0').toString());
-        }, updateId = function () {
-            helpers_1.val(prop, '.id', image.getAttribute('id') || '');
-        }, updateStyle = function () {
-            helpers_1.val(prop, '.style', image.getAttribute('style') || '');
-        }, updateClasses = function () {
-            helpers_1.val(prop, '.classes', (image.getAttribute('class') || '').replace(/jodit_focused_image[\s]*/, ''));
-        }, updateMargins = function () {
-            if (!opt.image.editMargins) {
-                return;
-            }
-            var notequal = false;
-            helpers_1.$$('.margins', prop).forEach(function (elm) {
-                var id = elm.getAttribute('data-id') || '';
-                var value = image.style[id];
-                if (!value) {
-                    return;
-                }
-                if (/^[0-9]+(px)?$/.test(value)) {
-                    value = parseInt(value, 10);
-                }
-                elm.value = value.toString() || '';
-                if (!notequal &&
-                    id !== 'marginTop' &&
-                    elm.value !==
-                        helpers_1.val(prop, '.marginTop')) {
-                    notequal = true;
-                }
-            });
-            lockMargin = !notequal;
-            var lock_margin = prop.querySelector('.jodit_lock_margin');
-            if (lock_margin) {
-                lock_margin.innerHTML = gi(lockMargin ? 'lock' : 'unlock');
-            }
-            helpers_1.$$('.margins:not(.marginTop)', prop).forEach(function (elm) {
-                return !lockMargin
-                    ? elm.removeAttribute('disabled')
-                    : elm.setAttribute('disabled', 'true');
-            });
-        }, updateSizes = function () {
-            $w.value = image.offsetWidth.toString();
-            $h.value = image.offsetHeight.toString();
-        }, updateText = function () {
-            if (image.hasAttribute('title')) {
-                helpers_1.val(prop, '.imageTitle', image.getAttribute('title') || '');
-            }
-            if (image.hasAttribute('alt')) {
-                helpers_1.val(prop, '.imageAlt', image.getAttribute('alt') || '');
-            }
-            var a = Dom_1.Dom.closest(image, 'a', editor.editor);
-            if (a) {
-                helpers_1.val(prop, '.imageLink', a.getAttribute('href') || '');
-                prop.querySelector('.imageLinkOpenInNewTab').checked =
-                    a.getAttribute('target') === '_blank';
-            }
-        }, updateSrc = function () {
-            helpers_1.val(prop, '.imageSrc', image.getAttribute('src') || '');
-            var imageViewSrc = prop.querySelector('.imageViewSrc');
-            if (imageViewSrc) {
-                imageViewSrc.setAttribute('src', image.getAttribute('src') || '');
-            }
-        }, update = function () {
-            updateSrc();
-            updateText();
-            updateSizes();
-            updateMargins();
-            updateClasses();
-            updateId();
-            updateBorderRadius();
-            updateAlign();
-            updateStyle();
-        };
-        var timer, lockSize = true, lockMargin = true;
-        var tabs = {}, tabsbox = prop.querySelector('.tabsbox');
-        tabs['Image'] = mainTab;
-        tabs['Advanced'] = positionTab;
-        if (tabsbox) {
-            tabsbox.appendChild(TabsWidget(editor, tabs));
-        }
-        update();
-        editor.events.on(dialog, 'afterClose', function () {
-            dialog.destruct();
-            if (image.parentNode && opt.image.selectImageAfterClose) {
-                editor.selection.select(image);
-            }
-        });
-        buttons.remove.addEventListener('click', function () {
-            Dom_1.Dom.safeRemove(image);
-            dialog.close();
-        });
-        if (opt.image.useImageEditor) {
-            helpers_1.$$('.jodit_use_image_editor', mainTab).forEach(function (btn) {
-                editor.events.on(btn, 'mousedown touchstart', function () {
-                    var url = image.getAttribute('src') || '', a = editor.create.element('a'), loadExternal = function () {
-                        if (a.host !== location.host) {
-                            dialog_1.Confirm(i18n('You can only edit your own images. Download this image on the host?'), function (yes) {
-                                if (yes && editor.uploader) {
-                                    editor.uploader.uploadRemoteImage(a.href.toString(), function (resp) {
-                                        dialog_1.Alert(i18n('The image has been successfully uploaded to the host!'), function () {
-                                            if (typeof resp.newfilename ===
-                                                'string') {
-                                                image.setAttribute('src', resp.baseurl +
-                                                    resp.newfilename);
-                                                updateSrc();
-                                            }
-                                        });
-                                    }, function (error) {
-                                        dialog_1.Alert(i18n('There was an error loading %s', error.message));
-                                    });
-                                }
-                            });
-                            return;
-                        }
-                    };
-                    a.href = url;
-                    editor.getInstance('FileBrowser').dataProvider.getPathByUrl(a.href.toString(), function (path, name, source) {
-                        editor.getInstance('FileBrowser').openImageEditor(a.href, name, path, source, function () {
-                            var timestamp = new Date().getTime();
-                            image.setAttribute('src', url +
-                                (url.indexOf('?') !== -1
-                                    ? ''
-                                    : '?') +
-                                '&_tmp=' +
-                                timestamp.toString());
-                            updateSrc();
-                        }, function (error) {
-                            dialog_1.Alert(error.message);
-                        });
-                    }, function (error) {
-                        dialog_1.Alert(error.message, loadExternal);
-                    });
-                });
-            });
-        }
-        helpers_1.$$('.jodit_rechange', mainTab).forEach(function (imagebtn) {
-            imagebtn.addEventListener('mousedown', function (event) {
-                imagebtn.classList.toggle('active');
-                var popup = new popup_1.Popup(editor, imagebtn);
-                popup.open(FileSelectorWidget(editor, {
-                    upload: function (data) {
-                        if (data.files && data.files.length) {
-                            image.setAttribute('src', data.baseurl + data.files[0]);
-                        }
-                        update();
-                        popup.close();
-                    },
-                    filebrowser: function (data) {
-                        if (data &&
-                            data.files &&
-                            Array.isArray(data.files) &&
-                            data.files.length) {
-                            image.setAttribute('src', data.files[0]);
-                            popup.close();
-                            update();
-                        }
-                    }
-                }, image, popup.close), true);
-                event.stopPropagation();
-            });
-        });
-        var jodit_lock_size = prop.querySelector('.jodit_lock_helper.jodit_lock_size'), jodit_lock_margin = prop.querySelector('.jodit_lock_helper.jodit_lock_margin');
-        if (jodit_lock_size) {
-            jodit_lock_size.addEventListener('click', function () {
-                lockSize = !lockSize;
-                this.innerHTML = gi(lockSize ? 'lock' : 'unlock');
-                editor.events.fire($w, 'change');
-            });
-        }
-        if (jodit_lock_margin) {
-            jodit_lock_margin.addEventListener('click', function () {
-                lockMargin = !lockMargin;
-                this.innerHTML = gi(lockMargin ? 'lock' : 'unlock');
-                if (!lockMargin) {
-                    helpers_1.$$('.margins', prop).forEach(function (elm) {
-                        if (!elm.matches('.marginTop')) {
-                            elm.removeAttribute('disabled');
-                        }
-                    });
-                }
-                else {
-                    helpers_1.$$('.margins', prop).forEach(function (elm) {
-                        if (!elm.matches('.marginTop')) {
-                            elm.setAttribute('disabled', 'true');
-                        }
-                    });
-                }
-            });
-        }
-        var changeSizes = function (event) {
-            var w = parseInt($w.value, 10), h = parseInt($h.value, 10);
-            if (event.target === $w) {
-                $h.value = Math.round(w / ratio).toString();
-            }
-            else {
-                $w.value = Math.round(h * ratio).toString();
-            }
-        };
-        editor.events.on([$w, $h], 'change keydown mousedown paste', function (event) {
-            if (!lockSize) {
-                return;
-            }
-            if (editor.defaultTimeout) {
-                clearTimeout(timer);
-                timer = helpers_1.setTimeout(changeSizes.bind(_this, event), editor.defaultTimeout);
-            }
-            else {
-                changeSizes(event);
-            }
-        });
-        dialog.setTitle([i18n('Image properties'), buttons.remove]);
-        dialog.setContent(prop);
-        check.addEventListener('click', function () {
-            if (opt.image.editStyle) {
-                if (helpers_1.val(prop, '.style')) {
-                    image.setAttribute('style', helpers_1.val(prop, '.style'));
-                }
-                else {
-                    image.removeAttribute('style');
-                }
-            }
-            if (helpers_1.val(prop, '.imageSrc')) {
-                image.setAttribute('src', helpers_1.val(prop, '.imageSrc'));
-            }
-            else {
-                Dom_1.Dom.safeRemove(image);
-                dialog.close();
-                return;
-            }
-            if (helpers_1.val(prop, '.border_radius') !== '0' &&
-                /^[0-9]+$/.test(helpers_1.val(prop, '.border_radius'))) {
-                image.style.borderRadius = helpers_1.val(prop, '.border_radius') + 'px';
-            }
-            else {
-                image.style.borderRadius = '';
-            }
-            if (helpers_1.val(prop, '.imageTitle')) {
-                image.setAttribute('title', helpers_1.val(prop, '.imageTitle'));
-            }
-            else {
-                image.removeAttribute('title');
-            }
-            if (helpers_1.val(prop, '.imageAlt')) {
-                image.setAttribute('alt', helpers_1.val(prop, '.imageAlt'));
-            }
-            else {
-                image.removeAttribute('alt');
-            }
-            var link = Dom_1.Dom.closest(image, 'a', editor.editor);
-            if (helpers_1.val(prop, '.imageLink')) {
-                if (!link) {
-                    link = Dom_1.Dom.wrap(image, 'a', editor);
-                }
-                link.setAttribute('href', helpers_1.val(prop, '.imageLink'));
-                if (prop.querySelector('.imageLinkOpenInNewTab').checked) {
-                    link.setAttribute('target', '_blank');
-                }
-                else {
-                    link.removeAttribute('target');
-                }
-            }
-            else {
-                if (link && link.parentNode) {
-                    link.parentNode.replaceChild(image, link);
-                }
-            }
-            var normalSize = function (value) {
-                value = helpers_1.trim(value);
-                return /^[0-9]+$/.test(value) ? value + 'px' : value;
-            };
-            if ($w.value !== image.offsetWidth.toString() ||
-                $h.value !== image.offsetHeight.toString()) {
-                helpers_1.css(image, {
-                    width: helpers_1.trim($w.value) ? normalSize($w.value) : null,
-                    height: helpers_1.trim($h.value) ? normalSize($h.value) : null
-                });
-            }
-            if (opt.image.editMargins) {
-                if (!lockMargin) {
-                    helpers_1.$$('.margins', prop).forEach(function (margin) {
-                        var id = margin.getAttribute('data-id') || '';
-                        helpers_1.css(image, id, normalSize(margin.value));
-                    });
-                }
-                else {
-                    helpers_1.css(image, 'margin', normalSize(helpers_1.val(prop, '.marginTop')));
-                }
-            }
-            if (opt.image.editClass) {
-                if (helpers_1.val(prop, '.classes')) {
-                    image.setAttribute('class', helpers_1.val(prop, '.classes'));
-                }
-                else {
-                    image.removeAttribute('class');
-                }
-            }
-            if (opt.image.editId) {
-                if (helpers_1.val(prop, '.id')) {
-                    image.setAttribute('id', helpers_1.val(prop, '.id'));
-                }
-                else {
-                    image.removeAttribute('id');
-                }
-            }
-            if (opt.image.editAlign) {
-                if (helpers_1.val(prop, '.align')) {
-                    if (['right', 'left'].indexOf(helpers_1.val(prop, '.align').toLowerCase()) !== -1) {
-                        helpers_1.css(image, 'float', helpers_1.val(prop, '.align'));
-                        helpers_1.clearCenterAlign(image);
-                    }
-                    else {
-                        helpers_1.css(image, 'float', '');
-                        helpers_1.css(image, {
-                            display: 'block',
-                            'margin-left': 'auto',
-                            'margin-right': 'auto'
-                        });
-                    }
-                }
-                else {
-                    if (helpers_1.css(image, 'float') &&
-                        ['right', 'left'].indexOf(helpers_1.css(image, 'float')
-                            .toString()
-                            .toLowerCase()) !== -1) {
-                        helpers_1.css(image, 'float', '');
-                    }
-                    helpers_1.clearCenterAlign(image);
-                }
-            }
-            if (!image.getAttribute('style')) {
-                image.removeAttribute('style');
-            }
-            editor.setEditorValue();
-            dialog.close();
-        });
-        dialog.setFooter([check]);
-        dialog.setSize(500);
-        dialog.open();
-        if (e) {
-            e.preventDefault();
-        }
-        return false;
-    };
-    editor.events
-        .on('afterInit', function () {
-        if (opt.image.openOnDblClick) {
-            editor.events.on(editor.editor, 'dblclick', open, 'img');
-        }
-        else {
-            editor.events.on(editor.editor, 'dblclick', function (event) {
-                event.stopImmediatePropagation();
-                editor.selection.select(this);
-            }, 'img');
-        }
-    })
-        .on('openImageProperties', function (image) {
-        open.call(image);
-    });
-}
-exports.imageProperties = imageProperties;
-
-
-/***/ }),
-/* 172 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.controls.indent = {
-    tooltip: 'Increase Indent'
-};
-Config_1.Config.prototype.controls.outdent = {
-    isDisable: function (editor) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-            if (currentBox && currentBox.style && currentBox.style.marginLeft) {
-                return parseInt(currentBox.style.marginLeft, 10) <= 0;
-            }
-        }
-        return true;
-    },
-    tooltip: 'Decrease Indent'
-};
-Config_1.Config.prototype.indentMargin = 10;
-function indent(editor) {
-    var callback = function (command) {
-        var indentedBoxes = [];
-        editor.selection.eachSelection(function (current) {
-            var selectionInfo = editor.selection.save();
-            var currentBox = current
-                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
-                : false;
-            var enter = editor.options.enter;
-            if (!currentBox && current) {
-                currentBox = Dom_1.Dom.wrapInline(current, enter !== constants_1.BR ? enter : constants_1.PARAGRAPH, editor);
-            }
-            if (!currentBox) {
-                editor.selection.restore(selectionInfo);
-                return false;
-            }
-            var alreadyIndented = indentedBoxes.indexOf(currentBox) !== -1;
-            if (currentBox && currentBox.style && !alreadyIndented) {
-                indentedBoxes.push(currentBox);
-                var marginLeft = currentBox.style.marginLeft
-                    ? parseInt(currentBox.style.marginLeft, 10)
-                    : 0;
-                marginLeft +=
-                    editor.options.indentMargin *
-                        (command === 'outdent' ? -1 : 1);
-                currentBox.style.marginLeft =
-                    marginLeft > 0 ? marginLeft + 'px' : '';
-                if (!currentBox.getAttribute('style')) {
-                    currentBox.removeAttribute('style');
-                }
-            }
-            editor.selection.restore(selectionInfo);
-        });
-        editor.setEditorValue();
-        return false;
-    };
-    editor.registerCommand('indent', {
-        exec: callback,
-        hotkeys: ['ctrl+]', 'cmd+]']
-    });
-    editor.registerCommand('outdent', {
-        exec: callback,
-        hotkeys: ['ctrl+[', 'cmd+[']
-    });
-}
-exports.indent = indent;
-
-
-/***/ }),
-/* 173 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var Widget_1 = __webpack_require__(17);
-var ColorPickerWidget = Widget_1.Widget.ColorPickerWidget;
-var TabsWidget = Widget_1.Widget.TabsWidget;
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-var Plugin_1 = __webpack_require__(7);
-var Table_1 = __webpack_require__(30);
-var popup_1 = __webpack_require__(28);
-var joditToolbarCollection_1 = __webpack_require__(20);
-Config_1.Config.prototype.toolbarInline = true;
-Config_1.Config.prototype.toolbarInlineDisableFor = [];
-Config_1.Config.prototype.popup = {
-    a: [
-        {
-            name: 'eye',
-            tooltip: 'Open link',
-            exec: function (editor, current) {
-                var href = current.getAttribute('href');
-                if (current && href) {
-                    editor.ownerWindow.open(href);
-                }
-            }
-        },
-        {
-            name: 'link',
-            tooltip: 'Edit link',
-            icon: 'pencil'
-        },
-        'unlink',
-        'brush',
-        'file'
-    ],
-    jodit: [
-        {
-            name: 'bin',
-            tooltip: 'Delete',
-            exec: function (editor, image) {
-                if (image.parentNode) {
-                    Dom_1.Dom.safeRemove(image);
-                    editor.events.fire('hidePopup');
-                }
-            }
-        }
-    ],
-    'jodit-media': [
-        {
-            name: 'bin',
-            tooltip: 'Delete',
-            exec: function (editor, image) {
-                if (image.parentNode) {
-                    Dom_1.Dom.safeRemove(image);
-                    editor.events.fire('hidePopup');
-                }
-            }
-        }
-    ],
-    img: [
-        {
-            name: 'delete',
-            icon: 'bin',
-            tooltip: 'Delete',
-            exec: function (editor, image) {
-                if (image.parentNode) {
-                    Dom_1.Dom.safeRemove(image);
-                    editor.events.fire('hidePopup');
-                }
-            }
-        },
-        {
-            name: 'pencil',
-            exec: function (editor, current) {
-                var tagName = current.tagName.toLowerCase();
-                if (tagName === 'img') {
-                    editor.events.fire('openImageProperties', current);
-                }
-            },
-            tooltip: 'Edit'
-        },
-        {
-            name: 'valign',
-            list: ['Top', 'Middle', 'Bottom'],
-            tooltip: 'Vertical align',
-            exec: function (editor, image, control) {
-                var tagName = image.tagName.toLowerCase();
-                if (tagName !== 'img') {
-                    return;
-                }
-                var command = control.args && typeof control.args[1] === 'string'
-                    ? control.args[1].toLowerCase()
-                    : '';
-                helpers_1.css(image, 'vertical-align', command);
-                editor.events.fire('recalcPositionPopup');
-            }
-        },
-        {
-            name: 'left',
-            list: ['Left', 'Right', 'Center', 'Normal'],
-            exec: function (editor, image, control) {
-                var tagName = image.tagName.toLowerCase();
-                if (tagName !== 'img') {
-                    return;
-                }
-                var command = control.args && typeof control.args[1] === 'string'
-                    ? control.args[1].toLowerCase()
-                    : '';
-                if (command !== 'normal') {
-                    if (['right', 'left'].indexOf(command) !== -1) {
-                        helpers_1.css(image, 'float', command);
-                        helpers_1.clearCenterAlign(image);
-                    }
-                    else {
-                        helpers_1.css(image, 'float', '');
-                        helpers_1.css(image, {
-                            display: 'block',
-                            'margin-left': 'auto',
-                            'margin-right': 'auto'
-                        });
-                    }
-                }
-                else {
-                    if (helpers_1.css(image, 'float') &&
-                        ['right', 'left'].indexOf(helpers_1.css(image, 'float').toLowerCase()) !== -1) {
-                        helpers_1.css(image, 'float', '');
-                    }
-                    helpers_1.clearCenterAlign(image);
-                }
-                editor.events.fire('recalcPositionPopup');
-            },
-            tooltip: 'Horizontal align'
-        }
-    ],
-    table: [
-        {
-            name: 'brush',
-            popup: function (editor, elm) {
-                var selected = Table_1.Table.getAllSelectedCells(elm);
-                var $bg, $cl, $br, $tab, color, br_color, bg_color;
-                if (!selected.length) {
-                    return false;
-                }
-                color = helpers_1.css(selected[0], 'color');
-                bg_color = helpers_1.css(selected[0], 'background-color');
-                br_color = helpers_1.css(selected[0], 'border-color');
-                $bg = ColorPickerWidget(editor, function (value) {
-                    selected.forEach(function (cell) {
-                        helpers_1.css(cell, 'background-color', value);
-                    });
-                    editor.setEditorValue();
-                }, bg_color);
-                $cl = ColorPickerWidget(editor, function (value) {
-                    selected.forEach(function (cell) {
-                        helpers_1.css(cell, 'color', value);
-                    });
-                    editor.setEditorValue();
-                }, color);
-                $br = ColorPickerWidget(editor, function (value) {
-                    selected.forEach(function (cell) {
-                        helpers_1.css(cell, 'border-color', value);
-                    });
-                    editor.setEditorValue();
-                }, br_color);
-                $tab = TabsWidget(editor, {
-                    Background: $bg,
-                    Text: $cl,
-                    Border: $br
-                });
-                return $tab;
-            },
-            tooltip: 'Background'
-        },
-        {
-            name: 'valign',
-            list: ['Top', 'Middle', 'Bottom'],
-            exec: function (editor, table, control) {
-                var command = control.args && typeof control.args[1] === 'string'
-                    ? control.args[1].toLowerCase()
-                    : '';
-                Table_1.Table.getAllSelectedCells(table).forEach(function (cell) {
-                    helpers_1.css(cell, 'vertical-align', command);
-                });
-            },
-            tooltip: 'Vertical align'
-        },
-        {
-            name: 'splitv',
-            list: {
-                tablesplitv: 'Split vertical',
-                tablesplitg: 'Split horizontal'
-            },
-            tooltip: 'Split'
-        },
-        {
-            name: 'align',
-            icon: 'left'
-        },
-        '\n',
-        {
-            name: 'merge',
-            command: 'tablemerge',
-            tooltip: 'Merge'
-        },
-        {
-            name: 'addcolumn',
-            list: {
-                tableaddcolumnbefore: 'Insert column before',
-                tableaddcolumnafter: 'Insert column after'
-            },
-            exec: function (editor, table, control) {
-                var command = control.args && typeof control.args[0] === 'string'
-                    ? control.args[0].toLowerCase()
-                    : '';
-                editor.execCommand(command, false, table);
-            },
-            tooltip: 'Add column'
-        },
-        {
-            name: 'addrow',
-            list: {
-                tableaddrowbefore: 'Insert row above',
-                tableaddrowafter: 'Insert row below'
-            },
-            exec: function (editor, table, control) {
-                var command = control.args && typeof control.args[0] === 'string'
-                    ? control.args[0].toLowerCase()
-                    : '';
-                editor.execCommand(command, false, table);
-            },
-            tooltip: 'Add row'
-        },
-        {
-            name: 'delete',
-            icon: 'bin',
-            list: {
-                tablebin: 'Delete table',
-                tablebinrow: 'Delete row',
-                tablebincolumn: 'Delete column',
-                tableempty: 'Empty cell'
-            },
-            exec: function (editor, table, control) {
-                var command = control.args && typeof control.args[0] === 'string'
-                    ? control.args[0].toLowerCase()
-                    : '';
-                editor.execCommand(command, false, table);
-                editor.events.fire('hidePopup');
-            },
-            tooltip: 'Delete'
-        }
-    ]
-};
-var inlinePopup = (function (_super) {
-    tslib_1.__extends(inlinePopup, _super);
-    function inlinePopup() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this._hiddenClass = 'jodit_toolbar_popup-inline-target-hidden';
-        _this.isSelectionStarted = false;
-        _this.onSelectionEnd = helpers_1.debounce(function () {
-            if (_this.isDestructed || !_this.jodit.isEditorMode()) {
-                return;
-            }
-            if (_this.isSelectionStarted) {
-                if (!_this.isTargetAction) {
-                    _this.onChangeSelection();
-                }
-            }
-            _this.isSelectionStarted = false;
-            _this.isTargetAction = false;
-        }, _this.jodit.defaultTimeout);
-        _this.isTargetAction = false;
-        _this.isSelectionPopup = false;
-        _this.calcWindSizes = function () {
-            var win = _this.jodit.ownerWindow;
-            var docElement = _this.jodit.ownerDocument
-                .documentElement;
-            if (!docElement) {
-                return {
-                    left: 0,
-                    top: 0,
-                    width: 0,
-                    height: 0
-                };
-            }
-            var body = _this.jodit.ownerDocument.body;
-            var scrollTop = win.pageYOffset || docElement.scrollTop || body.scrollTop;
-            var clientTop = docElement.clientTop || body.clientTop || 0;
-            var scrollLeft = win.pageXOffset || docElement.scrollLeft || body.scrollLeft;
-            var clientLeft = docElement.clientLeft || body.clientLeft || 0;
-            var windWidth = docElement.clientWidth + scrollLeft - clientLeft;
-            var windHeight = docElement.clientHeight + scrollTop - clientTop;
-            return {
-                left: clientLeft,
-                top: clientTop,
-                width: windWidth,
-                height: windHeight
-            };
-        };
-        _this.calcPosition = function (rect, windowSize) {
-            if (_this.isDestructed) {
-                return;
-            }
-            _this.popup.target.classList.remove(_this._hiddenClass);
-            var selectionCenterLeft = rect.left + rect.width / 2;
-            var workplacePosition = helpers_1.offset(_this.jodit.workplace, _this.jodit, _this.jodit.ownerDocument, true);
-            var targetTop = rect.top + rect.height + 10;
-            var diff = 50;
-            _this.target.style.left = selectionCenterLeft + 'px';
-            _this.target.style.top = targetTop + 'px';
-            if (_this.jodit.isFullSize()) {
-                _this.target.style.zIndex = helpers_1.css(_this.jodit.container, 'zIndex').toString();
-            }
-            var halfWidthPopup = _this.container.offsetWidth / 2;
-            var marginLeft = -halfWidthPopup;
-            _this.popup.container.classList.remove('jodit_toolbar_popup-inline-top');
-            if (targetTop + _this.container.offsetHeight > windowSize.height) {
-                targetTop = rect.top - _this.container.offsetHeight - 10;
-                _this.target.style.top = targetTop + 'px';
-                _this.popup.container.classList.add('jodit_toolbar_popup-inline-top');
-            }
-            if (selectionCenterLeft - halfWidthPopup < 0) {
-                marginLeft = -(rect.width / 2 + rect.left);
-            }
-            if (selectionCenterLeft + halfWidthPopup > windowSize.width) {
-                marginLeft = -(_this.container.offsetWidth -
-                    (windowSize.width - selectionCenterLeft));
-            }
-            _this.container.style.marginLeft = marginLeft + 'px';
-            if (workplacePosition.top - targetTop > diff ||
-                targetTop - (workplacePosition.top + workplacePosition.height) >
-                    diff) {
-                _this.popup.target.classList.add(_this._hiddenClass);
-            }
-        };
-        _this.reCalcPosition = function () {
-            if (_this.__getRect) {
-                _this.calcPosition(_this.__getRect(), _this.calcWindSizes());
-            }
-        };
-        _this.showPopup = function (rect, type, elm) {
-            if (!_this.jodit.options.toolbarInline ||
-                !_this.jodit.options.popup[type.toLowerCase()]) {
-                return false;
-            }
-            if (_this.isExcludedTarget(type)) {
-                return true;
-            }
-            _this.isOpened = true;
-            _this.isTargetAction = true;
-            var windSize = _this.calcWindSizes();
-            _this.targetContainer.parentNode ||
-                _this.jodit.ownerDocument.body.appendChild(_this.targetContainer);
-            _this.toolbar.build(_this.jodit.options.popup[type.toLowerCase()], _this.container, elm);
-            _this.popup.open(_this.container, false, true);
-            _this.__getRect = rect;
-            _this.calcPosition(rect(), windSize);
-            return true;
-        };
-        _this.hidePopup = function (root) {
-            if (_this.isDestructed) {
-                return;
-            }
-            if (root &&
-                (Dom_1.Dom.isNode(root, _this.jodit.editorWindow || window) ||
-                    root instanceof popup_1.Popup) &&
-                Dom_1.Dom.isOrContains(_this.target, root instanceof popup_1.Popup ? root.target : root)) {
-                return;
-            }
-            _this.isTargetAction = false;
-            _this.isOpened = false;
-            _this.popup.close();
-            Dom_1.Dom.safeRemove(_this.targetContainer);
-        };
-        _this.onSelectionStart = function (event) {
-            if (_this.isDestructed || !_this.jodit.isEditorMode()) {
-                return;
-            }
-            _this.isTargetAction = false;
-            _this.isSelectionPopup = false;
-            if (!_this.isSelectionStarted) {
-                var elements = Object.keys(_this.jodit.options.popup).join('|'), target_1 = event.target.nodeName === 'IMG'
-                    ? event.target
-                    : Dom_1.Dom.closest(event.target, elements, _this.jodit.editor);
-                if (!target_1 ||
-                    !_this.showPopup(function () { return helpers_1.offset(target_1, _this.jodit, _this.jodit.editorDocument); }, target_1.nodeName, target_1)) {
-                    _this.isSelectionStarted = true;
-                }
-            }
-        };
-        _this.checkIsTargetEvent = function () {
-            if (!_this.isTargetAction) {
-                _this.hidePopup();
-            }
-            else {
-                _this.isTargetAction = false;
-            }
-        };
-        _this.isOpened = false;
-        _this.onChangeSelection = function () {
-            if (!_this.jodit.options.toolbarInline || !_this.jodit.isEditorMode()) {
-                return;
-            }
-            if (_this.hideIfCollapsed()) {
-                return;
-            }
-            if (_this.jodit.options.popup.selection !== undefined) {
-                var sel = _this.jodit.selection.sel;
-                if (sel && sel.rangeCount) {
-                    _this.isSelectionPopup = true;
-                    var range_1 = sel.getRangeAt(0);
-                    _this.showPopup(function () { return helpers_1.offset(range_1, _this.jodit, _this.jodit.editorDocument); }, 'selection');
-                }
-            }
-        };
-        return _this;
-    }
-    inlinePopup.prototype.isExcludedTarget = function (type) {
-        return (helpers_1.splitArray(this.jodit.options.toolbarInlineDisableFor)
-            .map(function (a) { return a.toLowerCase(); })
-            .indexOf(type.toLowerCase()) !== -1);
-    };
-    inlinePopup.prototype.hideIfCollapsed = function () {
-        if (this.jodit.selection.isCollapsed()) {
-            this.hidePopup();
-            return true;
-        }
-        return false;
-    };
-    inlinePopup.prototype.afterInit = function (editor) {
-        var _this = this;
-        this.toolbar = joditToolbarCollection_1.JoditToolbarCollection.makeCollection(editor);
-        this.target = editor.create.div('jodit_toolbar_popup-inline-target');
-        this.targetContainer = editor.create.div('jodit_toolbar_popup-inline-container', this.target);
-        this.container = editor.create.div();
-        this.popup = new popup_1.Popup(editor, this.target, undefined, 'jodit_toolbar_popup-inline');
-        editor.events
-            .on(this.target, 'mousedown keydown touchstart', function (e) {
-            e.stopPropagation();
-        })
-            .on('beforeOpenPopup hidePopup afterSetMode blur', this.hidePopup)
-            .on('recalcPositionPopup', this.reCalcPosition)
-            .on('getDiffButtons.mobile', function (_toolbar) {
-            if (_this.toolbar === _toolbar) {
-                return helpers_1.splitArray(editor.options.buttons)
-                    .filter(function (name) { return name !== '|' && name !== '\n'; })
-                    .filter(function (name) {
-                    return (_this.toolbar
-                        .getButtonsList()
-                        .indexOf(name) < 0);
-                });
-            }
-        })
-            .on('selectionchange', this.onChangeSelection)
-            .on('afterCommand afterExec', function () {
-            if (_this.isOpened && _this.isSelectionPopup) {
-                _this.onChangeSelection();
-            }
-        })
-            .on('showPopup', function (elm, rect) {
-            var elementName = (typeof elm === 'string'
-                ? elm
-                : elm.nodeName).toLowerCase();
-            _this.isSelectionPopup = false;
-            _this.showPopup(rect, elementName, typeof elm === 'string' ? undefined : elm);
-        })
-            .on('mousedown keydown touchstart', this.onSelectionStart)
-            .on([editor.ownerWindow, editor.editor], 'scroll resize', this.reCalcPosition)
-            .on([editor.ownerWindow], 'mouseup keyup touchend', this.onSelectionEnd)
-            .on([editor.ownerWindow], 'mousedown keydown touchstart', this.checkIsTargetEvent);
-    };
-    inlinePopup.prototype.beforeDestruct = function (editor) {
-        this.popup && this.popup.destruct();
-        delete this.popup;
-        this.toolbar && this.toolbar.destruct();
-        delete this.toolbar;
-        Dom_1.Dom.safeRemove(this.target);
-        Dom_1.Dom.safeRemove(this.container);
-        editor.events &&
-            editor.events
-                .off([editor.ownerWindow], 'scroll resize', this.reCalcPosition)
-                .off([editor.ownerWindow], 'mouseup keyup touchend', this.onSelectionEnd)
-                .off([editor.ownerWindow], 'mousedown keydown touchstart', this.checkIsTargetEvent);
-    };
-    return inlinePopup;
-}(Plugin_1.Plugin));
-exports.inlinePopup = inlinePopup;
-
-
-/***/ }),
-/* 174 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-var icon_1 = __webpack_require__(6);
-Config_1.Config.prototype.controls.align = {
-    name: 'left',
-    tooltip: 'Align',
-    getLabel: function (editor, btn, button) {
-        var current = editor.selection.current();
-        if (current) {
-            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor;
-            var currentValue = helpers_1.css(currentBox, 'text-align').toString();
-            if (btn.defaultValue &&
-                btn.defaultValue.indexOf(currentValue) !== -1) {
-                currentValue = 'left';
-            }
-            if (button &&
-                btn.data &&
-                btn.data.currentValue !== currentValue &&
-                btn.list &&
-                btn.list.indexOf(currentValue) !== -1) {
-                button.textBox.innerHTML = !editor.options.textIcons
-                    ? icon_1.ToolbarIcon.getIcon(currentValue, '')
-                    : "<span>" + currentValue + "</span>";
-                button.textBox.firstChild.classList.add('jodit_icon');
-                btn.data.currentValue = currentValue;
-            }
-        }
-        return false;
-    },
-    isActive: function (editor, btn) {
-        var current = editor.selection.current();
-        if (current && btn.defaultValue) {
-            var currentBox = Dom_1.Dom.closest(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor) || editor.editor;
-            return (btn.defaultValue.indexOf(helpers_1.css(currentBox, 'text-align').toString()) === -1);
-        }
-        return false;
-    },
-    defaultValue: ['left', 'start', 'inherit'],
-    data: {
-        currentValue: 'left'
-    },
-    list: ['center', 'left', 'right', 'justify']
-};
-Config_1.Config.prototype.controls.center = {
-    command: 'justifyCenter',
-    css: {
-        'text-align': 'center'
-    },
-    tooltip: 'Align Center'
-};
-Config_1.Config.prototype.controls.justify = {
-    command: 'justifyFull',
-    css: {
-        'text-align': 'justify'
-    },
-    tooltip: 'Align Justify'
-};
-Config_1.Config.prototype.controls.left = {
-    command: 'justifyLeft',
-    css: {
-        'text-align': 'left'
-    },
-    tooltip: 'Align Left'
-};
-Config_1.Config.prototype.controls.right = {
-    command: 'justifyRight',
-    css: {
-        'text-align': 'right'
-    },
-    tooltip: 'Align Right'
-};
-function justify(editor) {
-    var callback = function (command) {
-        var justifyElm = function (box) {
-            if (box instanceof editor.editorWindow.HTMLElement) {
-                switch (command.toLowerCase()) {
-                    case 'justifyfull':
-                        box.style.textAlign = 'justify';
-                        break;
-                    case 'justifyright':
-                        box.style.textAlign = 'right';
-                        break;
-                    case 'justifyleft':
-                        box.style.textAlign = 'left';
-                        break;
-                    case 'justifycenter':
-                        box.style.textAlign = 'center';
-                        break;
-                }
-            }
-        };
-        editor.selection.focus();
-        editor.selection.eachSelection(function (current) {
-            if (!current) {
-                if (editor.editor.querySelector('.jodit_selected_cell')) {
-                    helpers_1.$$('.jodit_selected_cell', editor.editor).forEach(justifyElm);
-                    return false;
-                }
-            }
-            if (!(current instanceof editor.editorWindow.Node)) {
-                return;
-            }
-            var currentBox = current
-                ? Dom_1.Dom.up(current, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor)
-                : false;
-            if (!currentBox && current) {
-                currentBox = Dom_1.Dom.wrapInline(current, editor.options.enterBlock, editor);
-            }
-            justifyElm(currentBox);
-        });
-        return false;
-    };
-    editor.registerCommand('justifyfull', callback);
-    editor.registerCommand('justifyright', callback);
-    editor.registerCommand('justifyleft', callback);
-    editor.registerCommand('justifycenter', callback);
-}
-exports.justify = justify;
-
-
-/***/ }),
-/* 175 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var async_1 = __webpack_require__(5);
-var html_1 = __webpack_require__(36);
-Config_1.Config.prototype.limitWords = false;
-Config_1.Config.prototype.limitChars = false;
-Config_1.Config.prototype.limitHTML = false;
-function limit(jodit) {
-    if (jodit && (jodit.options.limitWords || jodit.options.limitChars)) {
-        var callback_1 = function (event, inputText) {
-            if (inputText === void 0) { inputText = ''; }
-            var text = inputText ||
-                (jodit.options.limitHTML ? jodit.value : jodit.getEditorText());
-            var words = text
-                .replace(constants_1.INVISIBLE_SPACE_REG_EXP, '')
-                .split(constants_1.SPACE_REG_EXP)
-                .filter(function (e) { return e.length; });
-            if (event && constants_1.COMMAND_KEYS.indexOf(event.which) !== -1) {
-                return;
-            }
-            if (jodit.options.limitWords &&
-                jodit.options.limitWords <= words.length) {
-                return jodit.options.limitWords === words.length;
-            }
-            if (jodit.options.limitChars &&
-                jodit.options.limitChars <= words.join('').length) {
-                return jodit.options.limitChars === words.join('').length;
-            }
-            return;
-        };
-        var snapshot_1 = null;
-        jodit.events
-            .on('beforePaste', function () {
-            snapshot_1 = jodit.observer.snapshot.make();
-        })
-            .on('keydown keyup beforeEnter beforePaste', function (event) {
-            if (callback_1(event) !== undefined) {
-                return false;
-            }
-        })
-            .on('change', async_1.debounce(function (newValue, oldValue) {
-            if (callback_1(null, jodit.options.limitHTML
-                ? newValue
-                : html_1.stripTags(newValue)) === false) {
-                jodit.value = oldValue;
-            }
-        }, jodit.defaultTimeout))
-            .on('afterPaste', function () {
-            if (callback_1(null) === false && snapshot_1) {
-                jodit.observer.snapshot.restore(snapshot_1);
-                return false;
-            }
-        });
-    }
-}
-exports.limit = limit;
-
-
-/***/ }),
-/* 176 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.link = {
-    followOnDblClick: true,
-    processVideoLink: true,
-    processPastedLink: true,
-    openLinkDialogAfterPost: true,
-    removeLinkAfterFormat: true,
-    noFollowCheckbox: true,
-    openInNewTabCheckbox: true
-};
-Config_1.Config.prototype.controls.unlink = {
-    exec: function (editor, current) {
-        var anchor = Dom_1.Dom.closest(current, 'A', editor.editor);
-        if (anchor) {
-            Dom_1.Dom.unwrap(anchor);
-        }
-        editor.events.fire('hidePopup');
-    }
-};
-Config_1.Config.prototype.controls.link = {
-    isActive: function (editor) {
-        var current = editor.selection.current();
-        return current && Dom_1.Dom.closest(current, 'a', editor.editor) !== false;
-    },
-    popup: function (editor, current, self, close) {
-        var sel = editor.selection.sel, form = editor.create.fromHTML('<form class="jodit_form">' +
-            '<div class="jodit_form_group">' +
-            '<input class="jodit_input" required type="text" name="url" placeholder="http://" type="text"/>' +
-            '</div>' +
-            '<div class="jodit_form_group">' +
-            '<input class="jodit_input" name="text" placeholder="' + editor.i18n('Text') + '" type="text"/>' +
-            '</div>' +
-            (editor.options.link.openInNewTabCheckbox
-                ? '<label>' +
-                    '<input class="jodit_checkbox" name="target" type="checkbox"/> ' +
-                    editor.i18n('Open in new tab') +
-                    '</label>'
-                : '') +
-            (editor.options.link.noFollowCheckbox
-                ? '<label>' +
-                    '<input class="jodit_checkbox" name="nofollow" type="checkbox"/> ' +
-                    editor.i18n('No follow') +
-                    '</label>'
-                : '') +
-            '<div style="text-align: right">' +
-            '<button class="jodit_button jodit_unlink_button" type="button">' +
-            editor.i18n('Unlink') +
-            '</button> &nbsp;&nbsp;' +
-            '<button class="jodit_button jodit_link_insert_button" type="submit"></button>' +
-            '</div>' +
-            '<form/>');
-        if (current && Dom_1.Dom.closest(current, 'A', editor.editor)) {
-            current = Dom_1.Dom.closest(current, 'A', editor.editor);
-        }
-        else {
-            current = false;
-        }
-        var lnk = form.querySelector('.jodit_link_insert_button'), unlink = form.querySelector('.jodit_unlink_button');
-        if (current) {
-            helpers_1.val(form, 'input[name=url]', current.getAttribute('href') || '');
-            helpers_1.val(form, 'input[name=text]', current.textContent || '');
-            if (editor.options.link.openInNewTabCheckbox) {
-                form.querySelector('input[name=target]').checked =
-                    current.getAttribute('target') === '_blank';
-            }
-            if (editor.options.link.noFollowCheckbox) {
-                form.querySelector('input[name=nofollow]').checked =
-                    current.getAttribute('rel') === 'nofollow';
-            }
-            if (lnk) {
-                lnk.innerHTML = editor.i18n('Update');
-            }
-        }
-        else {
-            if (unlink) {
-                unlink.style.display = 'none';
-            }
-            helpers_1.val(form, 'input[name=text]', sel ? sel.toString() : '');
-            if (lnk) {
-                lnk.innerHTML = editor.i18n('Insert');
-            }
-        }
-        var selInfo = editor.selection.save();
-        if (unlink) {
-            unlink.addEventListener('mousedown', function (e) {
-                if (current) {
-                    Dom_1.Dom.unwrap(current);
-                }
-                editor.selection.restore(selInfo);
-                close();
-                e.preventDefault();
-            });
-        }
-        form.addEventListener('submit', function (event) {
-            event.preventDefault();
-            editor.selection.restore(selInfo);
-            var a = current ||
-                editor.editorDocument.createElement('a');
-            if (!helpers_1.val(form, 'input[name=url]')) {
-                form.querySelector('input[name=url]').focus();
-                form.querySelector('input[name=url]').classList.add('jodit_error');
-                return false;
-            }
-            a.setAttribute('href', helpers_1.val(form, 'input[name=url]'));
-            a.textContent = helpers_1.val(form, 'input[name=text]');
-            if (editor.options.link.openInNewTabCheckbox) {
-                if (form.querySelector('input[name=target]').checked) {
-                    a.setAttribute('target', '_blank');
-                }
-                else {
-                    a.removeAttribute('target');
-                }
-            }
-            if (editor.options.link.noFollowCheckbox) {
-                if (form.querySelector('input[name=nofollow]').checked) {
-                    a.setAttribute('rel', 'nofollow');
-                }
-                else {
-                    a.removeAttribute('rel');
-                }
-            }
-            if (!current) {
-                editor.selection.insertNode(a);
-            }
-            close();
-            return false;
-        });
-        return form;
-    },
-    tags: ['a'],
-    tooltip: 'Insert link'
-};
-function link(jodit) {
-    if (jodit.options.link.followOnDblClick) {
-        jodit.events.on('afterInit', function () {
-            jodit.events.on(jodit.editor, 'dblclick', function (e) {
-                var href = this.getAttribute('href');
-                if (href) {
-                    location.href = href;
-                    e.preventDefault();
-                }
-            }, 'a');
-        });
-    }
-    if (jodit.options.link.processPastedLink) {
-        jodit.events.on('processPaste', function (event, html) {
-            if (helpers_1.isURL(html)) {
-                var embed = helpers_1.convertMediaURLToVideoEmbed(html);
-                if (embed !== html) {
-                    return jodit.create.inside.fromHTML(embed);
-                }
-                var a = jodit.create.inside.element('a');
-                a.setAttribute('href', html);
-                a.textContent = html;
-                return a;
-            }
-        });
-    }
-    if (jodit.options.link.removeLinkAfterFormat) {
-        jodit.events.on('afterCommand', function (command) {
-            var sel = jodit.selection;
-            var newtag, node;
-            if (command === 'removeFormat') {
-                node = sel.current();
-                if (node && node.nodeName !== 'A') {
-                    node = Dom_1.Dom.closest(node, 'A', jodit.editor);
-                }
-                if (node && node.nodeName === 'A') {
-                    if (node.innerHTML ===
-                        node.textContent) {
-                        newtag = jodit.editorDocument.createTextNode(node.innerHTML);
-                    }
-                    else {
-                        newtag = jodit.editorDocument.createElement('span');
-                        newtag.innerHTML = node.innerHTML;
-                    }
-                    if (node.parentNode) {
-                        node.parentNode.replaceChild(newtag, node);
-                        jodit.selection.setCursorIn(newtag, true);
-                    }
-                }
-            }
-        });
-    }
-}
-exports.link = link;
-
-
-/***/ }),
-/* 177 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var async_1 = __webpack_require__(5);
-var selector_1 = __webpack_require__(12);
-Config_1.Config.prototype.mediaFakeTag = 'jodit-media';
-Config_1.Config.prototype.mediaInFakeBlock = true;
-Config_1.Config.prototype.mediaBlocks = ['video', 'audio'];
-function media(editor) {
-    var keyFake = 'jodit_fake_wrapper';
-    var _a = editor.options, mediaFakeTag = _a.mediaFakeTag, mediaBlocks = _a.mediaBlocks, mediaInFakeBlock = _a.mediaInFakeBlock;
-    var wrap = function (element) {
-        if (element.parentNode &&
-            element.parentNode.getAttribute('data-jodit_iframe_wrapper')) {
-            element = element.parentNode;
-        }
-        else {
-            var wrapper = void 0;
-            wrapper = editor.create.inside.fromHTML('<' +
-                mediaFakeTag +
-                ' data-jodit-temp="1" ' +
-                'contenteditable="false" ' +
-                'draggable="true" ' +
-                'data-' +
-                keyFake +
-                '="1">' +
-                '</' +
-                mediaFakeTag +
-                '>');
-            wrapper.style.display =
-                element.style.display === 'inline-block'
-                    ? 'inline-block'
-                    : 'block';
-            wrapper.style.width = element.offsetWidth + 'px';
-            wrapper.style.height = element.offsetHeight + 'px';
-            if (element.parentNode) {
-                element.parentNode.insertBefore(wrapper, element);
-            }
-            wrapper.appendChild(element);
-            element = wrapper;
-        }
-        editor.events
-            .off(element, 'mousedown.select touchstart.select')
-            .on(element, 'mousedown.select touchstart.select', function () {
-            editor.selection.setCursorAfter(element);
-        });
-    };
-    if (mediaInFakeBlock) {
-        editor.events
-            .on('afterGetValueFromEditor', function (data) {
-            var rxp = new RegExp("<" + mediaFakeTag + "[^>]+data-" + keyFake + "[^>]+>(.+?)</" + mediaFakeTag + ">", 'ig');
-            if (rxp.test(data.value)) {
-                data.value = data.value.replace(rxp, '$1');
-            }
-        })
-            .on('change afterInit afterSetMode', async_1.debounce(function () {
-            if (!editor.isDestructed &&
-                editor.getMode() !== consts.MODE_SOURCE) {
-                selector_1.$$(mediaBlocks.join(','), editor.editor).forEach(function (elm) {
-                    if (!elm['__' + keyFake]) {
-                        elm['__' + keyFake] = true;
-                        wrap(elm);
-                    }
-                });
-            }
-        }, editor.defaultTimeout));
-    }
-}
-exports.media = media;
-
-
-/***/ }),
-/* 178 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var array_1 = __webpack_require__(31);
-var joditToolbarCollection_1 = __webpack_require__(20);
-Config_1.Config.prototype.mobileTapTimeout = 300;
-Config_1.Config.prototype.toolbarAdaptive = true;
-Config_1.Config.prototype.controls.dots = {
-    mode: consts.MODE_SOURCE + consts.MODE_WYSIWYG,
-    popup: function (editor, current, control, close, button) {
-        var store = control.data;
-        if (store === undefined) {
-            store = {
-                container: editor.create.div(),
-                toolbar: joditToolbarCollection_1.JoditToolbarCollection.makeCollection(editor),
-                rebuild: function () {
-                    if (button) {
-                        var buttons = editor.events.fire('getDiffButtons.mobile', button.parentToolbar);
-                        if (buttons && store) {
-                            store.toolbar.build(array_1.splitArray(buttons), store.container);
-                        }
-                    }
-                }
-            };
-            var w = 32;
-            var size = editor.options.toolbarButtonSize;
-            if (size === 'large') {
-                w = 36;
-            }
-            else if (size === 'small') {
-                w = 24;
-            }
-            store.container.style.width = (w * 3) + 'px';
-            control.data = store;
-        }
-        store.rebuild();
-        return store.container;
-    }
-};
-function mobile(editor) {
-    var timeout = 0, now, store = array_1.splitArray(editor.options.buttons);
-    editor.events
-        .on('touchend', function (e) {
-        if (e.changedTouches && e.changedTouches.length) {
-            now = new Date().getTime();
-            if (now - timeout > editor.options.mobileTapTimeout) {
-                timeout = now;
-                editor.selection.insertCursorAtPoint(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
-            }
-        }
-    })
-        .on('getDiffButtons.mobile', function (toolbar) {
-        if (toolbar === editor.toolbar) {
-            return array_1.splitArray(editor.options.buttons).filter(function (i) {
-                return store.indexOf(i) < 0;
-            });
-        }
-    });
-    if (editor.options.toolbarAdaptive) {
-        editor.events.on('resize afterInit', function () {
-            if (!editor.options.toolbar) {
-                return;
-            }
-            var width = editor.container.offsetWidth;
-            var newStore = [];
-            if (width >= editor.options.sizeLG) {
-                newStore = array_1.splitArray(editor.options.buttons);
-            }
-            else if (width >= editor.options.sizeMD) {
-                newStore = array_1.splitArray(editor.options.buttonsMD);
-            }
-            else if (width >= editor.options.sizeSM) {
-                newStore = array_1.splitArray(editor.options.buttonsSM);
-            }
-            else {
-                newStore = array_1.splitArray(editor.options.buttonsXS);
-            }
-            if (newStore.toString() !== store.toString()) {
-                store = newStore;
-                editor.toolbar.build(store.concat(editor.options.extraButtons), editor.toolbar.container.parentElement || editor.toolbar.getParentContainer());
-            }
-        });
-    }
-}
-exports.mobile = mobile;
-
-
-/***/ }),
-/* 179 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.controls.ul = {
-    command: 'insertUnorderedList',
-    controlName: 'ul',
-    tags: ['ul'],
-    tooltip: 'Insert Unordered List'
-};
-Config_1.Config.prototype.controls.ol = {
-    command: 'insertOrderedList',
-    controlName: 'ol',
-    tags: ['ol'],
-    tooltip: 'Insert Ordered List'
-};
-function orderedlist(editor) {
-    editor.events.on('afterCommand', function (command) {
-        if (/insert(un)?orderedlist/i.test(command)) {
-            var ul = Dom_1.Dom.up(editor.selection.current(), function (tag) { return tag && /^UL|OL$/i.test(tag.nodeName); }, editor.editor);
-            if (ul && ul.parentNode && ul.parentNode.nodeName === 'P') {
-                var selection = editor.selection.save();
-                Dom_1.Dom.unwrap(ul.parentNode);
-                Array.from(ul.childNodes).forEach(function (li) {
-                    if (li.lastChild &&
-                        li.lastChild.nodeType === Node.ELEMENT_NODE &&
-                        li.lastChild.nodeName === 'BR') {
-                        Dom_1.Dom.safeRemove(li.lastChild);
-                    }
-                });
-                editor.selection.restore(selection);
-            }
-            editor.setEditorValue();
-        }
-    });
-}
-exports.orderedlist = orderedlist;
-
-
-/***/ }),
-/* 180 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var css_1 = __webpack_require__(11);
-var async_1 = __webpack_require__(5);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.showPlaceholder = true;
-Config_1.Config.prototype.useInputsPlaceholder = true;
-Config_1.Config.prototype.placeholder = 'Type something';
-function placeholder(editor) {
-    if (!editor.options.showPlaceholder) {
-        return;
-    }
-    this.destruct = function () {
-        Dom_1.Dom.safeRemove(placeholderElm);
-    };
-    var show = function () {
-        if (!placeholderElm.parentNode || editor.options.readonly) {
-            return;
-        }
-        var marginTop = 0, marginLeft = 0;
-        var style = editor.editorWindow.getComputedStyle(editor.editor);
-        if (editor.editor.firstChild &&
-            editor.editor.firstChild.nodeType === Node.ELEMENT_NODE) {
-            var style2 = editor.editorWindow.getComputedStyle(editor.editor.firstChild);
-            marginTop = parseInt(style2.getPropertyValue('margin-top'), 10);
-            marginLeft = parseInt(style2.getPropertyValue('margin-left'), 10);
-            placeholderElm.style.fontSize =
-                parseInt(style2.getPropertyValue('font-size'), 10) + 'px';
-            placeholderElm.style.lineHeight = style2.getPropertyValue('line-height');
-        }
-        else {
-            placeholderElm.style.fontSize =
-                parseInt(style.getPropertyValue('font-size'), 10) + 'px';
-            placeholderElm.style.lineHeight = style.getPropertyValue('line-height');
-        }
-        css_1.css(placeholderElm, {
-            display: 'block',
-            marginTop: Math.max(parseInt(style.getPropertyValue('margin-top'), 10), marginTop),
-            marginLeft: Math.max(parseInt(style.getPropertyValue('margin-left'), 10), marginLeft)
-        });
-    }, hide = function () {
-        if (placeholderElm.parentNode) {
-            placeholderElm.style.display = 'none';
-        }
-    }, toggle = async_1.debounce(function () {
-        if (placeholderElm.parentNode === null) {
-            return;
-        }
-        if (!editor.editor) {
-            return;
-        }
-        if (editor.getRealMode() !== consts.MODE_WYSIWYG) {
-            return hide();
-        }
-        var value = editor.getEditorValue();
-        if (value && !/^<(p|div|h[1-6])><\/\1>$/.test(value)) {
-            hide();
-        }
-        else {
-            show();
-        }
-    }, editor.defaultTimeout / 10);
-    var placeholderElm = editor.create.fromHTML('<span style="display: none;" class="jodit_placeholder">' +
-        editor.i18n(editor.options.placeholder) +
-        '</span>');
-    if (editor.options.direction === 'rtl') {
-        placeholderElm.style.right = '0px';
-        placeholderElm.style.direction = 'rtl';
-    }
-    if (editor.options.useInputsPlaceholder &&
-        editor.element.hasAttribute('placeholder')) {
-        placeholderElm.innerHTML =
-            editor.element.getAttribute('placeholder') || '';
-    }
-    editor.events
-        .on('readonly', function (isReadOnly) {
-        if (isReadOnly) {
-            hide();
-        }
-        else {
-            toggle();
-        }
-    })
-        .on('afterInit', function () {
-        editor.workplace.appendChild(placeholderElm);
-        toggle();
-        editor.events.fire('placeholder', placeholderElm.innerHTML);
-        editor.events
-            .on('change keyup mouseup keydown mousedown afterSetMode', toggle)
-            .on(window, 'load', toggle);
-    });
-}
-exports.placeholder = placeholder;
-
-
-/***/ }),
-/* 181 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var Plugin_1 = __webpack_require__(7);
-Config_1.Config.prototype.controls.redo = {
-    mode: consts.MODE_SPLIT,
-    isDisable: function (editor) { return !editor.observer.stack.canRedo(); },
-    tooltip: 'Redo'
-};
-Config_1.Config.prototype.controls.undo = {
-    mode: consts.MODE_SPLIT,
-    isDisable: function (editor) { return !editor.observer.stack.canUndo(); },
-    tooltip: 'Undo'
-};
-var redoundo = (function (_super) {
-    tslib_1.__extends(redoundo, _super);
-    function redoundo() {
-        return _super !== null && _super.apply(this, arguments) || this;
-    }
-    redoundo.prototype.beforeDestruct = function () {
-    };
-    redoundo.prototype.afterInit = function (editor) {
-        var callback = function (command) {
-            if (editor.getRealMode() === consts.MODE_WYSIWYG) {
-                editor.observer[command]();
-            }
-            return false;
-        };
-        editor.registerCommand('redo', {
-            exec: callback,
-            hotkeys: ['ctrl+y', 'ctrl+shift+z', 'cmd+y', 'cmd+shift+z']
-        });
-        editor.registerCommand('undo', {
-            exec: callback,
-            hotkeys: ['ctrl+z', 'cmd+z']
-        });
-    };
-    return redoundo;
-}(Plugin_1.Plugin));
-exports.redoundo = redoundo;
-
-
-/***/ }),
-/* 182 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var selector_1 = __webpack_require__(12);
-var async_1 = __webpack_require__(5);
-var size_1 = __webpack_require__(23);
-var helpers_1 = __webpack_require__(4);
-Config_1.Config.prototype.useIframeResizer = true;
-Config_1.Config.prototype.useTableResizer = true;
-Config_1.Config.prototype.useImageResizer = true;
-Config_1.Config.prototype.resizer = {
-    showSize: true,
-    hideSizeTimeout: 1000,
-    min_width: 10,
-    min_height: 10
-};
-function resizer(editor) {
-    var LOCK_KEY = 'resizer';
-    var handle, currentElement, resizeElementClicked = false, isResizing = false, start_x, start_y, width, height, ratio, new_h, new_w, diff_x, diff_y, resizerIsVisible = false, timeoutSizeViewer = 0;
-    var resizerElm = editor.create.fromHTML('<div data-editor_id="' +
-        editor.id +
-        '" style="display:none" class="jodit_resizer">' +
-        '<i class="jodit_resizer-topleft"></i>' +
-        '<i class="jodit_resizer-topright"></i>' +
-        '<i class="jodit_resizer-bottomright"></i>' +
-        '<i class="jodit_resizer-bottomleft"></i>' +
-        '<span>100x100</span>' +
-        '</div>'), sizeViewer = resizerElm.getElementsByTagName('span')[0], hideResizer = function () {
-        isResizing = false;
-        resizerIsVisible = false;
-        currentElement = null;
-        resizerElm.style.display = 'none';
-    }, hideSizeViewer = function () {
-        sizeViewer.style.opacity = '0';
-    }, showSizeViewer = function (w, h) {
-        if (!editor.options.resizer.showSize) {
-            return;
-        }
-        if (w < sizeViewer.offsetWidth || h < sizeViewer.offsetHeight) {
-            hideSizeViewer();
-            return;
-        }
-        sizeViewer.style.opacity = '1';
-        sizeViewer.innerHTML = w + " x " + h;
-        clearTimeout(timeoutSizeViewer);
-        timeoutSizeViewer = async_1.setTimeout(hideSizeViewer, editor.options.resizer.hideSizeTimeout);
-    }, updateSize = function () {
-        if (resizerIsVisible && currentElement && resizerElm) {
-            var workplacePosition = size_1.offset((resizerElm.parentNode ||
-                editor.ownerDocument
-                    .documentElement), editor, editor.ownerDocument, true), pos = size_1.offset(currentElement, editor, editor.editorDocument), left = parseInt(resizerElm.style.left || '0', 10), top_1 = parseInt(resizerElm.style.top || '0', 10), w = resizerElm.offsetWidth, h = resizerElm.offsetHeight;
-            var newTop = pos.top - 1 - workplacePosition.top, newLeft = pos.left - 1 - workplacePosition.left;
-            if (top_1 !== newTop ||
-                left !== newLeft ||
-                w !== currentElement.offsetWidth ||
-                h !== currentElement.offsetHeight) {
-                resizerElm.style.top = newTop + 'px';
-                resizerElm.style.left = newLeft + 'px';
-                resizerElm.style.width = currentElement.offsetWidth + 'px';
-                resizerElm.style.height =
-                    currentElement.offsetHeight + 'px';
-                if (editor.events) {
-                    editor.events.fire(currentElement, 'changesize');
-                    if (!isNaN(left)) {
-                        editor.events.fire('resize');
-                    }
-                }
-            }
-        }
-    }, showResizer = function () {
-        if (editor.options.readonly) {
-            return;
-        }
-        if (!resizerElm.parentNode) {
-            editor.workplace.appendChild(resizerElm);
-        }
-        resizerIsVisible = true;
-        resizerElm.style.display = 'block';
-        if (editor.isFullSize()) {
-            resizerElm.style.zIndex = helpers_1.css(editor.container, 'zIndex').toString();
-        }
-        updateSize();
-    }, bind = function (element) {
-        var wrapper;
-        if (element.tagName === 'IFRAME') {
-            var iframe_1 = element;
-            if (element.parentNode &&
-                element.parentNode.getAttribute('data-jodit_iframe_wrapper')) {
-                element = element.parentNode;
-            }
-            else {
-                wrapper = editor.create.inside.fromHTML('<jodit ' +
-                    'data-jodit-temp="1" ' +
-                    'contenteditable="false" ' +
-                    'draggable="true" ' +
-                    'data-jodit_iframe_wrapper="1"' +
-                    '></jodit>');
-                wrapper.style.display =
-                    element.style.display === 'inline-block'
-                        ? 'inline-block'
-                        : 'block';
-                wrapper.style.width = element.offsetWidth + 'px';
-                wrapper.style.height = element.offsetHeight + 'px';
-                if (element.parentNode) {
-                    element.parentNode.insertBefore(wrapper, element);
-                }
-                wrapper.appendChild(element);
-                element = wrapper;
-            }
-            editor.events
-                .off(element, 'mousedown.select touchstart.select')
-                .on(element, 'mousedown.select touchstart.select', function () {
-                editor.selection.select(element);
-            });
-            editor.events
-                .off(element, 'changesize')
-                .on(element, 'changesize', function () {
-                iframe_1.setAttribute('width', element.offsetWidth + 'px');
-                iframe_1.setAttribute('height', element.offsetHeight + 'px');
-            });
-        }
-        var timer;
-        editor.events
-            .on(element, 'dragstart', hideResizer)
-            .on(element, 'mousedown', function (event) {
-            if (constants_1.IS_IE && element.nodeName === 'IMG') {
-                event.preventDefault();
-            }
-        })
-            .on(element, 'mousedown touchstart', function () {
-            if (!resizeElementClicked) {
-                resizeElementClicked = true;
-                currentElement = element;
-                showResizer();
-                if (currentElement.tagName === 'IMG' &&
-                    !currentElement.complete) {
-                    currentElement.addEventListener('load', function ElementOnLoad() {
-                        updateSize();
-                        if (currentElement) {
-                            currentElement.removeEventListener('load', ElementOnLoad);
-                        }
-                    });
-                }
-                clearTimeout(timer);
-            }
-            timer = async_1.setTimeout(function () {
-                resizeElementClicked = false;
-            }, 400);
-        });
-    };
-    selector_1.$$('i', resizerElm).forEach(function (resizeHandle) {
-        editor.events.on(resizeHandle, 'mousedown touchstart', function (e) {
-            if (!currentElement || !currentElement.parentNode) {
-                hideResizer();
-                return false;
-            }
-            handle = resizeHandle;
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            width = currentElement.offsetWidth;
-            height = currentElement.offsetHeight;
-            ratio = width / height;
-            isResizing = true;
-            start_x = e.clientX;
-            start_y = e.clientY;
-            editor.events.fire('hidePopup');
-            editor.lock(LOCK_KEY);
-        });
-    });
-    editor.events
-        .on('readonly', function (isReadOnly) {
-        if (isReadOnly) {
-            hideResizer();
-        }
-    })
-        .on('beforeDestruct', function () {
-        Dom_1.Dom.safeRemove(resizerElm);
-    })
-        .on('afterInit', function () {
-        editor.events
-            .on(editor.editor, 'keydown', function (e) {
-            if (resizerIsVisible &&
-                e.which === consts.KEY_DELETE &&
-                currentElement &&
-                currentElement.tagName.toLowerCase() !== 'table') {
-                if (currentElement.tagName !== 'JODIT') {
-                    editor.selection.select(currentElement);
-                }
-                else {
-                    Dom_1.Dom.safeRemove(currentElement);
-                    hideResizer();
-                    e.preventDefault();
-                }
-            }
-        })
-            .on(editor.ownerWindow, 'mousemove touchmove', function (e) {
-            if (isResizing) {
-                diff_x = e.clientX - start_x;
-                diff_y = e.clientY - start_y;
-                if (!currentElement) {
-                    return;
-                }
-                var className = handle.className;
-                if ('IMG' === currentElement.tagName) {
-                    if (diff_x) {
-                        new_w =
-                            width +
-                                (className.match(/left/) ? -1 : 1) *
-                                    diff_x;
-                        new_h = Math.round(new_w / ratio);
-                    }
-                    else {
-                        new_h =
-                            height +
-                                (className.match(/top/) ? -1 : 1) *
-                                    diff_y;
-                        new_w = Math.round(new_h * ratio);
-                    }
-                    if (new_w >
-                        size_1.innerWidth(editor.editor, editor.ownerWindow)) {
-                        new_w = size_1.innerWidth(editor.editor, editor.ownerWindow);
-                        new_h = Math.round(new_w / ratio);
-                    }
-                }
-                else {
-                    new_w =
-                        width +
-                            (className.match(/left/) ? -1 : 1) * diff_x;
-                    new_h =
-                        height +
-                            (className.match(/top/) ? -1 : 1) * diff_y;
-                }
-                if (new_w > editor.options.resizer.min_width) {
-                    if (new_w <
-                        resizerElm.parentNode
-                            .offsetWidth) {
-                        currentElement.style.width = new_w + 'px';
-                    }
-                    else {
-                        currentElement.style.width = '100%';
-                    }
-                }
-                if (new_h > editor.options.resizer.min_height) {
-                    currentElement.style.height = new_h + 'px';
-                }
-                updateSize();
-                showSizeViewer(currentElement.offsetWidth, currentElement.offsetHeight);
-                e.stopImmediatePropagation();
-            }
-        })
-            .on(editor.ownerWindow, 'resize', function () {
-            if (resizerIsVisible) {
-                updateSize();
-            }
-        })
-            .on(editor.ownerWindow, 'mouseup keydown touchend', function (e) {
-            if (resizerIsVisible && !resizeElementClicked) {
-                if (isResizing) {
-                    editor.unlock();
-                    isResizing = false;
-                    editor.setEditorValue();
-                    e.stopImmediatePropagation();
-                }
-                else {
-                    hideResizer();
-                }
-            }
-        })
-            .on([editor.ownerWindow, editor.editor], 'scroll', function () {
-            if (resizerIsVisible && !isResizing) {
-                hideResizer();
-            }
-        });
-    })
-        .on('afterGetValueFromEditor', function (data) {
-        var rgx = /<jodit[^>]+data-jodit_iframe_wrapper[^>]+>(.*?<iframe[^>]+>[\s\n\r]*<\/iframe>.*?)<\/jodit>/gi;
-        if (rgx.test(data.value)) {
-            data.value = data.value.replace(rgx, '$1');
-        }
-    })
-        .on('hideResizer', hideResizer)
-        .on('change afterInit afterSetMode', async_1.debounce(function () {
-        if (resizerIsVisible) {
-            if (!currentElement || !currentElement.parentNode) {
-                hideResizer();
-            }
-            else {
-                updateSize();
-            }
-        }
-        if (!editor.isDestructed) {
-            selector_1.$$('img, table, iframe', editor.editor).forEach(function (elm) {
-                if (editor.getMode() === consts.MODE_SOURCE) {
-                    return;
-                }
-                if (!elm.__jodit_resizer_binded &&
-                    ((elm.tagName === 'IFRAME' &&
-                        editor.options.useIframeResizer) ||
-                        (elm.tagName === 'IMG' &&
-                            editor.options.useImageResizer) ||
-                        (elm.tagName === 'TABLE' &&
-                            editor.options.useTableResizer))) {
-                    elm.__jodit_resizer_binded = true;
-                    bind(elm);
-                }
-            });
-        }
-    }, editor.defaultTimeout));
-}
-exports.resizer = resizer;
-
-
-/***/ }),
-/* 183 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var icon_1 = __webpack_require__(6);
-var Plugin_1 = __webpack_require__(7);
-var async_1 = __webpack_require__(5);
-var string_1 = __webpack_require__(9);
-Config_1.Config.prototype.useSearch = true;
-var search = (function (_super) {
-    tslib_1.__extends(search, _super);
-    function search() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.template = '<div class="jodit_search">' +
-            '<div class="jodit_search_box">' +
-            '<div class="jodit_search_inputs">' +
-            '<input tabindex="0" class="jodit_search-query" placeholder="' +
-            _this.jodit.i18n('Search for') +
-            '" type="text"/>' +
-            '<input tabindex="0" class="jodit_search-replace" placeholder="' +
-            _this.jodit.i18n('Replace with') +
-            '" type="text"/>' +
-            '</div>' +
-            '<div class="jodit_search_counts">' +
-            '<span>0/0</span>' +
-            '</div>' +
-            '<div class="jodit_search_buttons">' +
-            '<button tabindex="0" type="button" class="jodit_search_buttons-next">' +
-            icon_1.ToolbarIcon.getIcon('angle-down') +
-            '</button>' +
-            '<button tabindex="0" type="button" class="jodit_search_buttons-prev">' +
-            icon_1.ToolbarIcon.getIcon('angle-up') +
-            '</button>' +
-            '<button tabindex="0" type="button" class="jodit_search_buttons-cancel">' +
-            icon_1.ToolbarIcon.getIcon('cancel') +
-            '</button>' +
-            '<button tabindex="0" type="button" class="jodit_search_buttons-replace">' +
-            _this.jodit.i18n('Replace') +
-            '</button>' +
-            '</div>' +
-            '</div>' +
-            '</div>';
-        _this.isOpened = false;
-        _this.selInfo = null;
-        _this.current = false;
-        _this.eachMap = function (node, callback, next) {
-            Dom_1.Dom.findWithCurrent(node, function (child) {
-                return !!child && callback(child);
-            }, _this.jodit.editor, next ? 'nextSibling' : 'previousSibling', next ? 'firstChild' : 'lastChild');
-        };
-        _this.updateCounters = function () {
-            if (!_this.isOpened) {
-                return;
-            }
-            _this.counterBox.style.display = _this.queryInput.value.length
-                ? 'inline-block'
-                : 'none';
-            var range = _this.jodit.selection.range, counts = _this.calcCounts(_this.queryInput.value, range);
-            _this.counterBox.textContent = counts.join('/');
-        };
-        _this.calcCounts = function (query, current) {
-            if (current === void 0) { current = false; }
-            var bounds = [];
-            var currentIndex = 0, count = 0, bound = false, start = _this.jodit.editor.firstChild;
-            while (start && query.length) {
-                bound = _this.find(start, query, true, 0, bound || _this.jodit.editorDocument.createRange());
-                if (bound) {
-                    if (_this.boundAlreadyWas(bound, bounds)) {
-                        break;
-                    }
-                    bounds.push(bound);
-                    start = bound.startContainer;
-                    count += 1;
-                    if (current && _this.boundAlreadyWas(current, [bound])) {
-                        currentIndex = count;
-                    }
-                }
-                else {
-                    start = null;
-                }
-            }
-            return [currentIndex, count];
-        };
-        _this.findAndReplace = function (start, query) {
-            var range = _this.jodit.selection.range, bound = _this.find(start, query, true, 0, range);
-            if (bound && bound.startContainer && bound.endContainer) {
-                var rng = _this.jodit.editorDocument.createRange();
-                try {
-                    if (bound && bound.startContainer && bound.endContainer) {
-                        rng.setStart(bound.startContainer, bound.startOffset);
-                        rng.setEnd(bound.endContainer, bound.endOffset);
-                        rng.deleteContents();
-                        var textNode = _this.jodit.editorDocument.createTextNode(_this.replaceInput.value);
-                        rng.insertNode(textNode);
-                        _this.jodit.selection.select(textNode);
-                        _this.tryScrollToElement(textNode);
-                    }
-                }
-                catch (_a) { }
-                return true;
-            }
-            return false;
-        };
-        _this.findAndSelect = function (start, query, next) {
-            var range = _this.jodit.selection.range, bound = _this.find(start, query, next, 0, range);
-            if (bound && bound.startContainer && bound.endContainer) {
-                var rng = _this.jodit.editorDocument.createRange();
-                try {
-                    rng.setStart(bound.startContainer, bound.startOffset);
-                    rng.setEnd(bound.endContainer, bound.endOffset);
-                    _this.jodit.selection.selectRange(rng);
-                }
-                catch (e) { }
-                _this.tryScrollToElement(bound.startContainer);
-                _this.current = bound.startContainer;
-                _this.updateCounters();
-                return true;
-            }
-            return false;
-        };
-        _this.find = function (start, query, next, deep, range) {
-            if (start && query.length) {
-                var sentence_1 = '', bound_1 = {
-                    startContainer: null,
-                    startOffset: null,
-                    endContainer: null,
-                    endOffset: null
-                };
-                _this.eachMap(start, function (elm) {
-                    if (elm.nodeType === Node.TEXT_NODE &&
-                        elm.nodeValue !== null &&
-                        elm.nodeValue.length) {
-                        var value = elm.nodeValue;
-                        if (!next && elm === range.startContainer) {
-                            value = !deep
-                                ? value.substr(0, range.startOffset)
-                                : value.substr(range.endOffset);
-                        }
-                        else if (next && elm === range.endContainer) {
-                            value = !deep
-                                ? value.substr(range.endOffset)
-                                : value.substr(0, range.startOffset);
-                        }
-                        var tmpSentence = next
-                            ? sentence_1 + value
-                            : value + sentence_1;
-                        var part = search.findSomePartOfString(query, tmpSentence, next);
-                        if (part !== false) {
-                            var currentPart = search.findSomePartOfString(query, value, next);
-                            if (currentPart === true) {
-                                currentPart = string_1.trim(query);
-                            }
-                            else if (currentPart === false) {
-                                currentPart = search.findSomePartOfString(value, query, next);
-                                if (currentPart === true) {
-                                    currentPart = string_1.trim(value);
-                                }
-                            }
-                            var currentPartIndex = search.getSomePartOfStringIndex(query, value, next) || 0;
-                            if (((next && !deep) || (!next && deep)) &&
-                                elm.nodeValue.length - value.length > 0) {
-                                currentPartIndex +=
-                                    elm.nodeValue.length - value.length;
-                            }
-                            if (bound_1.startContainer === null) {
-                                bound_1.startContainer = elm;
-                                bound_1.startOffset = currentPartIndex;
-                            }
-                            if (part !== true) {
-                                sentence_1 = tmpSentence;
-                            }
-                            else {
-                                bound_1.endContainer = elm;
-                                bound_1.endOffset = currentPartIndex;
-                                bound_1.endOffset += currentPart.length;
-                                return true;
-                            }
-                        }
-                        else {
-                            sentence_1 = '';
-                            bound_1 = {
-                                startContainer: null,
-                                startOffset: null,
-                                endContainer: null,
-                                endOffset: null
-                            };
-                        }
-                    }
-                    else if (Dom_1.Dom.isBlock(elm, _this.jodit.editorWindow) &&
-                        sentence_1 !== '') {
-                        sentence_1 = next ? sentence_1 + ' ' : ' ' + sentence_1;
-                    }
-                    return false;
-                }, next);
-                if (bound_1.startContainer && bound_1.endContainer) {
-                    return bound_1;
-                }
-                if (!deep) {
-                    _this.current = next
-                        ? _this.jodit.editor.firstChild
-                        : _this.jodit.editor.lastChild;
-                    return _this.find(_this.current, query, next, deep + 1, range);
-                }
-            }
-            return false;
-        };
-        _this.open = function (searchAndReplace) {
-            if (searchAndReplace === void 0) { searchAndReplace = false; }
-            if (!_this.isOpened) {
-                _this.searchBox.classList.add('jodit_search-active');
-                _this.isOpened = true;
-            }
-            _this.jodit.events.fire('hidePopup');
-            _this.searchBox.classList.toggle('jodit_search-and-replace', searchAndReplace);
-            _this.current = _this.jodit.selection.current();
-            _this.selInfo = _this.jodit.selection.save();
-            var selStr = (_this.jodit.selection.sel || '').toString();
-            if (selStr) {
-                _this.queryInput.value = selStr;
-            }
-            _this.updateCounters();
-            if (selStr) {
-                _this.queryInput.select();
-            }
-            else {
-                _this.queryInput.focus();
-            }
-        };
-        _this.close = function () {
-            if (!_this.isOpened) {
-                return;
-            }
-            if (_this.selInfo) {
-                _this.jodit.selection.restore(_this.selInfo);
-                _this.selInfo = null;
-            }
-            _this.searchBox.classList.remove('jodit_search-active');
-            _this.isOpened = false;
-        };
-        return _this;
-    }
-    search.getSomePartOfStringIndex = function (needle, haystack, start) {
-        if (start === void 0) { start = true; }
-        return this.findSomePartOfString(needle, haystack, start, true);
-    };
-    search.findSomePartOfString = function (needle, haystack, start, getIndex) {
-        if (start === void 0) { start = true; }
-        if (getIndex === void 0) { getIndex = false; }
-        needle = string_1.trim(needle.toLowerCase().replace(consts.SPACE_REG_EXP, ' '));
-        haystack = haystack.toLowerCase();
-        var i = start ? 0 : haystack.length - 1, needleStart = start ? 0 : needle.length - 1, tmpEqualLength = 0, startAtIndex = null;
-        var inc = start ? 1 : -1, tmp = [];
-        for (; haystack[i] !== undefined; i += inc) {
-            var some = needle[needleStart] === haystack[i];
-            if (some ||
-                (startAtIndex !== null &&
-                    consts.SPACE_REG_EXP.test(haystack[i]))) {
-                if (startAtIndex === null || !start) {
-                    startAtIndex = i;
-                }
-                tmp.push(haystack[i]);
-                if (some) {
-                    tmpEqualLength += 1;
-                    needleStart += inc;
-                }
-            }
-            else {
-                startAtIndex = null;
-                tmp.length = 0;
-                tmpEqualLength = 0;
-                needleStart = start ? 0 : needle.length - 1;
-            }
-            if (tmpEqualLength === needle.length) {
-                return getIndex ? startAtIndex : true;
-            }
-        }
-        if (getIndex) {
-            return (startAtIndex !== null && startAtIndex !== void 0 ? startAtIndex : false);
-        }
-        if (tmp.length) {
-            return start ? tmp.join('') : tmp.reverse().join('');
-        }
-        return false;
-    };
-    search.prototype.boundAlreadyWas = function (current, bounds) {
-        return bounds.some(function (bound) {
-            return (bound.startContainer === current.startContainer &&
-                bound.endContainer === current.endContainer &&
-                bound.startOffset === current.startOffset &&
-                bound.endOffset === current.endOffset);
-        }, false);
-    };
-    search.prototype.tryScrollToElement = function (startContainer) {
-        var parentBox = Dom_1.Dom.closest(startContainer, function (elm) { return elm && elm.nodeType === Node.ELEMENT_NODE; }, this.jodit.editor);
-        if (!parentBox) {
-            parentBox = Dom_1.Dom.prev(startContainer, function (elm) { return elm && elm.nodeType === Node.ELEMENT_NODE; }, this.jodit.editor);
-        }
-        parentBox &&
-            parentBox !== this.jodit.editor &&
-            parentBox.scrollIntoView();
-    };
-    search.prototype.afterInit = function (editor) {
-        var _this = this;
-        if (editor.options.useSearch) {
-            var self_1 = this;
-            self_1.searchBox = editor.create.fromHTML(self_1.template);
-            var qs = self_1.searchBox.querySelector.bind(self_1.searchBox);
-            self_1.queryInput = qs('input.jodit_search-query');
-            self_1.replaceInput = qs('input.jodit_search-replace');
-            self_1.closeButton = qs('.jodit_search_buttons-cancel');
-            self_1.nextButton = qs('.jodit_search_buttons-next');
-            self_1.prevButton = qs('.jodit_search_buttons-prev');
-            self_1.replaceButton = qs('.jodit_search_buttons-replace');
-            self_1.counterBox = qs('.jodit_search_counts span');
-            editor.workplace.appendChild(this.searchBox);
-            editor.events
-                .on(self_1.closeButton, 'click', this.close)
-                .on(self_1.queryInput, 'mousedown', function () {
-                if (editor.selection.isFocused()) {
-                    editor.selection.removeMarkers();
-                    self_1.selInfo = editor.selection.save();
-                }
-            })
-                .on(self_1.replaceButton, 'click', function (e) {
-                self_1.findAndReplace(editor.selection.current() || editor.editor.firstChild, self_1.queryInput.value);
-                _this.updateCounters();
-                e.preventDefault();
-                e.stopImmediatePropagation();
-            })
-                .on([self_1.nextButton, self_1.prevButton], 'click', function (e) {
-                editor.events.fire(self_1.nextButton === this
-                    ? 'searchNext'
-                    : 'searchPrevious');
-                e.preventDefault();
-                e.stopImmediatePropagation();
-            })
-                .on(this.queryInput, 'keydown', async_1.debounce(function (e) {
-                switch (e.which) {
-                    case consts.KEY_ENTER:
-                        e.preventDefault();
-                        e.stopImmediatePropagation();
-                        if (editor.events.fire('searchNext')) {
-                            _this.close();
-                        }
-                        break;
-                    default:
-                        _this.updateCounters();
-                        break;
-                }
-            }, this.jodit.defaultTimeout))
-                .on(this.jodit.container, 'keydown.search', function (e) {
-                if (editor.getRealMode() !== constants_1.MODE_WYSIWYG) {
-                    return;
-                }
-                switch (e.which) {
-                    case consts.KEY_ESC:
-                        _this.close();
-                        break;
-                    case consts.KEY_F3:
-                        if (self_1.queryInput.value) {
-                            editor.events.fire(!e.shiftKey
-                                ? 'searchNext'
-                                : 'searchPrevious');
-                            e.preventDefault();
-                        }
-                        break;
-                }
-            })
-                .on('beforeSetMode.search', function () {
-                _this.close();
-            })
-                .on('keydown.search mousedown.search', function () {
-                if (_this.selInfo) {
-                    editor.selection.removeMarkers();
-                    _this.selInfo = null;
-                }
-                if (_this.isOpened) {
-                    _this.current = _this.jodit.selection.current();
-                    _this.updateCounters();
-                }
-            })
-                .on('searchNext.search searchPrevious.search', function () {
-                return self_1.findAndSelect(editor.selection.current() || editor.editor.firstChild, self_1.queryInput.value, editor.events.current[editor.events.current.length - 1] === 'searchNext');
-            })
-                .on('search.search', function (value, next) {
-                if (next === void 0) { next = true; }
-                editor.execCommand('search', value, next);
-            });
-            editor.registerCommand('search', {
-                exec: function (command, value, next) {
-                    if (next === void 0) { next = true; }
-                    self_1.findAndSelect(editor.selection.current() || editor.editor.firstChild, value || '', next);
-                    return false;
-                }
-            });
-            editor.registerCommand('openSearchDialog', {
-                exec: function () {
-                    self_1.open();
-                    return false;
-                },
-                hotkeys: ['ctrl+f', 'cmd+f']
-            });
-            editor.registerCommand('openReplaceDialog', {
-                exec: function () {
-                    if (!editor.options.readonly) {
-                        self_1.open(true);
-                    }
-                    return false;
-                },
-                hotkeys: ['ctrl+h', 'cmd+h']
-            });
-        }
-    };
-    search.prototype.beforeDestruct = function (jodit) {
-        Dom_1.Dom.safeRemove(this.searchBox);
-        jodit.events && jodit.events.off('.search');
-        jodit.events && jodit.events.off(jodit.container, '.search');
-    };
-    return search;
-}(Plugin_1.Plugin));
-exports.search = search;
-
-
-/***/ }),
-/* 184 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var async_1 = __webpack_require__(5);
-var css_1 = __webpack_require__(11);
-Config_1.Config.prototype.allowResizeX = false;
-Config_1.Config.prototype.allowResizeY = true;
-function size(editor) {
-    var setHeight = function (height) {
-        css_1.css(editor.container, 'height', height);
-        if (editor.options.saveHeightInStorage) {
-            editor.storage.set('height', height);
-        }
-    };
-    var setWidth = function (width) {
-        return css_1.css(editor.container, 'width', width);
-    };
-    var setHeightWorkPlace = function (height) {
-        return css_1.css(editor.workplace, 'height', height);
-    };
-    if (editor.options.height !== 'auto' &&
-        (editor.options.allowResizeX || editor.options.allowResizeY)) {
-        var handle_1 = editor.create.div('jodit_editor_resize', '<a tabindex="-1" href="javascript:void(0)"></a>'), start_1 = {
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0
-        };
-        var isResized_1 = false;
-        editor.events
-            .on(handle_1, 'mousedown touchstart', function (e) {
-            isResized_1 = true;
-            start_1.x = e.clientX;
-            start_1.y = e.clientY;
-            start_1.w = editor.container.offsetWidth;
-            start_1.h = editor.container.offsetHeight;
-            editor.lock();
-            e.preventDefault();
-        })
-            .on(editor.ownerWindow, 'mousemove touchmove', async_1.throttle(function (e) {
-            if (isResized_1) {
-                if (editor.options.allowResizeY) {
-                    setHeight(start_1.h + e.clientY - start_1.y);
-                }
-                if (editor.options.allowResizeX) {
-                    setWidth(start_1.w + e.clientX - start_1.x);
-                }
-                resizeWorkspaceImd();
-                editor.events.fire('resize');
-            }
-        }, editor.defaultTimeout / 10))
-            .on(editor.ownerWindow, 'mouseup touchsend', function () {
-            if (isResized_1) {
-                isResized_1 = false;
-                editor.unlock();
-            }
-        })
-            .on('afterInit', function () {
-            editor.container.appendChild(handle_1);
-        })
-            .on('toggleFullSize', function (fullsize) {
-            handle_1.style.display = fullsize ? 'none' : 'block';
-        });
-    }
-    var getNotWorkHeight = function () {
-        return (editor.options.toolbar ? editor.toolbar.container.offsetHeight : 0) +
-            (editor.statusbar ? editor.statusbar.getHeight() : 0);
-    };
-    var calcMinHeightWorkspace = function () {
-        if (!editor.container || !editor.container.parentNode) {
-            return;
-        }
-        var minHeight = css_1.css(editor.container, 'minHeight') - getNotWorkHeight();
-        [editor.workplace, editor.iframe, editor.editor].map(function (elm) {
-            var minHeightD = elm === editor.editor ? minHeight - 2 : minHeight;
-            elm && css_1.css(elm, 'minHeight', minHeightD);
-            editor.events.fire('setMinHeight', minHeightD);
-        });
-    };
-    var resizeWorkspaceImd = function () {
-        if (!editor ||
-            editor.isDestructed ||
-            !editor.options ||
-            editor.options.inline) {
-            return;
-        }
-        calcMinHeightWorkspace();
-        if (editor.container &&
-            (editor.options.height !== 'auto' || editor.isFullSize())) {
-            setHeightWorkPlace(editor.container.offsetHeight - getNotWorkHeight());
-        }
-    };
-    var resizeWorkspace = async_1.debounce(resizeWorkspaceImd, editor.defaultTimeout);
-    editor.events
-        .on('toggleFullSize', function (fullsize) {
-        if (!fullsize && editor.options.height === 'auto') {
-            setHeightWorkPlace('auto');
-            calcMinHeightWorkspace();
-        }
-    })
-        .on('afterInit', function () {
-        if (!editor.options.inline) {
-            css_1.css(editor.editor, {
-                minHeight: '100%'
-            });
-            css_1.css(editor.container, {
-                minHeight: editor.options.minHeight,
-                minWidth: editor.options.minWidth,
-                maxWidth: editor.options.maxWidth
-            });
-        }
-        var height = editor.options.height;
-        if (editor.options.saveHeightInStorage && height !== 'auto') {
-            var localHeight = editor.storage.get('height');
-            if (localHeight) {
-                height = localHeight;
-            }
-        }
-        if (!editor.options.inline) {
-            setHeight(height);
-            setWidth(editor.options.width);
-        }
-        resizeWorkspaceImd();
-    }, undefined, undefined, true)
-        .on(window, 'load', resizeWorkspace)
-        .on('afterInit resize updateToolbar scroll afterResize', resizeWorkspace);
-}
-exports.size = size;
-
-
-/***/ }),
-/* 185 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var constants_1 = __webpack_require__(3);
-var Plugin_1 = __webpack_require__(7);
-var appendScript_1 = __webpack_require__(51);
-var async_1 = __webpack_require__(5);
-var selector_1 = __webpack_require__(12);
-var css_1 = __webpack_require__(11);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.beautifyHTML = true;
-Config_1.Config.prototype.useAceEditor = true;
-Config_1.Config.prototype.sourceEditorNativeOptions = {
-    showGutter: true,
-    theme: 'ace/theme/idle_fingers',
-    mode: 'ace/mode/html',
-    wrap: true,
-    highlightActiveLine: true
-};
-Config_1.Config.prototype.sourceEditorCDNUrlsJS = [
-    'https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.5/ace.js'
-];
-Config_1.Config.prototype.beautifyHTMLCDNUrlsJS = [
-    'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.0/beautify.min.js',
-    'https://cdnjs.cloudflare.com/ajax/libs/js-beautify/1.10.0/beautify-html.min.js'
-];
-Config_1.Config.prototype.controls.source = {
-    mode: consts.MODE_SPLIT,
-    exec: function (editor) {
-        editor.toggleMode();
-    },
-    isActive: function (editor) {
-        return editor.getRealMode() === consts.MODE_SOURCE;
-    },
-    tooltip: 'Change mode'
-};
-var source = (function (_super) {
-    tslib_1.__extends(source, _super);
-    function source() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.className = 'jodit_ace_editor';
-        _this.__lock = false;
-        _this.__oldMirrorValue = '';
-        _this.autosize = async_1.debounce(function () {
-            _this.mirror.style.height = 'auto';
-            _this.mirror.style.height = _this.mirror.scrollHeight + 'px';
-        }, _this.jodit.defaultTimeout);
-        _this.tempMarkerStart = '{start-jodit-selection}';
-        _this.tempMarkerStartReg = /{start-jodit-selection}/g;
-        _this.tempMarkerEnd = '{end-jodit-selection}';
-        _this.tempMarkerEndReg = /{end-jodit-selection}/g;
-        _this.selInfo = [];
-        _this.lastTuple = null;
-        _this.loadNext = function (i, urls, eventOnFinalize, className) {
-            if (eventOnFinalize === void 0) { eventOnFinalize = 'aceReady'; }
-            if (className === void 0) { className = _this.className; }
-            if (eventOnFinalize && urls[i] === undefined && !_this.isDestructed) {
-                _this.jodit &&
-                    _this.jodit.events &&
-                    _this.jodit.events.fire(eventOnFinalize);
-                _this.jodit &&
-                    _this.jodit.events &&
-                    _this.jodit.events.fire(_this.jodit.ownerWindow, eventOnFinalize);
-                return;
-            }
-            if (urls[i] !== undefined) {
-                if (_this.lastTuple) {
-                    _this.lastTuple.element.removeEventListener('load', _this.lastTuple.callback);
-                }
-                _this.lastTuple = appendScript_1.appendScript(urls[i], function () {
-                    if (!_this.isDestructed) {
-                        _this.loadNext(i + 1, urls, eventOnFinalize, className);
-                    }
-                }, className, _this.jodit.ownerDocument);
-            }
-        };
-        _this.insertHTML = function (html) {
-            if (_this.mirror.selectionStart || _this.mirror.selectionStart === 0) {
-                var startPos = _this.mirror.selectionStart, endPos = _this.mirror.selectionEnd;
-                _this.mirror.value =
-                    _this.mirror.value.substring(0, startPos) +
-                        html +
-                        _this.mirror.value.substring(endPos, _this.mirror.value.length);
-            }
-            else {
-                _this.mirror.value += _this.mirror;
-            }
-            _this.toWYSIWYG();
-        };
-        _this.fromWYSIWYG = function (force) {
-            if (force === void 0) { force = false; }
-            if (!_this.__lock || force === true) {
-                _this.__lock = true;
-                var new_value = _this.jodit.getEditorValue(false);
-                if (new_value !== _this.getMirrorValue()) {
-                    _this.setMirrorValue(new_value);
-                }
-                _this.__lock = false;
-            }
-        };
-        _this.toWYSIWYG = function () {
-            if (_this.__lock) {
-                return;
-            }
-            var value = _this.getMirrorValue();
-            if (value === _this.__oldMirrorValue) {
-                return;
-            }
-            _this.__lock = true;
-            _this.jodit.setEditorValue(value);
-            _this.__lock = false;
-            _this.__oldMirrorValue = value;
-        };
-        _this.getNormalPosition = function (pos, str) {
-            var start = pos;
-            while (start > 0) {
-                start--;
-                if (str[start] === '<' &&
-                    str[start + 1] !== undefined &&
-                    str[start + 1].match(/[\w\/]+/i)) {
-                    return start;
-                }
-                if (str[start] === '>') {
-                    return pos;
-                }
-            }
-            return pos;
-        };
-        _this.__clear = function (str) {
-            return str.replace(consts.INVISIBLE_SPACE_REG_EXP, '');
-        };
-        _this.selectAll = function () {
-            _this.mirror.select();
-        };
-        _this.onSelectAll = function (command) {
-            if (command.toLowerCase() === 'selectall' &&
-                _this.jodit.getRealMode() === constants_1.MODE_SOURCE) {
-                _this.selectAll();
-                return false;
-            }
-        };
-        _this.getSelectionStart = function () {
-            return _this.mirror.selectionStart;
-        };
-        _this.getSelectionEnd = function () {
-            return _this.mirror.selectionEnd;
-        };
-        _this.saveSelection = function () {
-            if (_this.jodit.getRealMode() === consts.MODE_WYSIWYG) {
-                _this.selInfo = _this.jodit.selection.save() || [];
-                _this.jodit.setEditorValue();
-                _this.fromWYSIWYG(true);
-            }
-            else {
-                _this.selInfo.length = 0;
-                var value = _this.getMirrorValue();
-                if (_this.getSelectionStart() === _this.getSelectionEnd()) {
-                    var marker = _this.jodit.selection.marker(true);
-                    _this.selInfo[0] = {
-                        startId: marker.id,
-                        collapsed: true,
-                        startMarker: marker.outerHTML
-                    };
-                    var selectionStart = _this.getNormalPosition(_this.getSelectionStart(), _this.getMirrorValue());
-                    _this.setMirrorValue(value.substr(0, selectionStart) +
-                        _this.__clear(_this.selInfo[0].startMarker) +
-                        value.substr(selectionStart));
-                }
-                else {
-                    var markerStart = _this.jodit.selection.marker(true);
-                    var markerEnd = _this.jodit.selection.marker(false);
-                    _this.selInfo[0] = {
-                        startId: markerStart.id,
-                        endId: markerEnd.id,
-                        collapsed: false,
-                        startMarker: _this.__clear(markerStart.outerHTML),
-                        endMarker: _this.__clear(markerEnd.outerHTML)
-                    };
-                    var selectionStart = _this.getNormalPosition(_this.getSelectionStart(), value);
-                    var selectionEnd = _this.getNormalPosition(_this.getSelectionEnd(), value);
-                    _this.setMirrorValue(value.substr(0, selectionStart) +
-                        _this.selInfo[0].startMarker +
-                        value.substr(selectionStart, selectionEnd - selectionStart) +
-                        _this.selInfo[0].endMarker +
-                        value.substr(selectionEnd));
-                }
-                _this.toWYSIWYG();
-            }
-        };
-        _this.restoreSelection = function () {
-            if (!_this.selInfo.length) {
-                return;
-            }
-            if (_this.jodit.getRealMode() === consts.MODE_WYSIWYG) {
-                _this.__lock = true;
-                _this.jodit.selection.restore(_this.selInfo);
-                _this.__lock = false;
-                return;
-            }
-            var value = _this.getMirrorValue();
-            var selectionStart = 0, selectionEnd = 0;
-            try {
-                if (_this.selInfo[0].startMarker) {
-                    value = value.replace(/<span[^>]+data-jodit_selection_marker="start"[^>]*>[<>]*?<\/span>/gim, _this.tempMarkerStart);
-                }
-                if (_this.selInfo[0].endMarker) {
-                    value = value.replace(/<span[^>]+data-jodit_selection_marker="end"[^>]*>[<>]*?<\/span>/gim, _this.tempMarkerEnd);
-                }
-                if (_this.jodit.ownerWindow.html_beautify &&
-                    _this.jodit.options.beautifyHTML) {
-                    value = _this.jodit.ownerWindow.html_beautify(value);
-                }
-                selectionStart = value.indexOf(_this.tempMarkerStart);
-                selectionEnd = selectionStart;
-                value = value.replace(_this.tempMarkerStartReg, '');
-                if (!_this.selInfo[0].collapsed || selectionStart === -1) {
-                    selectionEnd = value.indexOf(_this.tempMarkerEnd);
-                    if (selectionStart === -1) {
-                        selectionStart = selectionEnd;
-                    }
-                }
-                value = value.replace(_this.tempMarkerEndReg, '');
-            }
-            finally {
-                value = value
-                    .replace(_this.tempMarkerEndReg, '')
-                    .replace(_this.tempMarkerStartReg, '');
-            }
-            _this.setMirrorValue(value);
-            _this.setMirrorSelectionRange(selectionStart, selectionEnd);
-            _this.toWYSIWYG();
-            _this.setFocusToMirror();
-        };
-        _this.__proxyOnFocus = function (e) {
-            _this.jodit.events.fire('focus', e);
-        };
-        _this.__proxyOnMouseDown = function (e) {
-            _this.jodit.events.fire('mousedown', e);
-        };
-        _this.setMirrorSelectionRange = function (start, end) {
-            _this.mirror.setSelectionRange(start, end);
-        };
-        _this.onReadonlyReact = function () {
-            var isReadOnly = _this.jodit.options.readonly;
-            if (isReadOnly) {
-                _this.mirror.setAttribute('readonly', 'true');
-            }
-            else {
-                _this.mirror.removeAttribute('readonly');
-            }
-            if (_this.aceEditor) {
-                _this.aceEditor.setReadOnly(isReadOnly);
-            }
-        };
-        return _this;
-    }
-    source.prototype.getMirrorValue = function () {
-        return this.mirror.value;
-    };
-    source.prototype.setMirrorValue = function (value) {
-        this.mirror.value = value;
-    };
-    source.prototype.setFocusToMirror = function () {
-        this.mirror.focus();
-    };
-    source.prototype.replaceMirrorToACE = function () {
-        var _this = this;
-        var editor = this.jodit;
-        var aceEditor, undoManager;
-        var updateButtons = function () {
-            if (undoManager &&
-                editor.getRealMode() === consts.MODE_SOURCE) {
-                editor.events.fire('canRedo', undoManager.hasRedo());
-                editor.events.fire('canUndo', undoManager.hasUndo());
-            }
-        }, getLastColumnIndex = function (row) {
-            return aceEditor.session.getLine(row).length;
-        }, getLastColumnIndices = function () {
-            var rows = aceEditor.session.getLength();
-            var lastColumnIndices = [];
-            var lastColIndex = 0;
-            for (var i = 0; i < rows; i++) {
-                lastColIndex += getLastColumnIndex(i);
-                if (i > 0) {
-                    lastColIndex += 1;
-                }
-                lastColumnIndices[i] = lastColIndex;
-            }
-            return lastColumnIndices;
-        }, getRowColumnIndices = function (characterIndex) {
-            var lastColumnIndices = getLastColumnIndices();
-            if (characterIndex <= lastColumnIndices[0]) {
-                return { row: 0, column: characterIndex };
-            }
-            var row = 1;
-            for (var i = 1; i < lastColumnIndices.length; i++) {
-                if (characterIndex > lastColumnIndices[i]) {
-                    row = i + 1;
-                }
-            }
-            var column = characterIndex - lastColumnIndices[row - 1] - 1;
-            return { row: row, column: column };
-        }, setSelectionRangeIndices = function (start, end) {
-            var startRowColumn = getRowColumnIndices(start);
-            var endRowColumn = getRowColumnIndices(end);
-            aceEditor.getSelection().setSelectionRange({
-                start: startRowColumn,
-                end: endRowColumn
-            });
-        }, getIndexByRowColumn = function (row, column) {
-            var lastColumnIndices = getLastColumnIndices();
-            return (lastColumnIndices[row] - getLastColumnIndex(row) + column);
-        }, tryInitAceEditor = function () {
-            if (aceEditor === undefined &&
-                _this.jodit.ownerWindow.ace !== undefined) {
-                _this.jodit.events.off(_this.jodit.ownerWindow, 'aceReady', tryInitAceEditor);
-                var fakeMirror = _this.jodit.create.div('jodit_source_mirror-fake');
-                _this.mirrorContainer.insertBefore(fakeMirror, _this.mirrorContainer.firstChild);
-                _this.aceEditor = aceEditor = _this.jodit
-                    .ownerWindow.ace.edit(fakeMirror);
-                aceEditor.setTheme(editor.options.sourceEditorNativeOptions.theme);
-                aceEditor.renderer.setShowGutter(editor.options.sourceEditorNativeOptions.showGutter);
-                aceEditor
-                    .getSession()
-                    .setMode(editor.options.sourceEditorNativeOptions.mode);
-                aceEditor.setHighlightActiveLine(editor.options.sourceEditorNativeOptions
-                    .highlightActiveLine);
-                aceEditor.getSession().setUseWrapMode(true);
-                aceEditor.setOption('indentedSoftWrap', false);
-                aceEditor.setOption('wrap', editor.options.sourceEditorNativeOptions.wrap);
-                aceEditor.getSession().setUseWorker(false);
-                aceEditor.$blockScrolling = Infinity;
-                aceEditor.setOptions({
-                    maxLines: Infinity
-                });
-                aceEditor.on('change', _this.toWYSIWYG);
-                aceEditor.on('focus', _this.__proxyOnFocus);
-                aceEditor.on('mousedown', _this.__proxyOnMouseDown);
-                _this.mirror.style.display = 'none';
-                undoManager = aceEditor.getSession().getUndoManager();
-                _this.setMirrorValue = function (value) {
-                    if (editor.options.beautifyHTML &&
-                        editor.ownerWindow.html_beautify) {
-                        aceEditor.setValue(editor.ownerWindow.html_beautify(value));
-                    }
-                    else {
-                        aceEditor.setValue(value);
-                    }
-                    aceEditor.clearSelection();
-                    updateButtons();
-                };
-                if (_this.jodit.getRealMode() !== consts.MODE_WYSIWYG) {
-                    _this.setMirrorValue(_this.getMirrorValue());
-                }
-                _this.getMirrorValue = function () {
-                    return aceEditor.getValue();
-                };
-                _this.setFocusToMirror = function () {
-                    aceEditor.focus();
-                };
-                _this.getSelectionStart = function () {
-                    var range = aceEditor.selection.getRange();
-                    return getIndexByRowColumn(range.start.row, range.start.column);
-                };
-                _this.getSelectionEnd = function () {
-                    var range = aceEditor.selection.getRange();
-                    return getIndexByRowColumn(range.end.row, range.end.column);
-                };
-                _this.selectAll = function () {
-                    aceEditor.selection.selectAll();
-                };
-                _this.insertHTML = function (html) {
-                    var start = aceEditor.selection.getCursor(), end = aceEditor.session.insert(start, html);
-                    aceEditor.selection.setRange({
-                        start: start,
-                        end: end
-                    }, false);
-                };
-                _this.setMirrorSelectionRange = function (start, end) {
-                    setSelectionRangeIndices(start, end);
-                };
-                editor.events
-                    .on('afterResize', function () {
-                    aceEditor.resize();
-                })
-                    .fire('aceInited', editor);
-            }
-        };
-        editor.events
-            .on(this.jodit.ownerWindow, 'aceReady', tryInitAceEditor)
-            .on('aceReady', tryInitAceEditor)
-            .on('afterSetMode', function () {
-            if (editor.getRealMode() !== consts.MODE_SOURCE &&
-                editor.getMode() !== consts.MODE_SPLIT) {
-                return;
-            }
-            _this.fromWYSIWYG();
-            tryInitAceEditor();
-        })
-            .on('beforeCommand', function (command) {
-            if (editor.getRealMode() !== consts.MODE_WYSIWYG &&
-                (command === 'redo' || command === 'undo') &&
-                undoManager) {
-                if (undoManager['has' +
-                    command.substr(0, 1).toUpperCase() +
-                    command.substr(1)]) {
-                    aceEditor[command]();
-                }
-                updateButtons();
-                return false;
-            }
-        });
-        tryInitAceEditor();
-        if (this.jodit.ownerWindow.ace === undefined &&
-            !selector_1.$$('script.' + this.className, this.jodit.ownerDocument.body)
-                .length) {
-            this.loadNext(0, editor.options.sourceEditorCDNUrlsJS, 'aceReady', this.className);
-        }
-    };
-    source.prototype.afterInit = function (editor) {
-        var _this = this;
-        this.mirrorContainer = editor.create.div('jodit_source');
-        this.mirror = editor.create.fromHTML('<textarea class="jodit_source_mirror"/>');
-        var addListeners = function () {
-            editor.events
-                .off('beforeSetMode.source afterSetMode.source')
-                .on('beforeSetMode.source', _this.saveSelection)
-                .on('afterSetMode.source', _this.restoreSelection);
-        };
-        addListeners();
-        this.onReadonlyReact();
-        editor.events
-            .on(this.mirror, 'mousedown keydown touchstart input', async_1.debounce(this.toWYSIWYG, editor.defaultTimeout))
-            .on(this.mirror, 'change keydown mousedown touchstart input', this.autosize)
-            .on('afterSetMode.source', this.autosize)
-            .on(this.mirror, 'mousedown focus', function (e) {
-            editor.events.fire(e.type, e);
-        });
-        editor.events
-            .on('setMinHeight.source', function (minHeightD) {
-            _this.mirror && css_1.css(_this.mirror, 'minHeight', minHeightD);
-        })
-            .on('insertHTML.source', function (html) {
-            if (!editor.options.readonly &&
-                !_this.jodit.isEditorMode()) {
-                _this.insertHTML(html);
-                return false;
-            }
-        })
-            .on('aceInited', function () {
-            _this.onReadonlyReact();
-            addListeners();
-        }, void 0, void 0, true)
-            .on('readonly.source', this.onReadonlyReact)
-            .on('placeholder.source', function (text) {
-            _this.mirror.setAttribute('placeholder', text);
-        })
-            .on('beforeCommand.source', this.onSelectAll)
-            .on('change.source', this.fromWYSIWYG);
-        this.mirrorContainer.appendChild(this.mirror);
-        editor.workplace.appendChild(this.mirrorContainer);
-        this.autosize();
-        var className = 'beutyfy_html_jodit_helper';
-        if (editor.options.beautifyHTML &&
-            editor.ownerWindow.html_beautify === undefined &&
-            !selector_1.$$('script.' + className, editor.ownerDocument.body).length) {
-            this.loadNext(0, editor.options.beautifyHTMLCDNUrlsJS, false, className);
-        }
-        if (editor.options.useAceEditor) {
-            this.replaceMirrorToACE();
-        }
-        this.fromWYSIWYG();
-    };
-    source.prototype.beforeDestruct = function (jodit) {
-        Dom_1.Dom.safeRemove(this.mirrorContainer);
-        Dom_1.Dom.safeRemove(this.mirror);
-        if (jodit && jodit.events) {
-            jodit.events.off('aceInited.source');
-        }
-        if (this.aceEditor) {
-            this.setFocusToMirror = function () { };
-            this.aceEditor.off('change', this.toWYSIWYG);
-            this.aceEditor.off('focus', this.__proxyOnFocus);
-            this.aceEditor.off('mousedown', this.__proxyOnMouseDown);
-            this.aceEditor.destroy();
-            delete this.aceEditor;
-        }
-        if (this.lastTuple) {
-            this.lastTuple.element.removeEventListener('load', this.lastTuple.callback);
-        }
-    };
-    return source;
-}(Plugin_1.Plugin));
-exports.source = source;
-
-
-/***/ }),
-/* 186 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var async_1 = __webpack_require__(5);
-var Plugin_1 = __webpack_require__(7);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.showCharsCounter = true;
-Config_1.Config.prototype.showWordsCounter = true;
-var stat = (function (_super) {
-    tslib_1.__extends(stat, _super);
-    function stat() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.calc = async_1.throttle(function () {
-            var text = _this.jodit.getEditorText();
-            if (_this.jodit.options.showCharsCounter && _this.charCounter) {
-                _this.charCounter.textContent = _this.jodit.i18n('Chars: %d', text.replace(constants_1.SPACE_REG_EXP, '').length);
-            }
-            if (_this.jodit.options.showWordsCounter && _this.wordCounter) {
-                _this.wordCounter.textContent = _this.jodit.i18n('Words: %d', text
-                    .replace(constants_1.INVISIBLE_SPACE_REG_EXP, '')
-                    .split(constants_1.SPACE_REG_EXP)
-                    .filter(function (e) { return e.length; }).length);
-            }
-        }, _this.jodit.defaultTimeout);
-        return _this;
-    }
-    stat.prototype.afterInit = function () {
-        if (this.jodit.options.showCharsCounter) {
-            this.charCounter = this.jodit.create.span();
-            this.jodit.statusbar.append(this.charCounter, true);
-        }
-        if (this.jodit.options.showWordsCounter) {
-            this.wordCounter = this.jodit.create.span();
-            this.jodit.statusbar.append(this.wordCounter, true);
-        }
-        this.jodit.events.on('change', this.calc);
-        this.calc();
-    };
-    stat.prototype.beforeDestruct = function () {
-        Dom_1.Dom.safeRemove(this.charCounter);
-        Dom_1.Dom.safeRemove(this.wordCounter);
-        this.charCounter = null;
-        this.wordCounter = null;
-    };
-    return stat;
-}(Plugin_1.Plugin));
-exports.stat = stat;
-
-
-/***/ }),
-/* 187 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var Plugin_1 = __webpack_require__(7);
-var css_1 = __webpack_require__(11);
-var size_1 = __webpack_require__(23);
-var Dom_1 = __webpack_require__(0);
-Config_1.Config.prototype.toolbarSticky = true;
-Config_1.Config.prototype.toolbarDisableStickyForMobile = true;
-Config_1.Config.prototype.toolbarStickyOffset = 0;
-var sticky = (function (_super) {
-    tslib_1.__extends(sticky, _super);
-    function sticky() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.isToolbarSticked = false;
-        _this.createDummy = function (toolbar) {
-            if (constants_1.IS_IE && !_this.dummyBox) {
-                _this.dummyBox = _this.jodit.create.div();
-                _this.dummyBox.classList.add('jodit_sticky-dummy_toolbar');
-                _this.jodit.container.insertBefore(_this.dummyBox, toolbar);
-            }
-        };
-        _this.addSticky = function (toolbar) {
-            if (!_this.isToolbarSticked) {
-                _this.createDummy(toolbar);
-                _this.jodit.container.classList.add('jodit_sticky');
-                _this.isToolbarSticked = true;
-            }
-            css_1.css(toolbar, {
-                top: _this.jodit.options.toolbarStickyOffset,
-                width: _this.jodit.container.offsetWidth
-            });
-            if (constants_1.IS_IE && _this.dummyBox) {
-                css_1.css(_this.dummyBox, {
-                    height: toolbar.offsetHeight
-                });
-            }
-        };
-        _this.removeSticky = function (toolbar) {
-            if (_this.isToolbarSticked) {
-                css_1.css(toolbar, {
-                    width: '',
-                    top: ''
-                });
-                _this.jodit.container.classList.remove('jodit_sticky');
-                _this.isToolbarSticked = false;
-            }
-        };
-        return _this;
-    }
-    sticky.prototype.isMobile = function () {
-        return (this.jodit &&
-            this.jodit.options &&
-            this.jodit.container &&
-            this.jodit.options.sizeSM >= this.jodit.container.offsetWidth);
-    };
-    sticky.prototype.afterInit = function (jodit) {
-        var _this = this;
-        jodit.events.on(jodit.ownerWindow, 'scroll wheel mousewheel resize', function () {
-            var scrollWindowTop = jodit.ownerWindow.pageYOffset ||
-                (jodit.ownerDocument.documentElement &&
-                    jodit.ownerDocument.documentElement.scrollTop) ||
-                0, offsetEditor = size_1.offset(jodit.container, jodit, jodit.ownerDocument, true), doSticky = jodit.getMode() === constants_1.MODE_WYSIWYG &&
-                (scrollWindowTop + jodit.options.toolbarStickyOffset >
-                    offsetEditor.top &&
-                    scrollWindowTop +
-                        jodit.options.toolbarStickyOffset <
-                        offsetEditor.top + offsetEditor.height) &&
-                !(jodit.options.toolbarDisableStickyForMobile &&
-                    _this.isMobile());
-            if (jodit.options.toolbarSticky && jodit.options.toolbar === true) {
-                doSticky
-                    ? _this.addSticky(jodit.toolbar.getParentContainer())
-                    : _this.removeSticky(jodit.toolbar.getParentContainer());
-            }
-            jodit.events.fire('toggleSticky', doSticky);
-        });
-    };
-    sticky.prototype.beforeDestruct = function (jodit) {
-        this.dummyBox && Dom_1.Dom.safeRemove(this.dummyBox);
-    };
-    return sticky;
-}(Plugin_1.Plugin));
-exports.sticky = sticky;
-
-
-/***/ }),
-/* 188 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var dialog_1 = __webpack_require__(14);
-Config_1.Config.prototype.usePopupForSpecialCharacters = false;
-Config_1.Config.prototype.specialCharacters = [
-    '!',
-    '&quot;',
-    '#',
-    '$',
-    '%',
-    '&amp;',
-    "'",
-    '(',
-    ')',
-    '*',
-    '+',
-    '-',
-    '.',
-    '/',
-    '0',
-    '1',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    ':',
-    ';',
-    '&lt;',
-    '=',
-    '&gt;',
-    '?',
-    '@',
-    'A',
-    'B',
-    'C',
-    'D',
-    'E',
-    'F',
-    'G',
-    'H',
-    'I',
-    'J',
-    'K',
-    'L',
-    'M',
-    'N',
-    'O',
-    'P',
-    'Q',
-    'R',
-    'S',
-    'T',
-    'U',
-    'V',
-    'W',
-    'X',
-    'Y',
-    'Z',
-    '[',
-    ']',
-    '^',
-    '_',
-    '`',
-    'a',
-    'b',
-    'c',
-    'd',
-    'e',
-    'f',
-    'g',
-    'h',
-    'i',
-    'j',
-    'k',
-    'l',
-    'm',
-    'n',
-    'o',
-    'p',
-    'q',
-    'r',
-    's',
-    't',
-    'u',
-    'v',
-    'w',
-    'x',
-    'y',
-    'z',
-    '{',
-    '|',
-    '}',
-    '~',
-    '&euro;',
-    '&lsquo;',
-    '&rsquo;',
-    '&ldquo;',
-    '&rdquo;',
-    '&ndash;',
-    '&mdash;',
-    '&iexcl;',
-    '&cent;',
-    '&pound;',
-    '&curren;',
-    '&yen;',
-    '&brvbar;',
-    '&sect;',
-    '&uml;',
-    '&copy;',
-    '&ordf;',
-    '&laquo;',
-    '&raquo;',
-    '&not;',
-    '&reg;',
-    '&macr;',
-    '&deg;',
-    '&sup2;',
-    '&sup3;',
-    '&acute;',
-    '&micro;',
-    '&para;',
-    '&middot;',
-    '&cedil;',
-    '&sup1;',
-    '&ordm;',
-    '&frac14;',
-    '&frac12;',
-    '&frac34;',
-    '&iquest;',
-    '&Agrave;',
-    '&Aacute;',
-    '&Acirc;',
-    '&Atilde;',
-    '&Auml;',
-    '&Aring;',
-    '&AElig;',
-    '&Ccedil;',
-    '&Egrave;',
-    '&Eacute;',
-    '&Ecirc;',
-    '&Euml;',
-    '&Igrave;',
-    '&Iacute;',
-    '&Icirc;',
-    '&Iuml;',
-    '&ETH;',
-    '&Ntilde;',
-    '&Ograve;',
-    '&Oacute;',
-    '&Ocirc;',
-    '&Otilde;',
-    '&Ouml;',
-    '&times;',
-    '&Oslash;',
-    '&Ugrave;',
-    '&Uacute;',
-    '&Ucirc;',
-    '&Uuml;',
-    '&Yacute;',
-    '&THORN;',
-    '&szlig;',
-    '&agrave;',
-    '&aacute;',
-    '&acirc;',
-    '&atilde;',
-    '&auml;',
-    '&aring;',
-    '&aelig;',
-    '&ccedil;',
-    '&egrave;',
-    '&eacute;',
-    '&ecirc;',
-    '&euml;',
-    '&igrave;',
-    '&iacute;',
-    '&icirc;',
-    '&iuml;',
-    '&eth;',
-    '&ntilde;',
-    '&ograve;',
-    '&oacute;',
-    '&ocirc;',
-    '&otilde;',
-    '&ouml;',
-    '&divide;',
-    '&oslash;',
-    '&ugrave;',
-    '&uacute;',
-    '&ucirc;',
-    '&uuml;',
-    '&yacute;',
-    '&thorn;',
-    '&yuml;',
-    '&OElig;',
-    '&oelig;',
-    '&#372;',
-    '&#374',
-    '&#373',
-    '&#375;',
-    '&sbquo;',
-    '&#8219;',
-    '&bdquo;',
-    '&hellip;',
-    '&trade;',
-    '&#9658;',
-    '&bull;',
-    '&rarr;',
-    '&rArr;',
-    '&hArr;',
-    '&diams;',
-    '&asymp;'
-];
-Config_1.Config.prototype.controls.symbol = {
-    icon: 'omega',
-    hotkeys: ['ctrl+shift+i', 'cmd+shift+i'],
-    tooltip: 'Insert Special Character',
-    popup: function (editor, current, control, close) {
-        var container = editor.events.fire('generateSpecialCharactersTable.symbols');
-        if (container) {
-            if (editor.options.usePopupForSpecialCharacters) {
-                var box = editor.ownerDocument.createElement('div');
-                box.classList.add('jodit_symbols');
-                box.appendChild(container);
-                editor.events.on(container, 'close_dialog', close);
-                return box;
-            }
-            else {
-                var dialog_2 = dialog_1.Alert(container, editor.i18n('Select Special Character'), void 0, 'jodit_symbols');
-                var a = container.querySelector('a');
-                a && a.focus();
-                editor.events.on('beforeDestruct', function () {
-                    dialog_2 && dialog_2.close();
-                });
-            }
-        }
-    }
-};
-var symbols = (function () {
-    function symbols(editor) {
-        var _this = this;
-        this.countInRow = 17;
-        editor.events.on('generateSpecialCharactersTable.symbols', function () {
-            var container = editor.create.fromHTML('<div class="jodit_symbols-container">' +
-                '<div class="jodit_symbols-container_table"><table><tbody></tbody></table></div>' +
-                '<div class="jodit_symbols-container_preview"><div class="jodit_symbols-preview"></div></div>' +
-                '</div>'), preview = container.querySelector('.jodit_symbols-preview'), table = container.querySelector('table'), body = table.tBodies[0], chars = [];
-            for (var i = 0; i < editor.options.specialCharacters.length;) {
-                var tr = editor.create.element('tr');
-                for (var j = 0; j < _this.countInRow &&
-                    i < editor.options.specialCharacters.length; j += 1, i += 1) {
-                    var td = editor.create.element('td'), a = editor.create.fromHTML("<a\n                                    data-index=\"" + i + "\"\n                                    data-index-j=\"" + j + "\"\n                                    href=\"javascript:void(0)\"\n                                    role=\"option\"\n                                    tabindex=\"-1\"\n                                >" + editor.options.specialCharacters[i] + "</a>");
-                    chars.push(a);
-                    td.appendChild(a);
-                    tr.appendChild(td);
-                }
-                body.appendChild(tr);
-            }
-            var self = _this;
-            editor.events
-                .on(chars, 'focus', function () {
-                preview.innerHTML = this.innerHTML;
-            })
-                .on(chars, 'mousedown', function (e) {
-                if (this && this.nodeName === 'A') {
-                    editor.selection.focus();
-                    editor.selection.insertHTML(this.innerHTML);
-                    editor.events.fire(this, 'close_dialog');
-                    e && e.preventDefault();
-                    e && e.stopImmediatePropagation();
-                }
-            })
-                .on(chars, 'mouseenter', function () {
-                if (this && this.nodeName === 'A') {
-                    this.focus();
-                }
-            })
-                .on(chars, 'keydown', function (e) {
-                var target = e.target;
-                if (target && target.nodeName === 'A') {
-                    var index = parseInt(target.getAttribute('data-index') || '0', 10), jIndex = parseInt(target.getAttribute('data-index-j') || '0', 10);
-                    var newIndex = void 0;
-                    switch (e.which) {
-                        case constants_1.KEY_UP:
-                        case constants_1.KEY_DOWN:
-                            newIndex =
-                                e.which === constants_1.KEY_UP
-                                    ? index - self.countInRow
-                                    : index + self.countInRow;
-                            if (chars[newIndex] === undefined) {
-                                newIndex =
-                                    e.which === constants_1.KEY_UP
-                                        ? Math.floor(chars.length /
-                                            self.countInRow) *
-                                            self.countInRow +
-                                            jIndex
-                                        : jIndex;
-                                if (newIndex > chars.length - 1) {
-                                    newIndex -= self.countInRow;
-                                }
-                            }
-                            chars[newIndex] && chars[newIndex].focus();
-                            break;
-                        case constants_1.KEY_RIGHT:
-                        case constants_1.KEY_LEFT:
-                            newIndex =
-                                e.which === constants_1.KEY_LEFT
-                                    ? index - 1
-                                    : index + 1;
-                            if (chars[newIndex] === undefined) {
-                                newIndex =
-                                    e.which === constants_1.KEY_LEFT
-                                        ? chars.length - 1
-                                        : 0;
-                            }
-                            chars[newIndex] && chars[newIndex].focus();
-                            break;
-                        case constants_1.KEY_ENTER:
-                            editor.events.fire(target, 'mousedown');
-                            e.stopImmediatePropagation();
-                            e.preventDefault();
-                            break;
-                    }
-                }
-            });
-            return container;
-        });
-    }
-    return symbols;
-}());
-exports.symbols = symbols;
-
-
-/***/ }),
-/* 189 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var consts = __webpack_require__(3);
-var Dom_1 = __webpack_require__(0);
-var Table_1 = __webpack_require__(30);
-function tableKeyboardNavigation(editor) {
-    editor.events.on('keydown', function (event) {
-        var current, block;
-        if (event.which === consts.KEY_TAB ||
-            event.which === consts.KEY_LEFT ||
-            event.which === consts.KEY_RIGHT ||
-            event.which === consts.KEY_UP ||
-            event.which === consts.KEY_DOWN) {
-            current = editor.selection.current();
-            block = Dom_1.Dom.up(current, function (elm) {
-                return elm && elm.nodeName && /^td|th$/i.test(elm.nodeName);
-            }, editor.editor);
-            if (!block) {
-                return;
-            }
-            var range = editor.selection.range;
-            if (event.which !== consts.KEY_TAB && current !== block) {
-                if (((event.which === consts.KEY_LEFT ||
-                    event.which === consts.KEY_UP) &&
-                    (Dom_1.Dom.prev(current, function (elm) {
-                        return event.which === consts.KEY_UP
-                            ? elm && elm.nodeName === 'BR'
-                            : !!elm;
-                    }, block) ||
-                        (event.which !== consts.KEY_UP &&
-                            current.nodeType === Node.TEXT_NODE &&
-                            range.startOffset !== 0))) ||
-                    ((event.which === consts.KEY_RIGHT ||
-                        event.which === consts.KEY_DOWN) &&
-                        (Dom_1.Dom.next(current, function (elm) {
-                            return event.which === consts.KEY_DOWN
-                                ? elm && elm.nodeName === 'BR'
-                                : !!elm;
-                        }, block) ||
-                            (event.which !== consts.KEY_DOWN &&
-                                current.nodeType === Node.TEXT_NODE &&
-                                current.nodeValue &&
-                                range.startOffset !==
-                                    current.nodeValue.length)))) {
-                    return;
-                }
-            }
-        }
-        else {
-            return;
-        }
-        var table = Dom_1.Dom.up(block, function (elm) { return elm && /^table$/i.test(elm.nodeName); }, editor.editor);
-        var next = null;
-        switch (event.which) {
-            case consts.KEY_TAB:
-            case consts.KEY_LEFT:
-                var sibling = event.which === consts.KEY_LEFT || event.shiftKey
-                    ? 'prev'
-                    : 'next';
-                next = Dom_1.Dom[sibling](block, function (elm) {
-                    return elm &&
-                        /^td|th$/i.test(elm.tagName);
-                }, table);
-                if (!next) {
-                    Table_1.Table.appendRow(table, sibling === 'next'
-                        ? false
-                        : table.querySelector('tr'), sibling === 'next');
-                    next = Dom_1.Dom[sibling](block, function (elm) {
-                        return elm && Dom_1.Dom.isCell(elm, editor.editorWindow);
-                    }, table);
-                }
-                break;
-            case consts.KEY_UP:
-            case consts.KEY_DOWN:
-                {
-                    var i_1 = 0, j_1 = 0;
-                    var matrix = Table_1.Table.formalMatrix(table, function (elm, _i, _j) {
-                        if (elm === block) {
-                            i_1 = _i;
-                            j_1 = _j;
-                        }
-                    });
-                    if (event.which === consts.KEY_UP) {
-                        if (matrix[i_1 - 1] !== undefined) {
-                            next = matrix[i_1 - 1][j_1];
-                        }
-                    }
-                    else {
-                        if (matrix[i_1 + 1] !== undefined) {
-                            next = matrix[i_1 + 1][j_1];
-                        }
-                    }
-                }
-                break;
-        }
-        if (next) {
-            if (!next.firstChild) {
-                var first = editor.editorDocument.createElement('br');
-                next.appendChild(first);
-                editor.selection.setCursorBefore(first);
-            }
-            else {
-                if (event.which === consts.KEY_TAB) {
-                    editor.selection.select(next, true);
-                }
-                else {
-                    editor.selection.setCursorIn(next, event.which === consts.KEY_RIGHT ||
-                        event.which === consts.KEY_DOWN);
-                }
-            }
-            return false;
-        }
-    });
-}
-exports.tableKeyboardNavigation = tableKeyboardNavigation;
-
-
-/***/ }),
-/* 190 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var consts = __webpack_require__(3);
-var Plugin_1 = __webpack_require__(7);
-var Dom_1 = __webpack_require__(0);
-var Table_1 = __webpack_require__(30);
-var helpers_1 = __webpack_require__(4);
-var async_1 = __webpack_require__(5);
-Config_1.Config.prototype.useTableProcessor = true;
-Config_1.Config.prototype.useExtraClassesOptions = true;
-Config_1.Config.prototype.controls.table = {
-    data: {
-        cols: 10,
-        rows: 10,
-        classList: {
-            'table table-bordered': 'Bootstrap Bordered',
-            'table table-striped': 'Bootstrap Striped',
-            'table table-dark': 'Bootstrap Dark'
-        }
-    },
-    popup: function (editor, current, control, close, button) {
-        var default_rows_count = control.data && control.data.rows ? control.data.rows : 10, default_cols_count = control.data && control.data.cols ? control.data.cols : 10;
-        var generateExtraClasses = function () {
-            if (!editor.options.useExtraClassesOptions) {
-                return '';
-            }
-            var out = [];
-            if (control.data) {
-                var classList_1 = control.data.classList;
-                Object.keys(classList_1).forEach(function (classes) {
-                    out.push("<label class=\"jodit_vertical_middle\"><input class=\"jodit_checkbox\" value=\"" + classes + "\" type=\"checkbox\"/>" + classList_1[classes] + "</label>");
-                });
-            }
-            return out.join('');
-        };
-        var form = editor.create.fromHTML('<form class="jodit_form jodit_form_inserter">' +
-            '<label class="jodit_form_center">' +
-            '<span>1</span> &times; <span>1</span>' +
-            '</label>' +
-            '<div class="jodit_form-table-creator-box">' +
-            '<div class="jodit_form-container"></div>' +
-            '<div class="jodit_form-options">' +
-            generateExtraClasses() +
-            '</div>' +
-            '</div>' +
-            '</form>'), rows = form.querySelectorAll('span')[0], cols = form.querySelectorAll('span')[1], blocksContainer = form.querySelector('.jodit_form-container'), mainBox = form.querySelector('.jodit_form-table-creator-box'), options = form.querySelector('.jodit_form-options'), cells = [];
-        var generateRows = function (need_rows) {
-            var cnt = need_rows * default_cols_count;
-            if (cells.length > cnt) {
-                for (var i = cnt; i < cells.length; i += 1) {
-                    Dom_1.Dom.safeRemove(cells[i]);
-                    delete cells[i];
-                }
-                cells.length = cnt;
-            }
-            for (var i = 0; i < cnt; i += 1) {
-                if (!cells[i]) {
-                    var div = editor.create.div();
-                    div.setAttribute('data-index', i.toString());
-                    cells.push(div);
-                }
-            }
-            cells.forEach(function (cell) {
-                blocksContainer.appendChild(cell);
-            });
-            var width = (cells[0].offsetWidth || 18) * default_cols_count;
-            blocksContainer.style.width = width + 'px';
-            mainBox.style.width = width + options.offsetWidth + 1 + 'px';
-        };
-        var mouseenter = function (e, index) {
-            var dv = e.target;
-            if (!dv || dv.tagName !== 'DIV') {
-                return;
-            }
-            var k = index === undefined || isNaN(index)
-                ? parseInt(dv.getAttribute('data-index') || '0', 10)
-                : index || 0;
-            var rows_count = Math.ceil((k + 1) / default_cols_count), cols_count = (k % default_cols_count) + 1;
-            for (var i = 0; i < cells.length; i += 1) {
-                if (cols_count >= (i % default_cols_count) + 1 &&
-                    rows_count >= Math.ceil((i + 1) / default_cols_count)) {
-                    cells[i].className = 'hovered';
-                }
-                else {
-                    cells[i].className = '';
-                }
-            }
-            cols.textContent = cols_count.toString();
-            rows.textContent = rows_count.toString();
-        };
-        blocksContainer.addEventListener('mousemove', mouseenter);
-        editor.events.on(blocksContainer, 'touchstart mousedown', function (e) {
-            var dv = e.target;
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            if (dv.tagName !== 'DIV') {
-                return;
-            }
-            var k = parseInt(dv.getAttribute('data-index') || '0', 10);
-            var rows_count = Math.ceil((k + 1) / default_cols_count), cols_count = (k % default_cols_count) + 1;
-            var crt = editor.create.inside, tbody = crt.element('tbody'), table = crt.element('table');
-            table.appendChild(tbody);
-            table.style.width = '100%';
-            var first_td = null, tr, td;
-            for (var i = 1; i <= rows_count; i += 1) {
-                tr = crt.element('tr');
-                for (var j = 1; j <= cols_count; j += 1) {
-                    td = crt.element('td');
-                    if (!first_td) {
-                        first_td = td;
-                    }
-                    td.appendChild(crt.element('br'));
-                    tr.appendChild(crt.text('\n'));
-                    tr.appendChild(crt.text('\t'));
-                    tr.appendChild(td);
-                }
-                tbody.appendChild(crt.text('\n'));
-                tbody.appendChild(tr);
-            }
-            var crnt = editor.selection.current();
-            if (crnt && editor.selection.isCollapsed()) {
-                var block = Dom_1.Dom.closest(crnt, function (node) { return Dom_1.Dom.isBlock(node, editor.editorWindow); }, editor.editor);
-                if (block &&
-                    block !== editor.editor &&
-                    !block.nodeName.match(/^TD|TH|TBODY|TABLE|THEADER|TFOOTER$/)) {
-                    editor.selection.setCursorAfter(block);
-                }
-            }
-            helpers_1.$$('input[type=checkbox]:checked', options).forEach(function (input) {
-                input.value
-                    .split(/[\s]+/)
-                    .forEach(function (className) {
-                    table.classList.add(className);
-                });
-            });
-            editor.selection.insertNode(crt.text('\n'));
-            editor.selection.insertNode(table, false);
-            if (first_td) {
-                editor.selection.setCursorIn(first_td);
-                helpers_1.scrollIntoView(first_td, editor.editor, editor.editorDocument);
-            }
-            close();
-        });
-        if (button && button.parentToolbar) {
-            editor.events
-                .off(button.parentToolbar.container, 'afterOpenPopup.tableGenerator')
-                .on(button.parentToolbar.container, 'afterOpenPopup.tableGenerator', function () {
-                generateRows(default_rows_count);
-                if (cells[0]) {
-                    cells[0].className = 'hovered';
-                }
-            }, '', true);
-        }
-        return form;
-    },
-    tooltip: 'Insert table'
-};
-var TableProcessor = (function (_super) {
-    tslib_1.__extends(TableProcessor, _super);
-    function TableProcessor() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.__key = 'table_processor_observer';
-        _this.__selectMode = false;
-        _this.__resizerDelta = 0;
-        _this.__drag = false;
-        _this.__addResizer = function () {
-            if (!_this.__resizerHandler) {
-                _this.__resizerHandler = _this.jodit.container.querySelector('.jodit_table_resizer');
-                if (!_this.__resizerHandler) {
-                    _this.__resizerHandler = _this.jodit.create.div('jodit_table_resizer');
-                    var startX_1 = 0;
-                    _this.jodit.events
-                        .on(_this.__resizerHandler, 'mousedown.table touchstart.table', function (event) {
-                        _this.__drag = true;
-                        startX_1 = event.clientX;
-                        _this.jodit.lock(_this.__key);
-                        _this.__resizerHandler.classList.add('jodit_table_resizer-moved');
-                        var box, tableBox = _this.__workTable.getBoundingClientRect();
-                        _this.__minX = 0;
-                        _this.__maxX = 1000000;
-                        if (_this.__wholeTable !== null) {
-                            tableBox = _this.__workTable
-                                .parentNode.getBoundingClientRect();
-                            _this.__minX = tableBox.left;
-                            _this.__maxX = tableBox.left + tableBox.width;
-                        }
-                        else {
-                            var coordinate_1 = Table_1.Table.formalCoordinate(_this.__workTable, _this.__workCell, true);
-                            Table_1.Table.formalMatrix(_this.__workTable, function (td, i, j) {
-                                if (coordinate_1[1] === j) {
-                                    box = td.getBoundingClientRect();
-                                    _this.__minX = Math.max(box.left + consts.NEARBY / 2, _this.__minX);
-                                }
-                                if (coordinate_1[1] + 1 === j) {
-                                    box = td.getBoundingClientRect();
-                                    _this.__maxX = Math.min(box.left +
-                                        box.width -
-                                        consts.NEARBY / 2, _this.__maxX);
-                                }
-                            });
-                        }
-                        return false;
-                    })
-                        .on(_this.__resizerHandler, 'mouseenter.table', function () {
-                        clearTimeout(_this.hideTimeout);
-                    })
-                        .on(_this.jodit.editorWindow, 'mousemove.table touchmove.table', function (event) {
-                        if (_this.__drag) {
-                            var x = event.clientX;
-                            var workplacePosition = helpers_1.offset((_this.__resizerHandler.parentNode ||
-                                _this.jodit.ownerDocument
-                                    .documentElement), _this.jodit, _this.jodit.ownerDocument, true);
-                            if (x < _this.__minX) {
-                                x = _this.__minX;
-                            }
-                            if (x > _this.__maxX) {
-                                x = _this.__maxX;
-                            }
-                            _this.__resizerDelta =
-                                x -
-                                    startX_1 +
-                                    (!_this.jodit.options.iframe
-                                        ? 0
-                                        : workplacePosition.left);
-                            _this.__resizerHandler.style.left =
-                                x -
-                                    (_this.jodit.options.iframe
-                                        ? 0
-                                        : workplacePosition.left) +
-                                    'px';
-                            var sel = _this.jodit.selection.sel;
-                            sel && sel.removeAllRanges();
-                            if (event.preventDefault) {
-                                event.preventDefault();
-                            }
-                        }
-                    });
-                    _this.jodit.workplace.appendChild(_this.__resizerHandler);
-                }
-            }
-        };
-        _this.onExecCommand = function (command) {
-            if (/table(splitv|splitg|merge|empty|bin|binrow|bincolumn|addcolumn|addrow)/.test(command)) {
-                command = command.replace('table', '');
-                var cells = Table_1.Table.getAllSelectedCells(_this.jodit.editor);
-                if (cells.length) {
-                    var cell = cells.shift();
-                    if (!cell) {
-                        return;
-                    }
-                    var table = Dom_1.Dom.closest(cell, 'table', _this.jodit.editor);
-                    switch (command) {
-                        case 'splitv':
-                            Table_1.Table.splitVertical(table);
-                            break;
-                        case 'splitg':
-                            Table_1.Table.splitHorizontal(table);
-                            break;
-                        case 'merge':
-                            Table_1.Table.mergeSelected(table);
-                            break;
-                        case 'empty':
-                            Table_1.Table.getAllSelectedCells(_this.jodit.editor).forEach(function (td) { return (td.innerHTML = ''); });
-                            break;
-                        case 'bin':
-                            Dom_1.Dom.safeRemove(table);
-                            break;
-                        case 'binrow':
-                            Table_1.Table.removeRow(table, cell.parentNode.rowIndex);
-                            break;
-                        case 'bincolumn':
-                            Table_1.Table.removeColumn(table, cell.cellIndex);
-                            break;
-                        case 'addcolumnafter':
-                        case 'addcolumnbefore':
-                            Table_1.Table.appendColumn(table, cell.cellIndex, command === 'addcolumnafter');
-                            break;
-                        case 'addrowafter':
-                        case 'addrowbefore':
-                            Table_1.Table.appendRow(table, cell.parentNode, command === 'addrowafter');
-                            break;
-                    }
-                }
-                return false;
-            }
-        };
-        return _this;
-    }
-    TableProcessor.isCell = function (tag) {
-        return !!tag && /^TD|TH$/i.test(tag.nodeName);
-    };
-    TableProcessor.prototype.showResizer = function () {
-        clearTimeout(this.hideTimeout);
-        this.__resizerHandler.style.display = 'block';
-    };
-    TableProcessor.prototype.hideResizer = function () {
-        var _this = this;
-        clearTimeout(this.hideTimeout);
-        this.hideTimeout = async_1.setTimeout(function () {
-            _this.__resizerHandler.style.display = 'none';
-        }, this.jodit.defaultTimeout);
-    };
-    TableProcessor.prototype.__deSelectAll = function (table, currentCell) {
-        var cells = table
-            ? Table_1.Table.getAllSelectedCells(table)
-            : Table_1.Table.getAllSelectedCells(this.jodit.editor);
-        if (cells.length) {
-            cells.forEach(function (cell) {
-                if (!currentCell || currentCell !== cell) {
-                    Table_1.Table.restoreSelection(cell);
-                }
-            });
-        }
-    };
-    TableProcessor.prototype.__setWorkCell = function (cell, wholeTable) {
-        if (wholeTable === void 0) { wholeTable = null; }
-        this.__wholeTable = wholeTable;
-        this.__workCell = cell;
-        this.__workTable = Dom_1.Dom.up(cell, function (elm) { return elm && elm.nodeName === 'TABLE'; }, this.jodit.editor);
-    };
-    TableProcessor.prototype.__calcResizerPosition = function (table, cell, offsetX, delta) {
-        if (offsetX === void 0) { offsetX = 0; }
-        if (delta === void 0) { delta = 0; }
-        var box = helpers_1.offset(cell, this.jodit, this.jodit.editorDocument);
-        if (offsetX <= consts.NEARBY || box.width - offsetX <= consts.NEARBY) {
-            var workplacePosition = helpers_1.offset((this.__resizerHandler.parentNode ||
-                this.jodit.ownerDocument
-                    .documentElement), this.jodit, this.jodit.ownerDocument, true), parentBox = helpers_1.offset(table, this.jodit, this.jodit.editorDocument);
-            this.__resizerHandler.style.left =
-                (offsetX <= consts.NEARBY ? box.left : box.left + box.width) -
-                    workplacePosition.left +
-                    delta +
-                    'px';
-            this.__resizerHandler.style.height = parentBox.height + 'px';
-            this.__resizerHandler.style.top =
-                parentBox.top - workplacePosition.top + 'px';
-            this.showResizer();
-            if (offsetX <= consts.NEARBY) {
-                var prevTD = Dom_1.Dom.prev(cell, TableProcessor.isCell, cell.parentNode);
-                if (prevTD) {
-                    this.__setWorkCell(prevTD);
-                }
-                else {
-                    this.__setWorkCell(cell, true);
-                }
-            }
-            else {
-                var nextTD = Dom_1.Dom.next(cell, TableProcessor.isCell, cell.parentNode);
-                this.__setWorkCell(cell, !nextTD ? false : null);
-            }
-        }
-        else {
-            this.hideResizer();
-        }
-    };
-    TableProcessor.prototype.observe = function (table) {
-        var _this = this;
-        table[this.__key] = true;
-        var start;
-        this.jodit.events
-            .on(table, 'mousedown.table touchstart.table', function (event) {
-            if (_this.jodit.options.readonly) {
-                return;
-            }
-            var cell = Dom_1.Dom.up(event.target, TableProcessor.isCell, table);
-            if (cell &&
-                cell instanceof
-                    _this.jodit.editorWindow.HTMLElement) {
-                if (!cell.firstChild) {
-                    cell.appendChild(_this.jodit.editorDocument.createElement('br'));
-                }
-                start = cell;
-                Table_1.Table.addSelected(cell);
-                _this.__selectMode = true;
-            }
-        })
-            .on(table, 'mouseleave.table', function (e) {
-            if (_this.__resizerHandler &&
-                _this.__resizerHandler !== e.relatedTarget) {
-                _this.hideResizer();
-            }
-        })
-            .on(table, 'mousemove.table touchmove.table', function (event) {
-            if (_this.jodit.options.readonly) {
-                return;
-            }
-            if (_this.__drag || _this.jodit.isLockedNotBy(_this.__key)) {
-                return;
-            }
-            var cell = Dom_1.Dom.up(event.target, TableProcessor.isCell, table);
-            if (cell) {
-                if (_this.__selectMode) {
-                    if (cell !== start) {
-                        _this.jodit.lock(_this.__key);
-                        var sel = _this.jodit.selection.sel;
-                        sel && sel.removeAllRanges();
-                        if (event.preventDefault) {
-                            event.preventDefault();
-                        }
-                    }
-                    _this.__deSelectAll(table);
-                    var bound = Table_1.Table.getSelectedBound(table, [
-                        cell,
-                        start
-                    ]), box = Table_1.Table.formalMatrix(table);
-                    for (var i = bound[0][0]; i <= bound[1][0]; i += 1) {
-                        for (var j = bound[0][1]; j <= bound[1][1]; j += 1) {
-                            Table_1.Table.addSelected(box[i][j]);
-                        }
-                    }
-                    var max_1 = box[bound[1][0]][bound[1][1]], min_1 = box[bound[0][0]][bound[0][1]];
-                    _this.jodit.events.fire('showPopup', table, function () {
-                        var minOffset = helpers_1.offset(min_1, _this.jodit, _this.jodit.editorDocument);
-                        var maxOffset = helpers_1.offset(max_1, _this.jodit, _this.jodit.editorDocument);
-                        return {
-                            left: minOffset.left,
-                            top: minOffset.top,
-                            width: maxOffset.left -
-                                minOffset.left +
-                                maxOffset.width,
-                            height: maxOffset.top -
-                                minOffset.top +
-                                maxOffset.height
-                        };
-                    });
-                    event.stopPropagation();
-                }
-                else {
-                    _this.__calcResizerPosition(table, cell, event.offsetX);
-                }
-            }
-        });
-        this.__addResizer();
-    };
-    TableProcessor.prototype.afterInit = function (editor) {
-        var _this = this;
-        if (!editor.options.useTableProcessor) {
-            return;
-        }
-        editor.events
-            .on(this.jodit.ownerWindow, 'mouseup.table touchend.table', function () {
-            if (_this.__selectMode || _this.__drag) {
-                _this.__selectMode = false;
-                _this.jodit.unlock();
-            }
-            if (_this.__resizerHandler && _this.__drag) {
-                _this.__drag = false;
-                _this.__resizerHandler.classList.remove('jodit_table_resizer-moved');
-                if (_this.__wholeTable === null) {
-                    var __marked = [];
-                    Table_1.Table.setColumnWidthByDelta(_this.__workTable, Table_1.Table.formalCoordinate(_this.__workTable, _this.__workCell, true)[1], _this.__resizerDelta, true, __marked);
-                    var nextTD = Dom_1.Dom.next(_this.__workCell, TableProcessor.isCell, _this.__workCell.parentNode);
-                    Table_1.Table.setColumnWidthByDelta(_this.__workTable, Table_1.Table.formalCoordinate(_this.__workTable, nextTD)[1], -_this.__resizerDelta, false, __marked);
-                }
-                else {
-                    var width = _this.__workTable.offsetWidth, parentWidth = helpers_1.getContentWidth(_this.__workTable.parentNode, _this.jodit.editorWindow);
-                    if (!_this.__wholeTable) {
-                        _this.__workTable.style.width =
-                            ((width + _this.__resizerDelta) / parentWidth) *
-                                100 +
-                                '%';
-                    }
-                    else {
-                        var margin = parseInt(_this.jodit.editorWindow.getComputedStyle(_this.__workTable).marginLeft || '0', 10);
-                        _this.__workTable.style.width =
-                            ((width - _this.__resizerDelta) / parentWidth) *
-                                100 +
-                                '%';
-                        _this.__workTable.style.marginLeft =
-                            ((margin + _this.__resizerDelta) / parentWidth) *
-                                100 +
-                                '%';
-                    }
-                }
-                editor.setEditorValue();
-                editor.selection.focus();
-            }
-        })
-            .on(this.jodit.ownerWindow, 'scroll.table', function () {
-            if (_this.__drag) {
-                var parent_1 = Dom_1.Dom.up(_this.__workCell, function (elm) { return elm && elm.nodeName === 'TABLE'; }, editor.editor);
-                if (parent_1) {
-                    var parentBox = parent_1.getBoundingClientRect();
-                    _this.__resizerHandler.style.top = parentBox.top + 'px';
-                }
-            }
-        })
-            .on(this.jodit.ownerWindow, 'mousedown.table touchend.table', function (event) {
-            var current_cell = Dom_1.Dom.closest(event.originalEvent.target, 'TD|TH', _this.jodit.editor);
-            var table = null;
-            if (current_cell instanceof
-                _this.jodit.editorWindow.HTMLTableCellElement) {
-                table = Dom_1.Dom.closest(current_cell, 'table', _this.jodit.editor);
-            }
-            if (table) {
-                _this.__deSelectAll(table, current_cell instanceof
-                    _this.jodit.editorWindow
-                        .HTMLTableCellElement
-                    ? current_cell
-                    : false);
-            }
-            else {
-                _this.__deSelectAll();
-            }
-        })
-            .on('afterGetValueFromEditor.table', function (data) {
-            var rxp = new RegExp("([s]*)" + consts.JODIT_SELECTED_CELL_MARKER + "=\"1\"", 'g');
-            if (rxp.test(data.value)) {
-                data.value = data.value.replace(rxp, '');
-            }
-        })
-            .on('change.table afterCommand.table afterSetMode.table', function () {
-            helpers_1.$$('table', editor.editor).forEach(function (table) {
-                if (!table[_this.__key]) {
-                    _this.observe(table);
-                }
-            });
-        })
-            .on('beforeSetMode.table', function () {
-            Table_1.Table.getAllSelectedCells(editor.editor).forEach(function (td) {
-                Table_1.Table.restoreSelection(td);
-                Table_1.Table.normalizeTable(Dom_1.Dom.closest(td, 'table', editor.editor));
-            });
-        })
-            .on('keydown.table', function (event) {
-            if (event.which === consts.KEY_TAB) {
-                helpers_1.$$('table', editor.editor).forEach(function (table) {
-                    _this.__deSelectAll(table);
-                });
-            }
-        })
-            .on('beforeCommand.table', this.onExecCommand.bind(this));
-    };
-    TableProcessor.prototype.beforeDestruct = function (jodit) {
-        if (jodit.events) {
-            jodit.events.off(this.jodit.ownerWindow, '.table');
-            jodit.events.off('.table');
-        }
-    };
-    return TableProcessor;
-}(Plugin_1.Plugin));
-exports.TableProcessor = TableProcessor;
-
-
-/***/ }),
-/* 191 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var tslib_1 = __webpack_require__(1);
-var Config_1 = __webpack_require__(2);
-var constants_1 = __webpack_require__(3);
-var ContextMenu_1 = __webpack_require__(41);
-var Dom_1 = __webpack_require__(0);
-var async_1 = __webpack_require__(5);
-var selector_1 = __webpack_require__(12);
-var Plugin_1 = __webpack_require__(7);
-var button_1 = __webpack_require__(27);
-var string_1 = __webpack_require__(9);
-Config_1.Config.prototype.controls.selectall = {
-    icon: 'select-all',
-    command: 'selectall',
-    tooltip: 'Select all'
-};
-Config_1.Config.prototype.showXPathInStatusbar = true;
-var xpath = (function (_super) {
-    tslib_1.__extends(xpath, _super);
-    function xpath() {
-        var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.onContext = function (bindElement, event) {
-            if (!_this.menu) {
-                _this.menu = new ContextMenu_1.ContextMenu(_this.jodit);
-            }
-            _this.menu.show(event.clientX, event.clientY, [
-                {
-                    icon: 'bin',
-                    title: bindElement === _this.jodit.editor ? 'Clear' : 'Remove',
-                    exec: function () {
-                        if (bindElement !== _this.jodit.editor) {
-                            Dom_1.Dom.safeRemove(bindElement);
-                        }
-                        else {
-                            _this.jodit.value = '';
-                        }
-                        _this.jodit.setEditorValue();
-                    }
-                },
-                {
-                    icon: 'select-all',
-                    title: 'Select',
-                    exec: function () {
-                        _this.jodit.selection.select(bindElement);
-                    }
-                }
-            ]);
-            return false;
-        };
-        _this.onSelectPath = function (bindElement, event) {
-            _this.jodit.selection.focus();
-            var path = event.target.getAttribute('data-path') || '/';
-            if (path === '/') {
-                _this.jodit.execCommand('selectall');
-                return false;
-            }
-            try {
-                var elm = _this.jodit.editorDocument
-                    .evaluate(path, _this.jodit.editor, null, XPathResult.ANY_TYPE, null)
-                    .iterateNext();
-                if (elm) {
-                    _this.jodit.selection.select(elm);
-                    return false;
-                }
-            }
-            catch (_a) { }
-            _this.jodit.selection.select(bindElement);
-            return false;
-        };
-        _this.tpl = function (bindElement, path, name, title) {
-            var li = _this.jodit.create.fromHTML('<li>' +
-                ("<a role=\"button\" data-path=\"" + path + "\" href=\"javascript:void(0)\" title=\"" + title + "\" tabindex=\"-1\"'>" + string_1.trim(name) + "</a>") +
-                '</li>');
-            var a = li.firstChild;
-            _this.jodit.events
-                .on(a, 'click', _this.onSelectPath.bind(_this, bindElement))
-                .on(a, 'contextmenu', _this.onContext.bind(_this, bindElement));
-            return li;
-        };
-        _this.removeSelectAll = function () {
-            if (_this.selectAllButton) {
-                _this.selectAllButton.destruct();
-                delete _this.selectAllButton;
-            }
-        };
-        _this.appendSelectAll = function () {
-            _this.removeSelectAll();
-            _this.selectAllButton = new button_1.ToolbarButton(_this.jodit, tslib_1.__assign({ name: 'selectall' }, _this.jodit.options.controls.selectall));
-            _this.container &&
-                _this.container.insertBefore(_this.selectAllButton.container, _this.container.firstChild);
-        };
-        _this.calcPathImd = function () {
-            if (_this.isDestructed) {
-                return;
-            }
-            var current = _this.jodit.selection.current();
-            if (_this.container) {
-                _this.container.innerHTML = constants_1.INVISIBLE_SPACE;
-            }
-            if (current) {
-                var name_1, xpth_1, li_1;
-                Dom_1.Dom.up(current, function (elm) {
-                    if (elm &&
-                        _this.jodit.editor !== elm &&
-                        elm.nodeType !== Node.TEXT_NODE) {
-                        name_1 = elm.nodeName.toLowerCase();
-                        xpth_1 = selector_1.getXPathByElement(elm, _this.jodit.editor).replace(/^\//, '');
-                        li_1 = _this.tpl(elm, xpth_1, name_1, _this.jodit.i18n('Select %s', name_1));
-                        _this.container &&
-                            _this.container.insertBefore(li_1, _this.container.firstChild);
-                    }
-                }, _this.jodit.editor);
-            }
-            _this.appendSelectAll();
-        };
-        _this.calcPath = async_1.debounce(_this.calcPathImd, _this.jodit.defaultTimeout * 2);
-        _this.container = null;
-        _this.menu = null;
-        return _this;
-    }
-    xpath.prototype.afterInit = function () {
-        var _this = this;
-        if (this.jodit.options.showXPathInStatusbar) {
-            this.container = this.jodit.create.element('ul');
-            this.container.classList.add('jodit_xpath');
-            this.jodit.statusbar.append(this.container);
-            this.jodit.events
-                .on('mouseup.xpath change.xpath keydown.xpath changeSelection.xpath', this.calcPath)
-                .on('afterSetMode.xpath afterInit.xpath', function () {
-                if (_this.jodit.getRealMode() === constants_1.MODE_WYSIWYG) {
-                    _this.calcPath();
-                }
-                else {
-                    if (_this.container) {
-                        _this.container.innerHTML = constants_1.INVISIBLE_SPACE;
-                    }
-                    _this.appendSelectAll();
-                }
-            });
-            this.calcPath();
-        }
-    };
-    xpath.prototype.beforeDestruct = function () {
-        if (this.jodit && this.jodit.events) {
-            this.jodit.events.off('.xpath');
-        }
-        this.removeSelectAll();
-        this.menu && this.menu.destruct();
-        Dom_1.Dom.safeRemove(this.container);
-        this.menu = null;
-        this.container = null;
-    };
-    return xpath;
-}(Plugin_1.Plugin));
-exports.xpath = xpath;
-
-
-/***/ }),
-/* 192 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-/*!
- * Jodit Editor (https://xdsoft.net/jodit/)
- * Licensed under GNU General Public License version 2 or later or a commercial license or MIT;
- * For GPL see LICENSE-GPL.txt in the project root for license information.
- * For MIT see LICENSE-MIT.txt in the project root for license information.
- * For commercial licenses see https://xdsoft.net/jodit/commercial/
- * Copyright (c) 2013-2019 Valeriy Chupurnov. All rights reserved. https://xdsoft.net
- */
-Object.defineProperty(exports, "__esModule", { value: true });
-var about = __webpack_require__(193);
+var about = __webpack_require__(198);
 exports.about = about;
-var addcolumn = __webpack_require__(194);
+var addcolumn = __webpack_require__(199);
 exports.addcolumn = addcolumn;
-var addrow = __webpack_require__(195);
+var addrow = __webpack_require__(200);
 exports.addrow = addrow;
-var angle_down = __webpack_require__(196);
+var angle_down = __webpack_require__(201);
 exports.angle_down = angle_down;
-var angle_left = __webpack_require__(197);
+var angle_left = __webpack_require__(202);
 exports.angle_left = angle_left;
-var angle_right = __webpack_require__(198);
+var angle_right = __webpack_require__(203);
 exports.angle_right = angle_right;
-var angle_up = __webpack_require__(199);
+var angle_up = __webpack_require__(204);
 exports.angle_up = angle_up;
-var arrows_alt = __webpack_require__(200);
+var arrows_alt = __webpack_require__(205);
 exports.arrows_alt = arrows_alt;
-var arrows_h = __webpack_require__(201);
+var arrows_h = __webpack_require__(206);
 exports.arrows_h = arrows_h;
-var attachment = __webpack_require__(202);
+var attachment = __webpack_require__(207);
 exports.attachment = attachment;
-var bin = __webpack_require__(203);
+var bin = __webpack_require__(208);
 exports.bin = bin;
-var bold = __webpack_require__(204);
+var bold = __webpack_require__(209);
 exports.bold = bold;
-var brush = __webpack_require__(205);
+var brush = __webpack_require__(210);
 exports.brush = brush;
-var cancel = __webpack_require__(206);
+var cancel = __webpack_require__(211);
 exports.cancel = cancel;
-var center = __webpack_require__(207);
+var center = __webpack_require__(212);
 exports.center = center;
-var chain_broken = __webpack_require__(208);
+var chain_broken = __webpack_require__(213);
 exports.chain_broken = chain_broken;
-var check = __webpack_require__(209);
+var check = __webpack_require__(214);
 exports.check = check;
-var check_square = __webpack_require__(210);
+var check_square = __webpack_require__(215);
 exports.check_square = check_square;
-var copyformat = __webpack_require__(211);
+var copyformat = __webpack_require__(216);
 exports.copyformat = copyformat;
-var crop = __webpack_require__(212);
+var crop = __webpack_require__(217);
 exports.crop = crop;
-var copy = __webpack_require__(213);
+var copy = __webpack_require__(218);
 exports.copy = copy;
-var cut = __webpack_require__(214);
+var cut = __webpack_require__(219);
 exports.cut = cut;
-var dedent = __webpack_require__(215);
+var dedent = __webpack_require__(220);
 exports.dedent = dedent;
-var dots = __webpack_require__(216);
+var dots = __webpack_require__(221);
 exports.dots = dots;
-var dropdown_arrow = __webpack_require__(217);
+var dropdown_arrow = __webpack_require__(222);
 exports.dropdown_arrow = dropdown_arrow;
-var enter = __webpack_require__(218);
+var enter = __webpack_require__(223);
 exports.enter = enter;
-var eraser = __webpack_require__(219);
+var eraser = __webpack_require__(224);
 exports.eraser = eraser;
-var eye = __webpack_require__(220);
+var eye = __webpack_require__(225);
 exports.eye = eye;
-var file = __webpack_require__(221);
+var file = __webpack_require__(226);
 exports.file = file;
-var folder = __webpack_require__(222);
+var folder = __webpack_require__(227);
 exports.folder = folder;
-var font = __webpack_require__(223);
+var font = __webpack_require__(228);
 exports.font = font;
-var fontsize = __webpack_require__(224);
+var fontsize = __webpack_require__(229);
 exports.fontsize = fontsize;
-var fullsize = __webpack_require__(225);
+var fullsize = __webpack_require__(230);
 exports.fullsize = fullsize;
-var hr = __webpack_require__(226);
+var hr = __webpack_require__(231);
 exports.hr = hr;
-var image = __webpack_require__(227);
+var image = __webpack_require__(232);
 exports.image = image;
-var indent = __webpack_require__(228);
+var indent = __webpack_require__(233);
 exports.indent = indent;
-var info_circle = __webpack_require__(229);
+var info_circle = __webpack_require__(234);
 exports.info_circle = info_circle;
-var italic = __webpack_require__(230);
+var italic = __webpack_require__(235);
 exports.italic = italic;
-var justify = __webpack_require__(231);
+var justify = __webpack_require__(236);
 exports.justify = justify;
-var left = __webpack_require__(232);
+var left = __webpack_require__(237);
 exports.left = left;
-var link = __webpack_require__(233);
+var link = __webpack_require__(238);
 exports.link = link;
-var lock = __webpack_require__(234);
+var lock = __webpack_require__(239);
 exports.lock = lock;
-var menu = __webpack_require__(235);
+var menu = __webpack_require__(240);
 exports.menu = menu;
-var merge = __webpack_require__(236);
+var merge = __webpack_require__(241);
 exports.merge = merge;
-var ol = __webpack_require__(237);
+var ol = __webpack_require__(242);
 exports.ol = ol;
-var omega = __webpack_require__(238);
+var omega = __webpack_require__(243);
 exports.omega = omega;
-var outdent = __webpack_require__(239);
+var outdent = __webpack_require__(244);
 exports.outdent = outdent;
-var palette = __webpack_require__(240);
+var palette = __webpack_require__(245);
 exports.palette = palette;
-var paragraph = __webpack_require__(241);
+var paragraph = __webpack_require__(246);
 exports.paragraph = paragraph;
-var paste = __webpack_require__(242);
+var paste = __webpack_require__(247);
 exports.paste = paste;
-var pencil = __webpack_require__(243);
+var pencil = __webpack_require__(248);
 exports.pencil = pencil;
-var plus = __webpack_require__(244);
+var plus = __webpack_require__(249);
 exports.plus = plus;
-var print = __webpack_require__(245);
+var print = __webpack_require__(250);
 exports.print = print;
-var redo = __webpack_require__(246);
+var redo = __webpack_require__(251);
 exports.redo = redo;
-var resize = __webpack_require__(247);
+var resize = __webpack_require__(252);
 exports.resize = resize;
-var resizer = __webpack_require__(248);
+var resizer = __webpack_require__(253);
 exports.resizer = resizer;
-var right = __webpack_require__(249);
+var right = __webpack_require__(254);
 exports.right = right;
-var save = __webpack_require__(250);
+var save = __webpack_require__(255);
 exports.save = save;
-var select_all = __webpack_require__(251);
+var select_all = __webpack_require__(256);
 exports.select_all = select_all;
-var shrink = __webpack_require__(252);
+var shrink = __webpack_require__(257);
 exports.shrink = shrink;
-var source = __webpack_require__(253);
+var source = __webpack_require__(258);
 exports.source = source;
-var splitg = __webpack_require__(254);
+var splitg = __webpack_require__(259);
 exports.splitg = splitg;
-var splitv = __webpack_require__(255);
+var splitv = __webpack_require__(260);
 exports.splitv = splitv;
-var strikethrough = __webpack_require__(256);
+var strikethrough = __webpack_require__(261);
 exports.strikethrough = strikethrough;
-var subscript = __webpack_require__(257);
+var subscript = __webpack_require__(262);
 exports.subscript = subscript;
-var superscript = __webpack_require__(258);
+var superscript = __webpack_require__(263);
 exports.superscript = superscript;
-var table = __webpack_require__(259);
+var table = __webpack_require__(264);
 exports.table = table;
-var th = __webpack_require__(260);
+var th = __webpack_require__(265);
 exports.th = th;
-var th_list = __webpack_require__(261);
+var th_list = __webpack_require__(266);
 exports.th_list = th_list;
-var ul = __webpack_require__(262);
+var ul = __webpack_require__(267);
 exports.ul = ul;
-var underline = __webpack_require__(263);
+var underline = __webpack_require__(268);
 exports.underline = underline;
-var undo = __webpack_require__(264);
+var undo = __webpack_require__(269);
 exports.undo = undo;
-var unlink = __webpack_require__(265);
+var unlink = __webpack_require__(270);
 exports.unlink = unlink;
-var unlock = __webpack_require__(266);
+var unlock = __webpack_require__(271);
 exports.unlock = unlock;
-var update = __webpack_require__(267);
+var update = __webpack_require__(272);
 exports.update = update;
-var upload = __webpack_require__(268);
+var upload = __webpack_require__(273);
 exports.upload = upload;
-var valign = __webpack_require__(269);
+var valign = __webpack_require__(274);
 exports.valign = valign;
-var video = __webpack_require__(270);
+var video = __webpack_require__(275);
 exports.video = video;
 
-
-/***/ }),
-/* 193 */
-/***/ (function(module, exports) {
-
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n\t<path d=\"M1088 1256v240q0 16-12 28t-28 12h-240q-16 0-28-12t-12-28v-240q0-16 12-28t28-12h240q16 0 28 12t12 28zm316-600q0 54-15.5 101t-35 76.5-55 59.5-57.5 43.5-61 35.5q-41 23-68.5 65t-27.5 67q0 17-12 32.5t-28 15.5h-240q-15 0-25.5-18.5t-10.5-37.5v-45q0-83 65-156.5t143-108.5q59-27 84-56t25-76q0-42-46.5-74t-107.5-32q-65 0-108 29-35 25-107 115-13 16-31 16-12 0-25-8l-164-125q-13-10-15.5-25t5.5-28q160-266 464-266 80 0 161 31t146 83 106 127.5 41 158.5z\"/>\n</svg>\n"
-
-/***/ }),
-/* 194 */
-/***/ (function(module, exports) {
-
-module.exports = "<svg viewBox=\"0 0 18.151 18.151\">\n<g>\n\t<g>\n\t\t<path d=\"M6.237,16.546H3.649V1.604h5.916v5.728c0.474-0.122,0.968-0.194,1.479-0.194\n\t\t\tc0.042,0,0.083,0.006,0.125,0.006V0H2.044v18.15h5.934C7.295,17.736,6.704,17.19,6.237,16.546z\"/>\n\t\t<path d=\"M11.169,8.275c-2.723,0-4.938,2.215-4.938,4.938s2.215,4.938,4.938,4.938s4.938-2.215,4.938-4.938\n\t\t\tS13.892,8.275,11.169,8.275z M11.169,16.81c-1.983,0-3.598-1.612-3.598-3.598c0-1.983,1.614-3.597,3.598-3.597\n\t\t\ts3.597,1.613,3.597,3.597C14.766,15.198,13.153,16.81,11.169,16.81z\"/>\n\t\t<polygon  points=\"11.792,11.073 10.502,11.073 10.502,12.578 9.03,12.578 9.03,13.868 10.502,13.868\n\t\t\t10.502,15.352 11.792,15.352 11.792,13.868 13.309,13.868 13.309,12.578 11.792,12.578 \t\t\"/>\n\t</g>\n</g>\n</svg>\n"
-
-/***/ }),
-/* 195 */
-/***/ (function(module, exports) {
-
-module.exports = "<svg viewBox=\"0 0 432 432\">\n<g>\n\t<g>\n\t\t<polygon points=\"203.688,96 0,96 0,144 155.688,144 \t\t\"/>\n\t\t<polygon points=\"155.719,288 0,288 0,336 203.719,336 \t\t\"/>\n\t\t<rect x=\"252\" y=\"96\"/>\n\t\t<rect/>\n\t\t<rect x=\"252\" y=\"288\"/>\n\t\t<rect y=\"384\"/>\n\t\t<path d=\"M97.844,230.125c-3.701-3.703-5.856-8.906-5.856-14.141s2.154-10.438,5.856-14.141l9.844-9.844H0v48h107.719\n\t\t\tL97.844,230.125z\"/>\n\t\t<polygon points=\"232,176 232,96 112,216 232,336 232,256 432,256 432,176 \t\t\"/>\n\t</g>\n</g>\n</svg>\n"
-
-/***/ }),
-/* 196 */
-/***/ (function(module, exports) {
-
-module.exports = "<svg  viewBox=\"0 0 1792 1792\">\n    <path d=\"M1395 736q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23z\"/>\n</svg>"
-
-/***/ }),
-/* 197 */
-/***/ (function(module, exports) {
-
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1203 544q0 13-10 23l-393 393 393 393q10 10 10 23t-10 23l-50 50q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l50 50q10 10 10 23z\"/></svg>"
 
 /***/ }),
 /* 198 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1171 960q0 13-10 23l-466 466q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l393-393-393-393q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l466 466q10 10 10 23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1088 1256v240q0 16-12 28t-28 12h-240q-16 0-28-12t-12-28v-240q0-16 12-28t28-12h240q16 0 28 12t12 28zm316-600q0 54-15.5 101t-35 76.5-55 59.5-57.5 43.5-61 35.5q-41 23-68.5 65t-27.5 67q0 17-12 32.5t-28 15.5h-240q-15 0-25.5-18.5t-10.5-37.5v-45q0-83 65-156.5t143-108.5q59-27 84-56t25-76q0-42-46.5-74t-107.5-32q-65 0-108 29-35 25-107 115-13 16-31 16-12 0-25-8l-164-125q-13-10-15.5-25t5.5-28q160-266 464-266 80 0 161 31t146 83 106 127.5 41 158.5z\"/> </svg> "
 
 /***/ }),
 /* 199 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1395 1184q0 13-10 23l-50 50q-10 10-23 10t-23-10l-393-393-393 393q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l466 466q10 10 10 23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 18.151 18.151\"> <g> <g> <path d=\"M6.237,16.546H3.649V1.604h5.916v5.728c0.474-0.122,0.968-0.194,1.479-0.194 c0.042,0,0.083,0.006,0.125,0.006V0H2.044v18.15h5.934C7.295,17.736,6.704,17.19,6.237,16.546z\"/> <path d=\"M11.169,8.275c-2.723,0-4.938,2.215-4.938,4.938s2.215,4.938,4.938,4.938s4.938-2.215,4.938-4.938 S13.892,8.275,11.169,8.275z M11.169,16.81c-1.983,0-3.598-1.612-3.598-3.598c0-1.983,1.614-3.597,3.598-3.597 s3.597,1.613,3.597,3.597C14.766,15.198,13.153,16.81,11.169,16.81z\"/> <polygon points=\"11.792,11.073 10.502,11.073 10.502,12.578 9.03,12.578 9.03,13.868 10.502,13.868 10.502,15.352 11.792,15.352 11.792,13.868 13.309,13.868 13.309,12.578 11.792,12.578 \"/> </g> </g> </svg> "
 
 /***/ }),
 /* 200 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1411 541l-355 355 355 355 144-144q29-31 70-14 39 17 39 59v448q0 26-19 45t-45 19h-448q-42 0-59-40-17-39 14-69l144-144-355-355-355 355 144 144q31 30 14 69-17 40-59 40h-448q-26 0-45-19t-19-45v-448q0-42 40-59 39-17 69 14l144 144 355-355-355-355-144 144q-19 19-45 19-12 0-24-5-40-17-40-59v-448q0-26 19-45t45-19h448q42 0 59 40 17 39-14 69l-144 144 355 355 355-355-144-144q-31-30-14-69 17-40 59-40h448q26 0 45 19t19 45v448q0 42-39 59-13 5-25 5-26 0-45-19z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 432 432\"> <g> <g> <polygon points=\"203.688,96 0,96 0,144 155.688,144 \"/> <polygon points=\"155.719,288 0,288 0,336 203.719,336 \"/> <rect x=\"252\" y=\"96\"/> <rect/> <rect x=\"252\" y=\"288\"/> <rect y=\"384\"/> <path d=\"M97.844,230.125c-3.701-3.703-5.856-8.906-5.856-14.141s2.154-10.438,5.856-14.141l9.844-9.844H0v48h107.719 L97.844,230.125z\"/> <polygon points=\"232,176 232,96 112,216 232,336 232,256 432,256 432,176 \"/> </g> </g> </svg> "
 
 /***/ }),
 /* 201 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 896q0 26-19 45l-256 256q-19 19-45 19t-45-19-19-45v-128h-1024v128q0 26-19 45t-45 19-45-19l-256-256q-19-19-19-45t19-45l256-256q19-19 45-19t45 19 19 45v128h1024v-128q0-26 19-45t45-19 45 19l256 256q19 19 19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1395 736q0 13-10 23l-466 466q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l393 393 393-393q10-10 23-10t23 10l50 50q10 10 10 23z\"/> </svg>"
 
 /***/ }),
 /* 202 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1596 1385q0 117-79 196t-196 79q-135 0-235-100l-777-776q-113-115-113-271 0-159 110-270t269-111q158 0 273 113l605 606q10 10 10 22 0 16-30.5 46.5t-46.5 30.5q-13 0-23-10l-606-607q-79-77-181-77-106 0-179 75t-73 181q0 105 76 181l776 777q63 63 145 63 64 0 106-42t42-106q0-82-63-145l-581-581q-26-24-60-24-29 0-48 19t-19 48q0 32 25 59l410 410q10 10 10 22 0 16-31 47t-47 31q-12 0-22-10l-410-410q-63-61-63-149 0-82 57-139t139-57q88 0 149 63l581 581q100 98 100 235z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1203 544q0 13-10 23l-393 393 393 393q10 10 10 23t-10 23l-50 50q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l50 50q10 10 10 23z\"/></svg>"
 
 /***/ }),
 /* 203 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M704 1376v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm256 0v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm256 0v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm-544-992h448l-48-117q-7-9-17-11h-317q-10 2-17 11zm928 32v64q0 14-9 23t-23 9h-96v948q0 83-47 143.5t-113 60.5h-832q-66 0-113-58.5t-47-141.5v-952h-96q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h309l70-167q15-37 54-63t79-26h320q40 0 79 26t54 63l70 167h309q14 0 23 9t9 23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1171 960q0 13-10 23l-466 466q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l393-393-393-393q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l466 466q10 10 10 23z\"/></svg>"
 
 /***/ }),
 /* 204 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M747 1521q74 32 140 32 376 0 376-335 0-114-41-180-27-44-61.5-74t-67.5-46.5-80.5-25-84-10.5-94.5-2q-73 0-101 10 0 53-.5 159t-.5 158q0 8-1 67.5t-.5 96.5 4.5 83.5 12 66.5zm-14-746q42 7 109 7 82 0 143-13t110-44.5 74.5-89.5 25.5-142q0-70-29-122.5t-79-82-108-43.5-124-14q-50 0-130 13 0 50 4 151t4 152q0 27-.5 80t-.5 79q0 46 1 69zm-541 889l2-94q15-4 85-16t106-27q7-12 12.5-27t8.5-33.5 5.5-32.5 3-37.5.5-34v-65.5q0-982-22-1025-4-8-22-14.5t-44.5-11-49.5-7-48.5-4.5-30.5-3l-4-83q98-2 340-11.5t373-9.5q23 0 68.5.5t67.5.5q70 0 136.5 13t128.5 42 108 71 74 104.5 28 137.5q0 52-16.5 95.5t-39 72-64.5 57.5-73 45-84 40q154 35 256.5 134t102.5 248q0 100-35 179.5t-93.5 130.5-138 85.5-163.5 48.5-176 14q-44 0-132-3t-132-3q-106 0-307 11t-231 12z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1395 1184q0 13-10 23l-50 50q-10 10-23 10t-23-10l-393-393-393 393q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l466 466q10 10 10 23z\"/></svg>"
 
 /***/ }),
 /* 205 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M896 1152q0-36-20-69-1-1-15.5-22.5t-25.5-38-25-44-21-50.5q-4-16-21-16t-21 16q-7 23-21 50.5t-25 44-25.5 38-15.5 22.5q-20 33-20 69 0 53 37.5 90.5t90.5 37.5 90.5-37.5 37.5-90.5zm512-128q0 212-150 362t-362 150-362-150-150-362q0-145 81-275 6-9 62.5-90.5t101-151 99.5-178 83-201.5q9-30 34-47t51-17 51.5 17 33.5 47q28 93 83 201.5t99.5 178 101 151 62.5 90.5q81 127 81 275z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1411 541l-355 355 355 355 144-144q29-31 70-14 39 17 39 59v448q0 26-19 45t-45 19h-448q-42 0-59-40-17-39 14-69l144-144-355-355-355 355 144 144q31 30 14 69-17 40-59 40h-448q-26 0-45-19t-19-45v-448q0-42 40-59 39-17 69 14l144 144 355-355-355-355-144 144q-19 19-45 19-12 0-24-5-40-17-40-59v-448q0-26 19-45t45-19h448q42 0 59 40 17 39-14 69l-144 144 355 355 355-355-144-144q-31-30-14-69 17-40 59-40h448q26 0 45 19t19 45v448q0 42-39 59-13 5-25 5-26 0-45-19z\"/></svg>"
 
 /***/ }),
 /* 206 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 16 16\">\n    <g transform=\"translate(0,-1036.3622)\">\n        <path d=\"m 2,1050.3622 12,-12\"\n              style=\"fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\"/>\n        <path d=\"m 2,1038.3622 12,12\"\n              style=\"fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\"/>\n    </g>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 896q0 26-19 45l-256 256q-19 19-45 19t-45-19-19-45v-128h-1024v128q0 26-19 45t-45 19-45-19l-256-256q-19-19-19-45t19-45l256-256q19-19 45-19t45 19 19 45v128h1024v-128q0-26 19-45t45-19 45 19l256 256q19 19 19 45z\"/></svg>"
 
 /***/ }),
 /* 207 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h896q26 0 45 19t19 45zm256-384v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-640q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h640q26 0 45 19t19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1596 1385q0 117-79 196t-196 79q-135 0-235-100l-777-776q-113-115-113-271 0-159 110-270t269-111q158 0 273 113l605 606q10 10 10 22 0 16-30.5 46.5t-46.5 30.5q-13 0-23-10l-606-607q-79-77-181-77-106 0-179 75t-73 181q0 105 76 181l776 777q63 63 145 63 64 0 106-42t42-106q0-82-63-145l-581-581q-26-24-60-24-29 0-48 19t-19 48q0 32 25 59l410 410q10 10 10 22 0 16-31 47t-47 31q-12 0-22-10l-410-410q-63-61-63-149 0-82 57-139t139-57q88 0 149 63l581 581q100 98 100 235z\"/></svg>"
 
 /***/ }),
 /* 208 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M503 1271l-256 256q-10 9-23 9-12 0-23-9-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23zm169 41v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm-224-224q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm1264 128q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-334-335q-21-21-42-56l239-18 273 274q27 27 68 27.5t68-26.5l147-146q28-28 28-67 0-40-28-68l-274-275 18-239q35 21 56 42l336 336q84 86 84 204zm-617-724l-239 18-273-274q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l274 274-18 240q-35-21-56-42l-336-336q-84-86-84-204 0-120 85-203l147-146q83-83 203-83 121 0 204 85l334 335q21 21 42 56zm633 84q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm-544-544v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm407 151l-256 256q-11 9-23 9t-23-9q-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M704 1376v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm256 0v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm256 0v-704q0-14-9-23t-23-9h-64q-14 0-23 9t-9 23v704q0 14 9 23t23 9h64q14 0 23-9t9-23zm-544-992h448l-48-117q-7-9-17-11h-317q-10 2-17 11zm928 32v64q0 14-9 23t-23 9h-96v948q0 83-47 143.5t-113 60.5h-832q-66 0-113-58.5t-47-141.5v-952h-96q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h309l70-167q15-37 54-63t79-26h320q40 0 79 26t54 63l70 167h309q14 0 23 9t9 23z\"/></svg>"
 
 /***/ }),
 /* 209 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1472 930v318q0 119-84.5 203.5t-203.5 84.5h-832q-119 0-203.5-84.5t-84.5-203.5v-832q0-119 84.5-203.5t203.5-84.5h832q63 0 117 25 15 7 18 23 3 17-9 29l-49 49q-10 10-23 10-3 0-9-2-23-6-45-6h-832q-66 0-113 47t-47 113v832q0 66 47 113t113 47h832q66 0 113-47t47-113v-254q0-13 9-22l64-64q10-10 23-10 6 0 12 3 20 8 20 29zm231-489l-814 814q-24 24-57 24t-57-24l-430-430q-24-24-24-57t24-57l110-110q24-24 57-24t57 24l263 263 647-647q24-24 57-24t57 24l110 110q24 24 24 57t-24 57z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M747 1521q74 32 140 32 376 0 376-335 0-114-41-180-27-44-61.5-74t-67.5-46.5-80.5-25-84-10.5-94.5-2q-73 0-101 10 0 53-.5 159t-.5 158q0 8-1 67.5t-.5 96.5 4.5 83.5 12 66.5zm-14-746q42 7 109 7 82 0 143-13t110-44.5 74.5-89.5 25.5-142q0-70-29-122.5t-79-82-108-43.5-124-14q-50 0-130 13 0 50 4 151t4 152q0 27-.5 80t-.5 79q0 46 1 69zm-541 889l2-94q15-4 85-16t106-27q7-12 12.5-27t8.5-33.5 5.5-32.5 3-37.5.5-34v-65.5q0-982-22-1025-4-8-22-14.5t-44.5-11-49.5-7-48.5-4.5-30.5-3l-4-83q98-2 340-11.5t373-9.5q23 0 68.5.5t67.5.5q70 0 136.5 13t128.5 42 108 71 74 104.5 28 137.5q0 52-16.5 95.5t-39 72-64.5 57.5-73 45-84 40q154 35 256.5 134t102.5 248q0 100-35 179.5t-93.5 130.5-138 85.5-163.5 48.5-176 14q-44 0-132-3t-132-3q-106 0-307 11t-231 12z\"/></svg>"
 
 /***/ }),
 /* 210 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M813 1299l614-614q19-19 19-45t-19-45l-102-102q-19-19-45-19t-45 19l-467 467-211-211q-19-19-45-19t-45 19l-102 102q-19 19-19 45t19 45l358 358q19 19 45 19t45-19zm851-883v960q0 119-84.5 203.5t-203.5 84.5h-960q-119 0-203.5-84.5t-84.5-203.5v-960q0-119 84.5-203.5t203.5-84.5h960q119 0 203.5 84.5t84.5 203.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M896 1152q0-36-20-69-1-1-15.5-22.5t-25.5-38-25-44-21-50.5q-4-16-21-16t-21 16q-7 23-21 50.5t-25 44-25.5 38-15.5 22.5q-20 33-20 69 0 53 37.5 90.5t90.5 37.5 90.5-37.5 37.5-90.5zm512-128q0 212-150 362t-362 150-362-150-150-362q0-145 81-275 6-9 62.5-90.5t101-151 99.5-178 83-201.5q9-30 34-47t51-17 51.5 17 33.5 47q28 93 83 201.5t99.5 178 101 151 62.5 90.5q81 127 81 275z\"/></svg>"
 
 /***/ }),
 /* 211 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 16 16\"><path d=\"M16 9v-6h-3v-1c0-0.55-0.45-1-1-1h-11c-0.55 0-1 0.45-1 1v3c0 0.55 0.45 1 1 1h11c0.55 0 1-0.45 1-1v-1h2v4h-9v2h-0.5c-0.276 0-0.5 0.224-0.5 0.5v5c0 0.276 0.224 0.5 0.5 0.5h2c0.276 0 0.5-0.224 0.5-0.5v-5c0-0.276-0.224-0.5-0.5-0.5h-0.5v-1h9zM12 3h-11v-1h11v1z\"/></svg>\n"
+module.exports = "<svg viewBox=\"0 0 16 16\"> <g transform=\"translate(0,-1036.3622)\"> <path d=\"m 2,1050.3622 12,-12\" style=\"fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\"/> <path d=\"m 2,1038.3622 12,12\" style=\"fill:none;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none\"/> </g> </svg> "
 
 /***/ }),
 /* 212 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M621 1280h595v-595zm-45-45l595-595h-595v595zm1152 77v192q0 14-9 23t-23 9h-224v224q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-224h-864q-14 0-23-9t-9-23v-864h-224q-14 0-23-9t-9-23v-192q0-14 9-23t23-9h224v-224q0-14 9-23t23-9h192q14 0 23 9t9 23v224h851l246-247q10-9 23-9t23 9q9 10 9 23t-9 23l-247 246v851h224q14 0 23 9t9 23z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-896q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h896q26 0 45 19t19 45zm256-384v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-640q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h640q26 0 45 19t19 45z\"/></svg>"
 
 /***/ }),
 /* 213 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\">\n\t<path\n\t\td=\"M24.89,6.61H22.31V4.47A2.47,2.47,0,0,0,19.84,2H6.78A2.47,2.47,0,0,0,4.31,4.47V22.92a2.47,2.47,0,0,0,2.47,2.47H9.69V27.2a2.8,2.8,0,0,0,2.8,2.8h12.4a2.8,2.8,0,0,0,2.8-2.8V9.41A2.8,2.8,0,0,0,24.89,6.61ZM6.78,23.52a.61.61,0,0,1-.61-.6V4.47a.61.61,0,0,1,.61-.6H19.84a.61.61,0,0,1,.61.6V6.61h-8a2.8,2.8,0,0,0-2.8,2.8V23.52Zm19,3.68a.94.94,0,0,1-.94.93H12.49a.94.94,0,0,1-.94-.93V9.41a.94.94,0,0,1,.94-.93h12.4a.94.94,0,0,1,.94.93Z\"/>\n\t<path d=\"M23.49,13.53h-9.6a.94.94,0,1,0,0,1.87h9.6a.94.94,0,1,0,0-1.87Z\"/>\n\t<path d=\"M23.49,17.37h-9.6a.94.94,0,1,0,0,1.87h9.6a.94.94,0,1,0,0-1.87Z\"/>\n\t<path d=\"M23.49,21.22h-9.6a.93.93,0,1,0,0,1.86h9.6a.93.93,0,1,0,0-1.86Z\"/>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M503 1271l-256 256q-10 9-23 9-12 0-23-9-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23zm169 41v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm-224-224q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm1264 128q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-334-335q-21-21-42-56l239-18 273 274q27 27 68 27.5t68-26.5l147-146q28-28 28-67 0-40-28-68l-274-275 18-239q35 21 56 42l336 336q84 86 84 204zm-617-724l-239 18-273-274q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l274 274-18 240q-35-21-56-42l-336-336q-84-86-84-204 0-120 85-203l147-146q83-83 203-83 121 0 204 85l334 335q21 21 42 56zm633 84q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm-544-544v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm407 151l-256 256q-11 9-23 9t-23-9q-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23z\"/></svg>"
 
 /***/ }),
 /* 214 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M960 896q26 0 45 19t19 45-19 45-45 19-45-19-19-45 19-45 45-19zm300 64l507 398q28 20 25 56-5 35-35 51l-128 64q-13 7-29 7-17 0-31-8l-690-387-110 66q-8 4-12 5 14 49 10 97-7 77-56 147.5t-132 123.5q-132 84-277 84-136 0-222-78-90-84-79-207 7-76 56-147t131-124q132-84 278-84 83 0 151 31 9-13 22-22l122-73-122-73q-13-9-22-22-68 31-151 31-146 0-278-84-82-53-131-124t-56-147q-5-59 15.5-113t63.5-93q85-79 222-79 145 0 277 84 83 52 132 123t56 148q4 48-10 97 4 1 12 5l110 66 690-387q14-8 31-8 16 0 29 7l128 64q30 16 35 51 3 36-25 56zm-681-260q46-42 21-108t-106-117q-92-59-192-59-74 0-113 36-46 42-21 108t106 117q92 59 192 59 74 0 113-36zm-85 745q81-51 106-117t-21-108q-39-36-113-36-100 0-192 59-81 51-106 117t21 108q39 36 113 36 100 0 192-59zm178-613l96 58v-11q0-36 33-56l14-8-79-47-26 26q-3 3-10 11t-12 12q-2 2-4 3.5t-3 2.5zm224 224l96 32 736-576-128-64-768 431v113l-160 96 9 8q2 2 7 6 4 4 11 12t11 12l26 26zm704 416l128-64-520-408-177 138q-2 3-13 7z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1472 930v318q0 119-84.5 203.5t-203.5 84.5h-832q-119 0-203.5-84.5t-84.5-203.5v-832q0-119 84.5-203.5t203.5-84.5h832q63 0 117 25 15 7 18 23 3 17-9 29l-49 49q-10 10-23 10-3 0-9-2-23-6-45-6h-832q-66 0-113 47t-47 113v832q0 66 47 113t113 47h832q66 0 113-47t47-113v-254q0-13 9-22l64-64q10-10 23-10 6 0 12 3 20 8 20 29zm231-489l-814 814q-24 24-57 24t-57-24l-430-430q-24-24-24-57t24-57l110-110q24-24 57-24t57 24l263 263 647-647q24-24 57-24t57 24l110 110q24 24 24 57t-24 57z\"/></svg>"
 
 /***/ }),
 /* 215 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 544v576q0 13-9.5 22.5t-22.5 9.5q-14 0-23-9l-288-288q-9-9-9-23t9-23l288-288q9-9 23-9 13 0 22.5 9.5t9.5 22.5zm1408 768v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M813 1299l614-614q19-19 19-45t-19-45l-102-102q-19-19-45-19t-45 19l-467 467-211-211q-19-19-45-19t-45 19l-102 102q-19 19-19 45t19 45l358 358q19 19 45 19t45-19zm851-883v960q0 119-84.5 203.5t-203.5 84.5h-960q-119 0-203.5-84.5t-84.5-203.5v-960q0-119 84.5-203.5t203.5-84.5h960q119 0 203.5 84.5t84.5 203.5z\"/></svg>"
 
 /***/ }),
 /* 216 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg\n        enable-background=\"new 0 0 24 24\"\n        viewBox=\"0 0 24 24\"\n        xml:space=\"preserve\"\n\n       >\n    <circle cx=\"12\" cy=\"12\" r=\"2.2\"/>\n    <circle cx=\"12\" cy=\"5\" r=\"2.2\"/>\n    <circle cx=\"12\" cy=\"19\" r=\"2.2\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 16 16\"><path d=\"M16 9v-6h-3v-1c0-0.55-0.45-1-1-1h-11c-0.55 0-1 0.45-1 1v3c0 0.55 0.45 1 1 1h11c0.55 0 1-0.45 1-1v-1h2v4h-9v2h-0.5c-0.276 0-0.5 0.224-0.5 0.5v5c0 0.276 0.224 0.5 0.5 0.5h2c0.276 0 0.5-0.224 0.5-0.5v-5c0-0.276-0.224-0.5-0.5-0.5h-0.5v-1h9zM12 3h-11v-1h11v1z\"/></svg> "
 
 /***/ }),
 /* 217 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 10 10\">\n\t<path\n\t\td=\"M.941 4.523a.75.75 0 1 1 1.06-1.06l3.006 3.005 3.005-3.005a.75.75 0 1 1 1.06 1.06l-3.549 3.55a.75.75 0 0 1-1.168-.136L.941 4.523z\"></path>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M621 1280h595v-595zm-45-45l595-595h-595v595zm1152 77v192q0 14-9 23t-23 9h-224v224q0 14-9 23t-23 9h-192q-14 0-23-9t-9-23v-224h-864q-14 0-23-9t-9-23v-864h-224q-14 0-23-9t-9-23v-192q0-14 9-23t23-9h224v-224q0-14 9-23t23-9h192q14 0 23 9t9 23v224h851l246-247q10-9 23-9t23 9q9 10 9 23t-9 23l-247 246v851h224q14 0 23 9t9 23z\"/> </svg>"
 
 /***/ }),
 /* 218 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 128 128\" xml:space=\"preserve\">\n    <g>\n        <polygon points=\"112.4560547,23.3203125 112.4560547,75.8154297 31.4853516,75.8154297 31.4853516,61.953125     16.0131836,72.6357422 0.5410156,83.3164063 16.0131836,93.9990234 31.4853516,104.6796875 31.4853516,90.8183594     112.4560547,90.8183594 112.4560547,90.8339844 127.4589844,90.8339844 127.4589844,23.3203125   \"/>\n    </g>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 32 32\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M24.89,6.61H22.31V4.47A2.47,2.47,0,0,0,19.84,2H6.78A2.47,2.47,0,0,0,4.31,4.47V22.92a2.47,2.47,0,0,0,2.47,2.47H9.69V27.2a2.8,2.8,0,0,0,2.8,2.8h12.4a2.8,2.8,0,0,0,2.8-2.8V9.41A2.8,2.8,0,0,0,24.89,6.61ZM6.78,23.52a.61.61,0,0,1-.61-.6V4.47a.61.61,0,0,1,.61-.6H19.84a.61.61,0,0,1,.61.6V6.61h-8a2.8,2.8,0,0,0-2.8,2.8V23.52Zm19,3.68a.94.94,0,0,1-.94.93H12.49a.94.94,0,0,1-.94-.93V9.41a.94.94,0,0,1,.94-.93h12.4a.94.94,0,0,1,.94.93Z\"/> <path d=\"M23.49,13.53h-9.6a.94.94,0,1,0,0,1.87h9.6a.94.94,0,1,0,0-1.87Z\"/> <path d=\"M23.49,17.37h-9.6a.94.94,0,1,0,0,1.87h9.6a.94.94,0,1,0,0-1.87Z\"/> <path d=\"M23.49,21.22h-9.6a.93.93,0,1,0,0,1.86h9.6a.93.93,0,1,0,0-1.86Z\"/> </svg> "
 
 /***/ }),
 /* 219 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M832 1408l336-384h-768l-336 384h768zm1013-1077q15 34 9.5 71.5t-30.5 65.5l-896 1024q-38 44-96 44h-768q-38 0-69.5-20.5t-47.5-54.5q-15-34-9.5-71.5t30.5-65.5l896-1024q38-44 96-44h768q38 0 69.5 20.5t47.5 54.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M960 896q26 0 45 19t19 45-19 45-45 19-45-19-19-45 19-45 45-19zm300 64l507 398q28 20 25 56-5 35-35 51l-128 64q-13 7-29 7-17 0-31-8l-690-387-110 66q-8 4-12 5 14 49 10 97-7 77-56 147.5t-132 123.5q-132 84-277 84-136 0-222-78-90-84-79-207 7-76 56-147t131-124q132-84 278-84 83 0 151 31 9-13 22-22l122-73-122-73q-13-9-22-22-68 31-151 31-146 0-278-84-82-53-131-124t-56-147q-5-59 15.5-113t63.5-93q85-79 222-79 145 0 277 84 83 52 132 123t56 148q4 48-10 97 4 1 12 5l110 66 690-387q14-8 31-8 16 0 29 7l128 64q30 16 35 51 3 36-25 56zm-681-260q46-42 21-108t-106-117q-92-59-192-59-74 0-113 36-46 42-21 108t106 117q92 59 192 59 74 0 113-36zm-85 745q81-51 106-117t-21-108q-39-36-113-36-100 0-192 59-81 51-106 117t21 108q39 36 113 36 100 0 192-59zm178-613l96 58v-11q0-36 33-56l14-8-79-47-26 26q-3 3-10 11t-12 12q-2 2-4 3.5t-3 2.5zm224 224l96 32 736-576-128-64-768 431v113l-160 96 9 8q2 2 7 6 4 4 11 12t11 12l26 26zm704 416l128-64-520-408-177 138q-2 3-13 7z\"/> </svg>"
 
 /***/ }),
 /* 220 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 960q-152-236-381-353 61 104 61 225 0 185-131.5 316.5t-316.5 131.5-316.5-131.5-131.5-316.5q0-121 61-225-229 117-381 353 133 205 333.5 326.5t434.5 121.5 434.5-121.5 333.5-326.5zm-720-384q0-20-14-34t-34-14q-125 0-214.5 89.5t-89.5 214.5q0 20 14 34t34 14 34-14 14-34q0-86 61-147t147-61q20 0 34-14t14-34zm848 384q0 34-20 69-140 230-376.5 368.5t-499.5 138.5-499.5-139-376.5-368q-20-35-20-69t20-69q140-229 376.5-368t499.5-139 499.5 139 376.5 368q20 35 20 69z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 544v576q0 13-9.5 22.5t-22.5 9.5q-14 0-23-9l-288-288q-9-9-9-23t9-23l288-288q9-9 23-9 13 0 22.5 9.5t9.5 22.5zm1408 768v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/></svg>"
 
 /***/ }),
 /* 221 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M1152 512v-472q22 14 36 28l408 408q14 14 28 36h-472zm-128 32q0 40 28 68t68 28h544v1056q0 40-28 68t-68 28h-1344q-40 0-68-28t-28-68v-1600q0-40 28-68t68-28h800v544z\"/>\n</svg>"
+module.exports = "<svg enable-background=\"new 0 0 24 24\" viewBox=\"0 0 24 24\" xml:space=\"preserve\" > <circle cx=\"12\" cy=\"12\" r=\"2.2\"/> <circle cx=\"12\" cy=\"5\" r=\"2.2\"/> <circle cx=\"12\" cy=\"19\" r=\"2.2\"/> </svg> "
 
 /***/ }),
 /* 222 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n\t<path d=\"M1728 608v704q0 92-66 158t-158 66h-1216q-92 0-158-66t-66-158v-960q0-92 66-158t158-66h320q92 0 158 66t66 158v32h672q92 0 158 66t66 158z\"/>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 10 10\"> <path d=\"M.941 4.523a.75.75 0 1 1 1.06-1.06l3.006 3.005 3.005-3.005a.75.75 0 1 1 1.06 1.06l-3.549 3.55a.75.75 0 0 1-1.168-.136L.941 4.523z\"/> </svg> "
 
 /***/ }),
 /* 223 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M789 559l-170 450q33 0 136.5 2t160.5 2q19 0 57-2-87-253-184-452zm-725 1105l2-79q23-7 56-12.5t57-10.5 49.5-14.5 44.5-29 31-50.5l237-616 280-724h128q8 14 11 21l205 480q33 78 106 257.5t114 274.5q15 34 58 144.5t72 168.5q20 45 35 57 19 15 88 29.5t84 20.5q6 38 6 57 0 4-.5 13t-.5 13q-63 0-190-8t-191-8q-76 0-215 7t-178 8q0-43 4-78l131-28q1 0 12.5-2.5t15.5-3.5 14.5-4.5 15-6.5 11-8 9-11 2.5-14q0-16-31-96.5t-72-177.5-42-100l-450-2q-26 58-76.5 195.5t-50.5 162.5q0 22 14 37.5t43.5 24.5 48.5 13.5 57 8.5 41 4q1 19 1 58 0 9-2 27-58 0-174.5-10t-174.5-10q-8 0-26.5 4t-21.5 4q-80 14-188 14z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 128 128\" xml:space=\"preserve\"> <g> <polygon points=\"112.4560547,23.3203125 112.4560547,75.8154297 31.4853516,75.8154297 31.4853516,61.953125 16.0131836,72.6357422 0.5410156,83.3164063 16.0131836,93.9990234 31.4853516,104.6796875 31.4853516,90.8183594 112.4560547,90.8183594 112.4560547,90.8339844 127.4589844,90.8339844 127.4589844,23.3203125 \"/> </g> </svg>"
 
 /***/ }),
 /* 224 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1744 1408q33 0 42 18.5t-11 44.5l-126 162q-20 26-49 26t-49-26l-126-162q-20-26-11-44.5t42-18.5h80v-1024h-80q-33 0-42-18.5t11-44.5l126-162q20-26 49-26t49 26l126 162q20 26 11 44.5t-42 18.5h-80v1024h80zm-1663-1279l54 27q12 5 211 5 44 0 132-2t132-2q36 0 107.5.5t107.5.5h293q6 0 21 .5t20.5 0 16-3 17.5-9 15-17.5l42-1q4 0 14 .5t14 .5q2 112 2 336 0 80-5 109-39 14-68 18-25-44-54-128-3-9-11-48t-14.5-73.5-7.5-35.5q-6-8-12-12.5t-15.5-6-13-2.5-18-.5-16.5.5q-17 0-66.5-.5t-74.5-.5-64 2-71 6q-9 81-8 136 0 94 2 388t2 455q0 16-2.5 71.5t0 91.5 12.5 69q40 21 124 42.5t120 37.5q5 40 5 50 0 14-3 29l-34 1q-76 2-218-8t-207-10q-50 0-151 9t-152 9q-3-51-3-52v-9q17-27 61.5-43t98.5-29 78-27q19-42 19-383 0-101-3-303t-3-303v-117q0-2 .5-15.5t.5-25-1-25.5-3-24-5-14q-11-12-162-12-33 0-93 12t-80 26q-19 13-34 72.5t-31.5 111-42.5 53.5q-42-26-56-44v-383z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M832 1408l336-384h-768l-336 384h768zm1013-1077q15 34 9.5 71.5t-30.5 65.5l-896 1024q-38 44-96 44h-768q-38 0-69.5-20.5t-47.5-54.5q-15-34-9.5-71.5t30.5-65.5l896-1024q38-44 96-44h768q38 0 69.5 20.5t47.5 54.5z\"/></svg>"
 
 /***/ }),
 /* 225 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 24 24\" >\n\t<path d=\"M22,20.6L3.4,2H8V0H0v8h2V3.4L20.6,22H16v2h8v-8h-2V20.6z M16,0v2h4.7l-6.3,6.3l1.4,1.4L22,3.5V8h2V0H16z   M8.3,14.3L2,20.6V16H0v8h8v-2H3.5l6.3-6.3L8.3,14.3z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 960q-152-236-381-353 61 104 61 225 0 185-131.5 316.5t-316.5 131.5-316.5-131.5-131.5-316.5q0-121 61-225-229 117-381 353 133 205 333.5 326.5t434.5 121.5 434.5-121.5 333.5-326.5zm-720-384q0-20-14-34t-34-14q-125 0-214.5 89.5t-89.5 214.5q0 20 14 34t34 14 34-14 14-34q0-86 61-147t147-61q20 0 34-14t14-34zm848 384q0 34-20 69-140 230-376.5 368.5t-499.5 138.5-499.5-139-376.5-368q-20-35-20-69t20-69q140-229 376.5-368t499.5-139 499.5 139 376.5 368q20 35 20 69z\"/></svg>"
 
 /***/ }),
 /* 226 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1600 736v192q0 40-28 68t-68 28h-1216q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h1216q40 0 68 28t28 68z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1152 512v-472q22 14 36 28l408 408q14 14 28 36h-472zm-128 32q0 40 28 68t68 28h544v1056q0 40-28 68t-68 28h-1344q-40 0-68-28t-28-68v-1600q0-40 28-68t68-28h800v544z\"/> </svg>"
 
 /***/ }),
 /* 227 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M576 576q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1024 384v448h-1408v-192l320-320 160 160 512-512zm96-704h-1600q-13 0-22.5 9.5t-9.5 22.5v1216q0 13 9.5 22.5t22.5 9.5h1600q13 0 22.5-9.5t9.5-22.5v-1216q0-13-9.5-22.5t-22.5-9.5zm160 32v1216q0 66-47 113t-113 47h-1600q-66 0-113-47t-47-113v-1216q0-66 47-113t113-47h1600q66 0 113 47t47 113z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1728 608v704q0 92-66 158t-158 66h-1216q-92 0-158-66t-66-158v-960q0-92 66-158t158-66h320q92 0 158 66t66 158v32h672q92 0 158 66t66 158z\"/> </svg> "
 
 /***/ }),
 /* 228 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M352 832q0 14-9 23l-288 288q-9 9-23 9-13 0-22.5-9.5t-9.5-22.5v-576q0-13 9.5-22.5t22.5-9.5q14 0 23 9l288 288q9 9 9 23zm1440 480v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M789 559l-170 450q33 0 136.5 2t160.5 2q19 0 57-2-87-253-184-452zm-725 1105l2-79q23-7 56-12.5t57-10.5 49.5-14.5 44.5-29 31-50.5l237-616 280-724h128q8 14 11 21l205 480q33 78 106 257.5t114 274.5q15 34 58 144.5t72 168.5q20 45 35 57 19 15 88 29.5t84 20.5q6 38 6 57 0 4-.5 13t-.5 13q-63 0-190-8t-191-8q-76 0-215 7t-178 8q0-43 4-78l131-28q1 0 12.5-2.5t15.5-3.5 14.5-4.5 15-6.5 11-8 9-11 2.5-14q0-16-31-96.5t-72-177.5-42-100l-450-2q-26 58-76.5 195.5t-50.5 162.5q0 22 14 37.5t43.5 24.5 48.5 13.5 57 8.5 41 4q1 19 1 58 0 9-2 27-58 0-174.5-10t-174.5-10q-8 0-26.5 4t-21.5 4q-80 14-188 14z\"/></svg>"
 
 /***/ }),
 /* 229 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1152 1376v-160q0-14-9-23t-23-9h-96v-512q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v160q0 14 9 23t23 9h96v320h-96q-14 0-23 9t-9 23v160q0 14 9 23t23 9h448q14 0 23-9t9-23zm-128-896v-160q0-14-9-23t-23-9h-192q-14 0-23 9t-9 23v160q0 14 9 23t23 9h192q14 0 23-9t9-23zm640 416q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1744 1408q33 0 42 18.5t-11 44.5l-126 162q-20 26-49 26t-49-26l-126-162q-20-26-11-44.5t42-18.5h80v-1024h-80q-33 0-42-18.5t11-44.5l126-162q20-26 49-26t49 26l126 162q20 26 11 44.5t-42 18.5h-80v1024h80zm-1663-1279l54 27q12 5 211 5 44 0 132-2t132-2q36 0 107.5.5t107.5.5h293q6 0 21 .5t20.5 0 16-3 17.5-9 15-17.5l42-1q4 0 14 .5t14 .5q2 112 2 336 0 80-5 109-39 14-68 18-25-44-54-128-3-9-11-48t-14.5-73.5-7.5-35.5q-6-8-12-12.5t-15.5-6-13-2.5-18-.5-16.5.5q-17 0-66.5-.5t-74.5-.5-64 2-71 6q-9 81-8 136 0 94 2 388t2 455q0 16-2.5 71.5t0 91.5 12.5 69q40 21 124 42.5t120 37.5q5 40 5 50 0 14-3 29l-34 1q-76 2-218-8t-207-10q-50 0-151 9t-152 9q-3-51-3-52v-9q17-27 61.5-43t98.5-29 78-27q19-42 19-383 0-101-3-303t-3-303v-117q0-2 .5-15.5t.5-25-1-25.5-3-24-5-14q-11-12-162-12-33 0-93 12t-80 26q-19 13-34 72.5t-31.5 111-42.5 53.5q-42-26-56-44v-383z\"/></svg>"
 
 /***/ }),
 /* 230 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 1662l17-85q6-2 81.5-21.5t111.5-37.5q28-35 41-101 1-7 62-289t114-543.5 52-296.5v-25q-24-13-54.5-18.5t-69.5-8-58-5.5l19-103q33 2 120 6.5t149.5 7 120.5 2.5q48 0 98.5-2.5t121-7 98.5-6.5q-5 39-19 89-30 10-101.5 28.5t-108.5 33.5q-8 19-14 42.5t-9 40-7.5 45.5-6.5 42q-27 148-87.5 419.5t-77.5 355.5q-2 9-13 58t-20 90-16 83.5-6 57.5l1 18q17 4 185 31-3 44-16 99-11 0-32.5 1.5t-32.5 1.5q-29 0-87-10t-86-10q-138-2-206-2-51 0-143 9t-121 11z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 24 24\" > <path d=\"M22,20.6L3.4,2H8V0H0v8h2V3.4L20.6,22H16v2h8v-8h-2V20.6z M16,0v2h4.7l-6.3,6.3l1.4,1.4L22,3.5V8h2V0H16z M8.3,14.3L2,20.6V16H0v8h8v-2H3.5l6.3-6.3L8.3,14.3z\"/> </svg>"
 
 /***/ }),
 /* 231 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1600 736v192q0 40-28 68t-68 28h-1216q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h1216q40 0 68 28t28 68z\"/></svg>"
 
 /***/ }),
 /* 232 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-1280q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1280q26 0 45 19t19 45zm256-384v128q0 26-19 45t-45 19h-1536q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1536q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-1152q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1152q26 0 45 19t19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M576 576q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1024 384v448h-1408v-192l320-320 160 160 512-512zm96-704h-1600q-13 0-22.5 9.5t-9.5 22.5v1216q0 13 9.5 22.5t22.5 9.5h1600q13 0 22.5-9.5t9.5-22.5v-1216q0-13-9.5-22.5t-22.5-9.5zm160 32v1216q0 66-47 113t-113 47h-1600q-66 0-113-47t-47-113v-1216q0-66 47-113t113-47h1600q66 0 113 47t47 113z\"/></svg>"
 
 /***/ }),
 /* 233 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1520 1216q0-40-28-68l-208-208q-28-28-68-28-42 0-72 32 3 3 19 18.5t21.5 21.5 15 19 13 25.5 3.5 27.5q0 40-28 68t-68 28q-15 0-27.5-3.5t-25.5-13-19-15-21.5-21.5-18.5-19q-33 31-33 73 0 40 28 68l206 207q27 27 68 27 40 0 68-26l147-146q28-28 28-67zm-703-705q0-40-28-68l-206-207q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l208 208q27 27 68 27 42 0 72-31-3-3-19-18.5t-21.5-21.5-15-19-13-25.5-3.5-27.5q0-40 28-68t68-28q15 0 27.5 3.5t25.5 13 19 15 21.5 21.5 18.5 19q33-31 33-73zm895 705q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-206-207q-83-83-83-203 0-123 88-209l-88-88q-86 88-208 88-120 0-204-84l-208-208q-84-84-84-204t85-203l147-146q83-83 203-83 121 0 204 85l206 207q83 83 83 203 0 123-88 209l88 88q86-88 208-88 120 0 204 84l208 208q84 84 84 204z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M352 832q0 14-9 23l-288 288q-9 9-23 9-13 0-22.5-9.5t-9.5-22.5v-576q0-13 9.5-22.5t22.5-9.5q14 0 23 9l288 288q9 9 9 23zm1440 480v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/> </svg>"
 
 /***/ }),
 /* 234 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1152 1376v-160q0-14-9-23t-23-9h-96v-512q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v160q0 14 9 23t23 9h96v320h-96q-14 0-23 9t-9 23v160q0 14 9 23t23 9h448q14 0 23-9t9-23zm-128-896v-160q0-14-9-23t-23-9h-192q-14 0-23 9t-9 23v160q0 14 9 23t23 9h192q14 0 23-9t9-23zm640 416q0 209-103 385.5t-279.5 279.5-385.5 103-385.5-103-279.5-279.5-103-385.5 103-385.5 279.5-279.5 385.5-103 385.5 103 279.5 279.5 103 385.5z\"/></svg>"
 
 /***/ }),
 /* 235 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 1344v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 1662l17-85q6-2 81.5-21.5t111.5-37.5q28-35 41-101 1-7 62-289t114-543.5 52-296.5v-25q-24-13-54.5-18.5t-69.5-8-58-5.5l19-103q33 2 120 6.5t149.5 7 120.5 2.5q48 0 98.5-2.5t121-7 98.5-6.5q-5 39-19 89-30 10-101.5 28.5t-108.5 33.5q-8 19-14 42.5t-9 40-7.5 45.5-6.5 42q-27 148-87.5 419.5t-77.5 355.5q-2 9-13 58t-20 90-16 83.5-6 57.5l1 18q17 4 185 31-3 44-16 99-11 0-32.5 1.5t-32.5 1.5q-29 0-87-10t-86-10q-138-2-206-2-51 0-143 9t-121 11z\"/></svg>"
 
 /***/ }),
 /* 236 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg\n     viewBox=\"0 0 312 312\">\n    <g transform=\"translate(0.000000,312.000000) scale(0.100000,-0.100000)\" stroke=\"none\">\n        <path d=\"M50 3109 c0 -7 -11 -22 -25 -35 l-25 -23 0 -961 0 -961 32 -29 32\n-30 501 -2 500 -3 3 -502 2 -502 31 -30 31 -31 958 0 958 0 23 25 c13 13 30\n25 37 25 9 0 12 199 12 960 0 686 -3 960 -11 960 -6 0 -24 12 -40 28 l-29 27\n-503 5 -502 5 -5 502 -5 503 -28 29 c-15 16 -27 34 -27 40 0 8 -274 11 -960\n11 -710 0 -960 -3 -960 -11z m1738 -698 l2 -453 -40 -40 c-22 -22 -40 -43 -40\n-47 0 -4 36 -42 79 -85 88 -87 82 -87 141 -23 l26 27 455 -2 454 -3 0 -775 0\n-775 -775 0 -775 0 -3 450 -2 449 47 48 47 48 -82 80 c-44 44 -84 80 -87 80\n-3 0 -25 -18 -48 -40 l-41 -40 -456 2 -455 3 -3 765 c-1 421 0 771 3 778 3 10\n164 12 777 10 l773 -3 3 -454z\"/>\n        <path d=\"M607 2492 c-42 -42 -77 -82 -77 -87 0 -6 86 -96 190 -200 105 -104\n190 -197 190 -205 0 -8 -41 -56 -92 -107 -65 -65 -87 -94 -77 -98 8 -3 138 -4\n289 -3 l275 3 3 275 c1 151 0 281 -3 289 -4 10 -35 -14 -103 -82 -54 -53 -103\n-97 -109 -97 -7 0 -99 88 -206 195 -107 107 -196 195 -198 195 -3 0 -39 -35\n-82 -78z\"/>\n        <path d=\"M1470 1639 c-47 -49 -87 -91 -89 -94 -5 -6 149 -165 160 -165 9 0\n189 179 189 188 0 12 -154 162 -165 161 -6 0 -48 -41 -95 -90z\"/>\n        <path d=\"M1797 1303 c-9 -8 -9 -568 0 -576 4 -4 50 36 103 88 54 52 101 95\n106 95 5 0 95 -85 199 -190 104 -104 194 -190 200 -190 6 0 46 36 90 80 l79\n79 -197 196 c-108 108 -197 199 -197 203 0 4 45 52 99 106 55 55 98 103 95\n108 -6 10 -568 11 -577 1z\"/>\n    </g>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45z\"/></svg>"
 
 /***/ }),
 /* 237 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg role=\"img\" viewBox=\"0 0 1792 1792\">\n    <path d=\"M381 1620q0 80-54.5 126t-135.5 46q-106 0-172-66l57-88q49 45 106 45 29 0 50.5-14.5t21.5-42.5q0-64-105-56l-26-56q8-10 32.5-43.5t42.5-54 37-38.5v-1q-16 0-48.5 1t-48.5 1v53h-106v-152h333v88l-95 115q51 12 81 49t30 88zm2-627v159h-362q-6-36-6-54 0-51 23.5-93t56.5-68 66-47.5 56.5-43.5 23.5-45q0-25-14.5-38.5t-39.5-13.5q-46 0-81 58l-85-59q24-51 71.5-79.5t105.5-28.5q73 0 123 41.5t50 112.5q0 50-34 91.5t-75 64.5-75.5 50.5-35.5 52.5h127v-60h105zm1409 319v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm-1408-899v99h-335v-99h107q0-41 .5-122t.5-121v-12h-2q-8 17-50 54l-71-76 136-127h106v404h108zm1408 387v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-1280q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1280q26 0 45 19t19 45zm256-384v128q0 26-19 45t-45 19h-1536q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1536q26 0 45 19t19 45zm-384-384v128q0 26-19 45t-45 19h-1152q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1152q26 0 45 19t19 45z\"/></svg>"
 
 /***/ }),
 /* 238 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 270 270\">\n\t<path d=\"m240.443652,220.45085l-47.410809,0l0,-10.342138c13.89973,-8.43655 25.752896,-19.844464 34.686646,-33.469923c11.445525,-17.455846 17.496072,-37.709239 17.496072,-58.570077c0,-59.589197 -49.208516,-108.068714 -109.693558,-108.068714s-109.69263,48.479517 -109.69263,108.069628c0,20.860839 6.050547,41.113316 17.497001,58.570077c8.93375,13.625459 20.787845,25.032458 34.686646,33.469008l0,10.342138l-47.412666,0c-10.256959,0 -18.571354,8.191376 -18.571354,18.296574c0,10.105198 8.314395,18.296574 18.571354,18.296574l65.98402,0c10.256959,0 18.571354,-8.191376 18.571354,-18.296574l0,-39.496814c0,-7.073455 -4.137698,-13.51202 -10.626529,-16.537358c-25.24497,-11.772016 -41.557118,-37.145704 -41.557118,-64.643625c0,-39.411735 32.545369,-71.476481 72.549922,-71.476481c40.004553,0 72.550851,32.064746 72.550851,71.476481c0,27.497006 -16.312149,52.87161 -41.557118,64.643625c-6.487902,3.026253 -10.6256,9.464818 -10.6256,16.537358l0,39.496814c0,10.105198 8.314395,18.296574 18.571354,18.296574l65.982163,0c10.256959,0 18.571354,-8.191376 18.571354,-18.296574c0,-10.105198 -8.314395,-18.296574 -18.571354,-18.296574z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1520 1216q0-40-28-68l-208-208q-28-28-68-28-42 0-72 32 3 3 19 18.5t21.5 21.5 15 19 13 25.5 3.5 27.5q0 40-28 68t-68 28q-15 0-27.5-3.5t-25.5-13-19-15-21.5-21.5-18.5-19q-33 31-33 73 0 40 28 68l206 207q27 27 68 27 40 0 68-26l147-146q28-28 28-67zm-703-705q0-40-28-68l-206-207q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l208 208q27 27 68 27 42 0 72-31-3-3-19-18.5t-21.5-21.5-15-19-13-25.5-3.5-27.5q0-40 28-68t68-28q15 0 27.5 3.5t25.5 13 19 15 21.5 21.5 18.5 19q33-31 33-73zm895 705q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-206-207q-83-83-83-203 0-123 88-209l-88-88q-86 88-208 88-120 0-204-84l-208-208q-84-84-84-204t85-203l147-146q83-83 203-83 121 0 204 85l206 207q83 83 83 203 0 123-88 209l88 88q86-88 208-88 120 0 204 84l208 208q84 84 84 204z\"/></svg>"
 
 /***/ }),
 /* 239 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M384 544v576q0 13-9.5 22.5t-22.5 9.5q-14 0-23-9l-288-288q-9-9-9-23t9-23l288-288q9-9 23-9 13 0 22.5 9.5t9.5 22.5zm1408 768v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M640 768h512v-192q0-106-75-181t-181-75-181 75-75 181v192zm832 96v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h32v-192q0-184 132-316t316-132 316 132 132 316v192h32q40 0 68 28t28 68z\"/></svg>"
 
 /***/ }),
 /* 240 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 459 459\">\n<g>\n\t<g>\n\t\t<path d=\"M229.5,0C102,0,0,102,0,229.5S102,459,229.5,459c20.4,0,38.25-17.85,38.25-38.25c0-10.2-2.55-17.85-10.2-25.5\n\t\t\tc-5.1-7.65-10.2-15.3-10.2-25.5c0-20.4,17.851-38.25,38.25-38.25h45.9c71.4,0,127.5-56.1,127.5-127.5C459,91.8,357,0,229.5,0z\n\t\t\t M89.25,229.5c-20.4,0-38.25-17.85-38.25-38.25S68.85,153,89.25,153s38.25,17.85,38.25,38.25S109.65,229.5,89.25,229.5z\n\t\t\t M165.75,127.5c-20.4,0-38.25-17.85-38.25-38.25S145.35,51,165.75,51S204,68.85,204,89.25S186.15,127.5,165.75,127.5z\n\t\t\t M293.25,127.5c-20.4,0-38.25-17.85-38.25-38.25S272.85,51,293.25,51s38.25,17.85,38.25,38.25S313.65,127.5,293.25,127.5z\n\t\t\t M369.75,229.5c-20.4,0-38.25-17.85-38.25-38.25S349.35,153,369.75,153S408,170.85,408,191.25S390.15,229.5,369.75,229.5z\"\n\t\t/>\n\t</g>\n</g>\n</svg>\n"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 1344v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45zm0-512v128q0 26-19 45t-45 19h-1408q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1408q26 0 45 19t19 45z\"/></svg>"
 
 /***/ }),
 /* 241 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1534 189v73q0 29-18.5 61t-42.5 32q-50 0-54 1-26 6-32 31-3 11-3 64v1152q0 25-18 43t-43 18h-108q-25 0-43-18t-18-43v-1218h-143v1218q0 25-17.5 43t-43.5 18h-108q-26 0-43.5-18t-17.5-43v-496q-147-12-245-59-126-58-192-179-64-117-64-259 0-166 88-286 88-118 209-159 111-37 417-37h479q25 0 43 18t18 43z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 312 312\"> <g transform=\"translate(0.000000,312.000000) scale(0.100000,-0.100000)\" stroke=\"none\"> <path d=\"M50 3109 c0 -7 -11 -22 -25 -35 l-25 -23 0 -961 0 -961 32 -29 32 -30 501 -2 500 -3 3 -502 2 -502 31 -30 31 -31 958 0 958 0 23 25 c13 13 30 25 37 25 9 0 12 199 12 960 0 686 -3 960 -11 960 -6 0 -24 12 -40 28 l-29 27 -503 5 -502 5 -5 502 -5 503 -28 29 c-15 16 -27 34 -27 40 0 8 -274 11 -960 11 -710 0 -960 -3 -960 -11z m1738 -698 l2 -453 -40 -40 c-22 -22 -40 -43 -40 -47 0 -4 36 -42 79 -85 88 -87 82 -87 141 -23 l26 27 455 -2 454 -3 0 -775 0 -775 -775 0 -775 0 -3 450 -2 449 47 48 47 48 -82 80 c-44 44 -84 80 -87 80 -3 0 -25 -18 -48 -40 l-41 -40 -456 2 -455 3 -3 765 c-1 421 0 771 3 778 3 10 164 12 777 10 l773 -3 3 -454z\"/> <path d=\"M607 2492 c-42 -42 -77 -82 -77 -87 0 -6 86 -96 190 -200 105 -104 190 -197 190 -205 0 -8 -41 -56 -92 -107 -65 -65 -87 -94 -77 -98 8 -3 138 -4 289 -3 l275 3 3 275 c1 151 0 281 -3 289 -4 10 -35 -14 -103 -82 -54 -53 -103 -97 -109 -97 -7 0 -99 88 -206 195 -107 107 -196 195 -198 195 -3 0 -39 -35 -82 -78z\"/> <path d=\"M1470 1639 c-47 -49 -87 -91 -89 -94 -5 -6 149 -165 160 -165 9 0 189 179 189 188 0 12 -154 162 -165 161 -6 0 -48 -41 -95 -90z\"/> <path d=\"M1797 1303 c-9 -8 -9 -568 0 -576 4 -4 50 36 103 88 54 52 101 95 106 95 5 0 95 -85 199 -190 104 -104 194 -190 200 -190 6 0 46 36 90 80 l79 79 -197 196 c-108 108 -197 199 -197 203 0 4 45 52 99 106 55 55 98 103 95 108 -6 10 -568 11 -577 1z\"/> </g> </svg> "
 
 /***/ }),
 /* 242 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\">\n\t<path\n\t\td=\"M10.5 20H2a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h1V3l2.03-.4a3 3 0 0 1 5.94 0L13 3v1h1a2 2 0 0 1 2 2v1h-2V6h-1v1H3V6H2v12h5v2h3.5zM8 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm2 4h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2zm0 2v8h8v-8h-8z\"/>\n</svg>\n"
+module.exports = "<svg role=\"img\" viewBox=\"0 0 1792 1792\"> <path d=\"M381 1620q0 80-54.5 126t-135.5 46q-106 0-172-66l57-88q49 45 106 45 29 0 50.5-14.5t21.5-42.5q0-64-105-56l-26-56q8-10 32.5-43.5t42.5-54 37-38.5v-1q-16 0-48.5 1t-48.5 1v53h-106v-152h333v88l-95 115q51 12 81 49t30 88zm2-627v159h-362q-6-36-6-54 0-51 23.5-93t56.5-68 66-47.5 56.5-43.5 23.5-45q0-25-14.5-38.5t-39.5-13.5q-46 0-81 58l-85-59q24-51 71.5-79.5t105.5-28.5q73 0 123 41.5t50 112.5q0 50-34 91.5t-75 64.5-75.5 50.5-35.5 52.5h127v-60h105zm1409 319v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm-1408-899v99h-335v-99h107q0-41 .5-122t.5-121v-12h-2q-8 17-50 54l-71-76 136-127h106v404h108zm1408 387v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-14 9-23t23-9h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z\"/> </svg>"
 
 /***/ }),
 /* 243 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 270 270\"> <path d=\"m240.443652,220.45085l-47.410809,0l0,-10.342138c13.89973,-8.43655 25.752896,-19.844464 34.686646,-33.469923c11.445525,-17.455846 17.496072,-37.709239 17.496072,-58.570077c0,-59.589197 -49.208516,-108.068714 -109.693558,-108.068714s-109.69263,48.479517 -109.69263,108.069628c0,20.860839 6.050547,41.113316 17.497001,58.570077c8.93375,13.625459 20.787845,25.032458 34.686646,33.469008l0,10.342138l-47.412666,0c-10.256959,0 -18.571354,8.191376 -18.571354,18.296574c0,10.105198 8.314395,18.296574 18.571354,18.296574l65.98402,0c10.256959,0 18.571354,-8.191376 18.571354,-18.296574l0,-39.496814c0,-7.073455 -4.137698,-13.51202 -10.626529,-16.537358c-25.24497,-11.772016 -41.557118,-37.145704 -41.557118,-64.643625c0,-39.411735 32.545369,-71.476481 72.549922,-71.476481c40.004553,0 72.550851,32.064746 72.550851,71.476481c0,27.497006 -16.312149,52.87161 -41.557118,64.643625c-6.487902,3.026253 -10.6256,9.464818 -10.6256,16.537358l0,39.496814c0,10.105198 8.314395,18.296574 18.571354,18.296574l65.982163,0c10.256959,0 18.571354,-8.191376 18.571354,-18.296574c0,-10.105198 -8.314395,-18.296574 -18.571354,-18.296574z\"/> </svg>"
 
 /***/ }),
 /* 244 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1600 736v192q0 40-28 68t-68 28h-416v416q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-416h-416q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h416v-416q0-40 28-68t68-28h192q40 0 68 28t28 68v416h416q40 0 68 28t28 68z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M384 544v576q0 13-9.5 22.5t-22.5 9.5q-14 0-23-9l-288-288q-9-9-9-23t9-23l288-288q9-9 23-9 13 0 22.5 9.5t9.5 22.5zm1408 768v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1088q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1088q13 0 22.5 9.5t9.5 22.5zm0-384v192q0 13-9.5 22.5t-22.5 9.5h-1728q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1728q13 0 22.5 9.5t9.5 22.5z\"/> </svg>"
 
 /***/ }),
 /* 245 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M448 1536h896v-256h-896v256zm0-640h896v-384h-160q-40 0-68-28t-28-68v-160h-640v640zm1152 64q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128 0v416q0 13-9.5 22.5t-22.5 9.5h-224v160q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-160h-224q-13 0-22.5-9.5t-9.5-22.5v-416q0-79 56.5-135.5t135.5-56.5h64v-544q0-40 28-68t68-28h672q40 0 88 20t76 48l152 152q28 28 48 76t20 88v256h64q79 0 135.5 56.5t56.5 135.5z\"/>\n</svg>"
+module.exports = "<svg x=\"0px\" y=\"0px\" viewBox=\"0 0 459 459\"> <g> <g> <path d=\"M229.5,0C102,0,0,102,0,229.5S102,459,229.5,459c20.4,0,38.25-17.85,38.25-38.25c0-10.2-2.55-17.85-10.2-25.5 c-5.1-7.65-10.2-15.3-10.2-25.5c0-20.4,17.851-38.25,38.25-38.25h45.9c71.4,0,127.5-56.1,127.5-127.5C459,91.8,357,0,229.5,0z M89.25,229.5c-20.4,0-38.25-17.85-38.25-38.25S68.85,153,89.25,153s38.25,17.85,38.25,38.25S109.65,229.5,89.25,229.5z M165.75,127.5c-20.4,0-38.25-17.85-38.25-38.25S145.35,51,165.75,51S204,68.85,204,89.25S186.15,127.5,165.75,127.5z M293.25,127.5c-20.4,0-38.25-17.85-38.25-38.25S272.85,51,293.25,51s38.25,17.85,38.25,38.25S313.65,127.5,293.25,127.5z M369.75,229.5c-20.4,0-38.25-17.85-38.25-38.25S349.35,153,369.75,153S408,170.85,408,191.25S390.15,229.5,369.75,229.5z\" /> </g> </g> </svg> "
 
 /***/ }),
 /* 246 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M1664 256v448q0 26-19 45t-45 19h-448q-42 0-59-40-17-39 14-69l138-138q-148-137-349-137-104 0-198.5 40.5t-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5q119 0 225-52t179-147q7-10 23-12 14 0 25 9l137 138q9 8 9.5 20.5t-7.5 22.5q-109 132-264 204.5t-327 72.5q-156 0-298-61t-245-164-164-245-61-298 61-298 164-245 245-164 298-61q147 0 284.5 55.5t244.5 156.5l130-129q29-31 70-14 39 17 39 59z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1534 189v73q0 29-18.5 61t-42.5 32q-50 0-54 1-26 6-32 31-3 11-3 64v1152q0 25-18 43t-43 18h-108q-25 0-43-18t-18-43v-1218h-143v1218q0 25-17.5 43t-43.5 18h-108q-26 0-43.5-18t-17.5-43v-496q-147-12-245-59-126-58-192-179-64-117-64-259 0-166 88-286 88-118 209-159 111-37 417-37h479q25 0 43 18t18 43z\"/></svg>"
 
 /***/ }),
 /* 247 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 24 24\"\n    >\n    <g>\n        <g transform=\"translate(-251.000000, -443.000000)\">\n            <g transform=\"translate(215.000000, 119.000000)\"/>\n            <path d=\"M252,448 L256,448 L256,444 L252,444 L252,448 Z M257,448 L269,448 L269,446 L257,446 L257,448 Z M257,464 L269,464 L269,462 L257,462 L257,464 Z M270,444 L270,448 L274,448 L274,444 L270,444 Z M252,462 L252,466 L256,466 L256,462 L252,462 Z M270,462 L270,466 L274,466 L274,462 L270,462 Z M254,461 L256,461 L256,449 L254,449 L254,461 Z M270,461 L272,461 L272,449 L270,449 L270,461 Z\"/>\n        </g>\n    </g>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 20 20\" xmlns=\"http://www.w3.org/2000/svg\"> <path d=\"M10.5 20H2a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h1V3l2.03-.4a3 3 0 0 1 5.94 0L13 3v1h1a2 2 0 0 1 2 2v1h-2V6h-1v1H3V6H2v12h5v2h3.5zM8 4a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm2 4h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-8a2 2 0 0 1-2-2v-8c0-1.1.9-2 2-2zm0 2v8h8v-8h-8z\"/> </svg> "
 
 /***/ }),
 /* 248 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M844 472q0 60-19 113.5t-63 92.5-105 39q-76 0-138-57.5t-92-135.5-30-151q0-60 19-113.5t63-92.5 105-39q77 0 138.5 57.5t91.5 135 30 151.5zm-342 483q0 80-42 139t-119 59q-76 0-141.5-55.5t-100.5-133.5-35-152q0-80 42-139.5t119-59.5q76 0 141.5 55.5t100.5 134 35 152.5zm394-27q118 0 255 97.5t229 237 92 254.5q0 46-17 76.5t-48.5 45-64.5 20-76 5.5q-68 0-187.5-45t-182.5-45q-66 0-192.5 44.5t-200.5 44.5q-183 0-183-146 0-86 56-191.5t139.5-192.5 187.5-146 193-59zm239-211q-61 0-105-39t-63-92.5-19-113.5q0-74 30-151.5t91.5-135 138.5-57.5q61 0 105 39t63 92.5 19 113.5q0 73-30 151t-92 135.5-138 57.5zm432-104q77 0 119 59.5t42 139.5q0 74-35 152t-100.5 133.5-141.5 55.5q-77 0-119-59t-42-139q0-74 35-152.5t100.5-134 141.5-55.5z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z\"/></svg>"
 
 /***/ }),
 /* 249 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1280q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1280q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1536q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1536q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1152q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1152q26 0 45 19t19 45z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1600 736v192q0 40-28 68t-68 28h-416v416q0 40-28 68t-68 28h-192q-40 0-68-28t-28-68v-416h-416q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h416v-416q0-40 28-68t68-28h192q40 0 68 28t28 68v416h416q40 0 68 28t28 68z\"/></svg>"
 
 /***/ }),
 /* 250 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M512 1536h768v-384h-768v384zm896 0h128v-896q0-14-10-38.5t-20-34.5l-281-281q-10-10-34-20t-39-10v416q0 40-28 68t-68 28h-576q-40 0-68-28t-28-68v-416h-128v1280h128v-416q0-40 28-68t68-28h832q40 0 68 28t28 68v416zm-384-928v-320q0-13-9.5-22.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 22.5v320q0 13 9.5 22.5t22.5 9.5h192q13 0 22.5-9.5t9.5-22.5zm640 32v928q0 40-28 68t-68 28h-1344q-40 0-68-28t-28-68v-1344q0-40 28-68t68-28h928q40 0 88 20t76 48l280 280q28 28 48 76t20 88z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M448 1536h896v-256h-896v256zm0-640h896v-384h-160q-40 0-68-28t-28-68v-160h-640v640zm1152 64q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128 0v416q0 13-9.5 22.5t-22.5 9.5h-224v160q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-160h-224q-13 0-22.5-9.5t-9.5-22.5v-416q0-79 56.5-135.5t135.5-56.5h64v-544q0-40 28-68t68-28h672q40 0 88 20t76 48l152 152q28 28 48 76t20 88v256h64q79 0 135.5 56.5t56.5 135.5z\"/> </svg>"
 
 /***/ }),
 /* 251 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 18 18\">\n    <g fill-rule=\"evenodd\" stroke=\"none\" stroke-width=\"1\">\n        <g transform=\"translate(-381.000000, -381.000000)\">\n            <g transform=\"translate(381.000000, 381.000000)\">\n                <path d=\"M0,2 L2,2 L2,0 C0.9,0 0,0.9 0,2 L0,2 Z M0,10 L2,10 L2,8 L0,8 L0,10 L0,10 Z M4,18 L6,18 L6,16 L4,16 L4,18 L4,18 Z M0,6 L2,6 L2,4 L0,4 L0,6 L0,6 Z M10,0 L8,0 L8,2 L10,2 L10,0 L10,0 Z M16,0 L16,2 L18,2 C18,0.9 17.1,0 16,0 L16,0 Z M2,18 L2,16 L0,16 C0,17.1 0.9,18 2,18 L2,18 Z M0,14 L2,14 L2,12 L0,12 L0,14 L0,14 Z M6,0 L4,0 L4,2 L6,2 L6,0 L6,0 Z M8,18 L10,18 L10,16 L8,16 L8,18 L8,18 Z M16,10 L18,10 L18,8 L16,8 L16,10 L16,10 Z M16,18 C17.1,18 18,17.1 18,16 L16,16 L16,18 L16,18 Z M16,6 L18,6 L18,4 L16,4 L16,6 L16,6 Z M16,14 L18,14 L18,12 L16,12 L16,14 L16,14 Z M12,18 L14,18 L14,16 L12,16 L12,18 L12,18 Z M12,2 L14,2 L14,0 L12,0 L12,2 L12,2 Z M4,14 L14,14 L14,4 L4,4 L4,14 L4,14 Z M6,6 L12,6 L12,12 L6,12 L6,6 L6,6 Z\"/>\n            </g>\n        </g>\n    </g>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1664 256v448q0 26-19 45t-45 19h-448q-42 0-59-40-17-39 14-69l138-138q-148-137-349-137-104 0-198.5 40.5t-163.5 109.5-109.5 163.5-40.5 198.5 40.5 198.5 109.5 163.5 163.5 109.5 198.5 40.5q119 0 225-52t179-147q7-10 23-12 14 0 25 9l137 138q9 8 9.5 20.5t-7.5 22.5q-109 132-264 204.5t-327 72.5q-156 0-298-61t-245-164-164-245-61-298 61-298 164-245 245-164 298-61q147 0 284.5 55.5t244.5 156.5l130-129q29-31 70-14 39 17 39 59z\"/> </svg>"
 
 /***/ }),
 /* 252 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 24 24\" > <g> <g transform=\"translate(-251.000000, -443.000000)\"> <g transform=\"translate(215.000000, 119.000000)\"/> <path d=\"M252,448 L256,448 L256,444 L252,444 L252,448 Z M257,448 L269,448 L269,446 L257,446 L257,448 Z M257,464 L269,464 L269,462 L257,462 L257,464 Z M270,444 L270,448 L274,448 L274,444 L270,444 Z M252,462 L252,466 L256,466 L256,462 L252,462 Z M270,462 L270,466 L274,466 L274,462 L270,462 Z M254,461 L256,461 L256,449 L254,449 L254,461 Z M270,461 L272,461 L272,449 L270,449 L270,461 Z\"/> </g> </g> </svg>"
 
 /***/ }),
 /* 253 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M553 1399l-50 50q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l50 50q10 10 10 23t-10 23l-393 393 393 393q10 10 10 23t-10 23zm591-1067l-373 1291q-4 13-15.5 19.5t-23.5 2.5l-62-17q-13-4-19.5-15.5t-2.5-24.5l373-1291q4-13 15.5-19.5t23.5-2.5l62 17q13 4 19.5 15.5t2.5 24.5zm657 651l-466 466q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l393-393-393-393q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l466 466q10 10 10 23t-10 23z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M844 472q0 60-19 113.5t-63 92.5-105 39q-76 0-138-57.5t-92-135.5-30-151q0-60 19-113.5t63-92.5 105-39q77 0 138.5 57.5t91.5 135 30 151.5zm-342 483q0 80-42 139t-119 59q-76 0-141.5-55.5t-100.5-133.5-35-152q0-80 42-139.5t119-59.5q76 0 141.5 55.5t100.5 134 35 152.5zm394-27q118 0 255 97.5t229 237 92 254.5q0 46-17 76.5t-48.5 45-64.5 20-76 5.5q-68 0-187.5-45t-182.5-45q-66 0-192.5 44.5t-200.5 44.5q-183 0-183-146 0-86 56-191.5t139.5-192.5 187.5-146 193-59zm239-211q-61 0-105-39t-63-92.5-19-113.5q0-74 30-151.5t91.5-135 138.5-57.5q61 0 105 39t63 92.5 19 113.5q0 73-30 151t-92 135.5-138 57.5zm432-104q77 0 119 59.5t42 139.5q0 74-35 152t-100.5 133.5-141.5 55.5q-77 0-119-59t-42-139q0-74 35-152.5t100.5-134 141.5-55.5z\"/> </svg>"
 
 /***/ }),
 /* 254 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 48 48\">\n    <path d=\"M6 42h4v-4h-4v4zm4-28h-4v4h4v-4zm-4 20h4v-4h-4v4zm8 8h4v-4h-4v4zm-4-36h-4v4h4v-4zm8 0h-4v4h4v-4zm16 0h-4v4h4v-4zm-8 8h-4v4h4v-4zm0-8h-4v4h4v-4zm12 28h4v-4h-4v4zm-16 8h4v-4h-4v4zm-16-16h36v-4h-36v4zm32-20v4h4v-4h-4zm0 12h4v-4h-4v4zm-16 16h4v-4h-4v4zm8 8h4v-4h-4v4zm8 0h4v-4h-4v4z\"/><path d=\"M0 0h48v48h-48z\" fill=\"none\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1792 1344v128q0 26-19 45t-45 19h-1664q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1664q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1280q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1280q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1536q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1536q26 0 45 19t19 45zm0-384v128q0 26-19 45t-45 19h-1152q-26 0-45-19t-19-45v-128q0-26 19-45t45-19h1152q26 0 45 19t19 45z\"/> </svg>"
 
 /***/ }),
 /* 255 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 48 48\">\n    <path d=\"M6 18h4v-4h-4v4zm0-8h4v-4h-4v4zm8 32h4v-4h-4v4zm0-16h4v-4h-4v4zm-8 0h4v-4h-4v4zm0 16h4v-4h-4v4zm0-8h4v-4h-4v4zm8-24h4v-4h-4v4zm24 24h4v-4h-4v4zm-16 8h4v-36h-4v36zm16 0h4v-4h-4v4zm0-16h4v-4h-4v4zm0-20v4h4v-4h-4zm0 12h4v-4h-4v4zm-8-8h4v-4h-4v4zm0 32h4v-4h-4v4zm0-16h4v-4h-4v4z\"/>\n    <path d=\"M0 0h48v48h-48z\" fill=\"none\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M512 1536h768v-384h-768v384zm896 0h128v-896q0-14-10-38.5t-20-34.5l-281-281q-10-10-34-20t-39-10v416q0 40-28 68t-68 28h-576q-40 0-68-28t-28-68v-416h-128v1280h128v-416q0-40 28-68t68-28h832q40 0 68 28t28 68v416zm-384-928v-320q0-13-9.5-22.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 22.5v320q0 13 9.5 22.5t22.5 9.5h192q13 0 22.5-9.5t9.5-22.5zm640 32v928q0 40-28 68t-68 28h-1344q-40 0-68-28t-28-68v-1344q0-40 28-68t68-28h928q40 0 88 20t76 48l280 280q28 28 48 76t20 88z\"/> </svg>"
 
 /***/ }),
 /* 256 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1760 896q14 0 23 9t9 23v64q0 14-9 23t-23 9h-1728q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h1728zm-1277-64q-28-35-51-80-48-97-48-188 0-181 134-309 133-127 393-127 50 0 167 19 66 12 177 48 10 38 21 118 14 123 14 183 0 18-5 45l-12 3-84-6-14-2q-50-149-103-205-88-91-210-91-114 0-182 59-67 58-67 146 0 73 66 140t279 129q69 20 173 66 58 28 95 52h-743zm507 256h411q7 39 7 92 0 111-41 212-23 55-71 104-37 35-109 81-80 48-153 66-80 21-203 21-114 0-195-23l-140-40q-57-16-72-28-8-8-8-22v-13q0-108-2-156-1-30 0-68l2-37v-44l102-2q15 34 30 71t22.5 56 12.5 27q35 57 80 94 43 36 105 57 59 22 132 22 64 0 139-27 77-26 122-86 47-61 47-129 0-84-81-157-34-29-137-71z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 18 18\"> <g fill-rule=\"evenodd\" stroke=\"none\" stroke-width=\"1\"> <g transform=\"translate(-381.000000, -381.000000)\"> <g transform=\"translate(381.000000, 381.000000)\"> <path d=\"M0,2 L2,2 L2,0 C0.9,0 0,0.9 0,2 L0,2 Z M0,10 L2,10 L2,8 L0,8 L0,10 L0,10 Z M4,18 L6,18 L6,16 L4,16 L4,18 L4,18 Z M0,6 L2,6 L2,4 L0,4 L0,6 L0,6 Z M10,0 L8,0 L8,2 L10,2 L10,0 L10,0 Z M16,0 L16,2 L18,2 C18,0.9 17.1,0 16,0 L16,0 Z M2,18 L2,16 L0,16 C0,17.1 0.9,18 2,18 L2,18 Z M0,14 L2,14 L2,12 L0,12 L0,14 L0,14 Z M6,0 L4,0 L4,2 L6,2 L6,0 L6,0 Z M8,18 L10,18 L10,16 L8,16 L8,18 L8,18 Z M16,10 L18,10 L18,8 L16,8 L16,10 L16,10 Z M16,18 C17.1,18 18,17.1 18,16 L16,16 L16,18 L16,18 Z M16,6 L18,6 L18,4 L16,4 L16,6 L16,6 Z M16,14 L18,14 L18,12 L16,12 L16,14 L16,14 Z M12,18 L14,18 L14,16 L12,16 L12,18 L12,18 Z M12,2 L14,2 L14,0 L12,0 L12,2 L12,2 Z M4,14 L14,14 L14,4 L4,4 L4,14 L4,14 Z M6,6 L12,6 L12,12 L6,12 L6,6 L6,6 Z\"/> </g> </g> </g> </svg>"
 
 /***/ }),
 /* 257 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M1025 1369v167h-248l-159-252-24-42q-8-9-11-21h-3l-9 21q-10 20-25 44l-155 250h-258v-167h128l197-291-185-272h-137v-168h276l139 228q2 4 23 42 8 9 11 21h3q3-9 11-21l25-42 140-228h257v168h-125l-184 267 204 296h109zm639 217v206h-514l-4-27q-3-45-3-46 0-64 26-117t65-86.5 84-65 84-54.5 65-54 26-64q0-38-29.5-62.5t-70.5-24.5q-51 0-97 39-14 11-36 38l-105-92q26-37 63-66 80-65 188-65 110 0 178 59.5t68 158.5q0 66-34.5 118.5t-84 86-99.5 62.5-87 63-41 73h232v-80h126z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M896 960v448q0 26-19 45t-45 19-45-19l-144-144-332 332q-10 10-23 10t-23-10l-114-114q-10-10-10-23t10-23l332-332-144-144q-19-19-19-45t19-45 45-19h448q26 0 45 19t19 45zm755-672q0 13-10 23l-332 332 144 144q19 19 19 45t-19 45-45 19h-448q-26 0-45-19t-19-45v-448q0-26 19-45t45-19 45 19l144 144 332-332q10-10 23-10t23 10l114 114q10 10 10 23z\"/> </svg>"
 
 /***/ }),
 /* 258 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\">\n    <path d=\"M1025 1369v167h-248l-159-252-24-42q-8-9-11-21h-3l-9 21q-10 20-25 44l-155 250h-258v-167h128l197-291-185-272h-137v-168h276l139 228q2 4 23 42 8 9 11 21h3q3-9 11-21l25-42 140-228h257v168h-125l-184 267 204 296h109zm637-679v206h-514l-3-27q-4-28-4-46 0-64 26-117t65-86.5 84-65 84-54.5 65-54 26-64q0-38-29.5-62.5t-70.5-24.5q-51 0-97 39-14 11-36 38l-105-92q26-37 63-66 83-65 188-65 110 0 178 59.5t68 158.5q0 56-24.5 103t-62 76.5-81.5 58.5-82 50.5-65.5 51.5-30.5 63h232v-80h126z\"/>\n</svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M553 1399l-50 50q-10 10-23 10t-23-10l-466-466q-10-10-10-23t10-23l466-466q10-10 23-10t23 10l50 50q10 10 10 23t-10 23l-393 393 393 393q10 10 10 23t-10 23zm591-1067l-373 1291q-4 13-15.5 19.5t-23.5 2.5l-62-17q-13-4-19.5-15.5t-2.5-24.5l373-1291q4-13 15.5-19.5t23.5-2.5l62 17q13 4 19.5 15.5t2.5 24.5zm657 651l-466 466q-10 10-23 10t-23-10l-50-50q-10-10-10-23t10-23l393-393-393-393q-10-10-10-23t10-23l50-50q10-10 23-10t23 10l466 466q10 10 10 23t-10 23z\"/> </svg>"
 
 /***/ }),
 /* 259 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M576 1376v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm0-384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm-512-768v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm-512-768v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm0-384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm128-320v1088q0 66-47 113t-113 47h-1344q-66 0-113-47t-47-113v-1088q0-66 47-113t113-47h1344q66 0 113 47t47 113z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 48 48\"> <path d=\"M6 42h4v-4h-4v4zm4-28h-4v4h4v-4zm-4 20h4v-4h-4v4zm8 8h4v-4h-4v4zm-4-36h-4v4h4v-4zm8 0h-4v4h4v-4zm16 0h-4v4h4v-4zm-8 8h-4v4h4v-4zm0-8h-4v4h4v-4zm12 28h4v-4h-4v4zm-16 8h4v-4h-4v4zm-16-16h36v-4h-36v4zm32-20v4h4v-4h-4zm0 12h4v-4h-4v4zm-16 16h4v-4h-4v4zm8 8h4v-4h-4v4zm8 0h4v-4h-4v4z\"/><path d=\"M0 0h48v48h-48z\" fill=\"none\"/> </svg>"
 
 /***/ }),
 /* 260 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M512 1248v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm-640-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm-640-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 48 48\"> <path d=\"M6 18h4v-4h-4v4zm0-8h4v-4h-4v4zm8 32h4v-4h-4v4zm0-16h4v-4h-4v4zm-8 0h4v-4h-4v4zm0 16h4v-4h-4v4zm0-8h4v-4h-4v4zm8-24h4v-4h-4v4zm24 24h4v-4h-4v4zm-16 8h4v-36h-4v36zm16 0h4v-4h-4v4zm0-16h4v-4h-4v4zm0-20v4h4v-4h-4zm0 12h4v-4h-4v4zm-8-8h4v-4h-4v4zm0 32h4v-4h-4v4zm0-16h4v-4h-4v4z\"/> <path d=\"M0 0h48v48h-48z\" fill=\"none\"/> </svg>"
 
 /***/ }),
 /* 261 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M512 1248v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm1280 512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68zm-1280-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm1280 512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1760 896q14 0 23 9t9 23v64q0 14-9 23t-23 9h-1728q-14 0-23-9t-9-23v-64q0-14 9-23t23-9h1728zm-1277-64q-28-35-51-80-48-97-48-188 0-181 134-309 133-127 393-127 50 0 167 19 66 12 177 48 10 38 21 118 14 123 14 183 0 18-5 45l-12 3-84-6-14-2q-50-149-103-205-88-91-210-91-114 0-182 59-67 58-67 146 0 73 66 140t279 129q69 20 173 66 58 28 95 52h-743zm507 256h411q7 39 7 92 0 111-41 212-23 55-71 104-37 35-109 81-80 48-153 66-80 21-203 21-114 0-195-23l-140-40q-57-16-72-28-8-8-8-22v-13q0-108-2-156-1-30 0-68l2-37v-44l102-2q15 34 30 71t22.5 56 12.5 27q35 57 80 94 43 36 105 57 59 22 132 22 64 0 139-27 77-26 122-86 47-61 47-129 0-84-81-157-34-29-137-71z\"/></svg>"
 
 /***/ }),
 /* 262 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 1408q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm0-512q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm-1408-928q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1025 1369v167h-248l-159-252-24-42q-8-9-11-21h-3l-9 21q-10 20-25 44l-155 250h-258v-167h128l197-291-185-272h-137v-168h276l139 228q2 4 23 42 8 9 11 21h3q3-9 11-21l25-42 140-228h257v168h-125l-184 267 204 296h109zm639 217v206h-514l-4-27q-3-45-3-46 0-64 26-117t65-86.5 84-65 84-54.5 65-54 26-64q0-38-29.5-62.5t-70.5-24.5q-51 0-97 39-14 11-36 38l-105-92q26-37 63-66 80-65 188-65 110 0 178 59.5t68 158.5q0 66-34.5 118.5t-84 86-99.5 62.5-87 63-41 73h232v-80h126z\"/> </svg>"
 
 /***/ }),
 /* 263 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M176 223q-37-2-45-4l-3-88q13-1 40-1 60 0 112 4 132 7 166 7 86 0 168-3 116-4 146-5 56 0 86-2l-1 14 2 64v9q-60 9-124 9-60 0-79 25-13 14-13 132 0 13 .5 32.5t.5 25.5l1 229 14 280q6 124 51 202 35 59 96 92 88 47 177 47 104 0 191-28 56-18 99-51 48-36 65-64 36-56 53-114 21-73 21-229 0-79-3.5-128t-11-122.5-13.5-159.5l-4-59q-5-67-24-88-34-35-77-34l-100 2-14-3 2-86h84l205 10q76 3 196-10l18 2q6 38 6 51 0 7-4 31-45 12-84 13-73 11-79 17-15 15-15 41 0 7 1.5 27t1.5 31q8 19 22 396 6 195-15 304-15 76-41 122-38 65-112 123-75 57-182 89-109 33-255 33-167 0-284-46-119-47-179-122-61-76-83-195-16-80-16-237v-333q0-188-17-213-25-36-147-39zm1488 1409v-64q0-14-9-23t-23-9h-1472q-14 0-23 9t-9 23v64q0 14 9 23t23 9h1472q14 0 23-9t9-23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"> <path d=\"M1025 1369v167h-248l-159-252-24-42q-8-9-11-21h-3l-9 21q-10 20-25 44l-155 250h-258v-167h128l197-291-185-272h-137v-168h276l139 228q2 4 23 42 8 9 11 21h3q3-9 11-21l25-42 140-228h257v168h-125l-184 267 204 296h109zm637-679v206h-514l-3-27q-4-28-4-46 0-64 26-117t65-86.5 84-65 84-54.5 65-54 26-64q0-38-29.5-62.5t-70.5-24.5q-51 0-97 39-14 11-36 38l-105-92q26-37 63-66 83-65 188-65 110 0 178 59.5t68 158.5q0 56-24.5 103t-62 76.5-81.5 58.5-82 50.5-65.5 51.5-30.5 63h232v-80h126z\"/> </svg>"
 
 /***/ }),
 /* 264 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 896q0 156-61 298t-164 245-245 164-298 61q-172 0-327-72.5t-264-204.5q-7-10-6.5-22.5t8.5-20.5l137-138q10-9 25-9 16 2 23 12 73 95 179 147t225 52q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5-40.5-198.5-109.5-163.5-163.5-109.5-198.5-40.5q-98 0-188 35.5t-160 101.5l137 138q31 30 14 69-17 40-59 40h-448q-26 0-45-19t-19-45v-448q0-42 40-59 39-17 69 14l130 129q107-101 244.5-156.5t284.5-55.5q156 0 298 61t245 164 164 245 61 298z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M576 1376v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm0-384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm-512-768v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm-512-768v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm512 384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm0-384v-192q0-14-9-23t-23-9h-320q-14 0-23 9t-9 23v192q0 14 9 23t23 9h320q14 0 23-9t9-23zm128-320v1088q0 66-47 113t-113 47h-1344q-66 0-113-47t-47-113v-1088q0-66 47-113t113-47h1344q66 0 113 47t47 113z\"/></svg>"
 
 /***/ }),
 /* 265 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M503 1271l-256 256q-10 9-23 9-12 0-23-9-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23zm169 41v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm-224-224q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm1264 128q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-334-335q-21-21-42-56l239-18 273 274q27 27 68 27.5t68-26.5l147-146q28-28 28-67 0-40-28-68l-274-275 18-239q35 21 56 42l336 336q84 86 84 204zm-617-724l-239 18-273-274q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l274 274-18 240q-35-21-56-42l-336-336q-84-86-84-204 0-120 85-203l147-146q83-83 203-83 121 0 204 85l334 335q21 21 42 56zm633 84q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm-544-544v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm407 151l-256 256q-11 9-23 9t-23-9q-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M512 1248v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm-640-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm-640-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm640 512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68z\"/></svg>"
 
 /***/ }),
 /* 266 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1728 576v256q0 26-19 45t-45 19h-64q-26 0-45-19t-19-45v-256q0-106-75-181t-181-75-181 75-75 181v192h96q40 0 68 28t28 68v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h672v-192q0-185 131.5-316.5t316.5-131.5 316.5 131.5 131.5 316.5z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M512 1248v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm1280 512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68zm-1280-1024v192q0 40-28 68t-68 28h-320q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h320q40 0 68 28t28 68zm1280 512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68zm0-512v192q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-192q0-40 28-68t68-28h960q40 0 68 28t28 68z\"/></svg>"
 
 /***/ }),
 /* 267 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1639 1056q0 5-1 7-64 268-268 434.5t-478 166.5q-146 0-282.5-55t-243.5-157l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65t-186 179q-11 17-53 117-8 23-30 23h-199q-13 0-22.5-9.5t-9.5-22.5v-7q65-268 270-434.5t480-166.5q146 0 284 55.5t245 156.5l130-129q19-19 45-19t45 19 19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M384 1408q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm0-512q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm-1408-928q0 80-56 136t-136 56-136-56-56-136 56-136 136-56 136 56 56 136zm1408 416v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5zm0-512v192q0 13-9.5 22.5t-22.5 9.5h-1216q-13 0-22.5-9.5t-9.5-22.5v-192q0-13 9.5-22.5t22.5-9.5h1216q13 0 22.5 9.5t9.5 22.5z\"/></svg>"
 
 /***/ }),
 /* 268 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1344 1472q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm256 0q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128-224v320q0 40-28 68t-68 28h-1472q-40 0-68-28t-28-68v-320q0-40 28-68t68-28h427q21 56 70.5 92t110.5 36h256q61 0 110.5-36t70.5-92h427q40 0 68 28t28 68zm-325-648q-17 40-59 40h-256v448q0 26-19 45t-45 19h-256q-26 0-45-19t-19-45v-448h-256q-42 0-59-40-17-39 14-69l448-448q18-19 45-19t45 19l448 448q31 30 14 69z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M176 223q-37-2-45-4l-3-88q13-1 40-1 60 0 112 4 132 7 166 7 86 0 168-3 116-4 146-5 56 0 86-2l-1 14 2 64v9q-60 9-124 9-60 0-79 25-13 14-13 132 0 13 .5 32.5t.5 25.5l1 229 14 280q6 124 51 202 35 59 96 92 88 47 177 47 104 0 191-28 56-18 99-51 48-36 65-64 36-56 53-114 21-73 21-229 0-79-3.5-128t-11-122.5-13.5-159.5l-4-59q-5-67-24-88-34-35-77-34l-100 2-14-3 2-86h84l205 10q76 3 196-10l18 2q6 38 6 51 0 7-4 31-45 12-84 13-73 11-79 17-15 15-15 41 0 7 1.5 27t1.5 31q8 19 22 396 6 195-15 304-15 76-41 122-38 65-112 123-75 57-182 89-109 33-255 33-167 0-284-46-119-47-179-122-61-76-83-195-16-80-16-237v-333q0-188-17-213-25-36-147-39zm1488 1409v-64q0-14-9-23t-23-9h-1472q-14 0-23 9t-9 23v64q0 14 9 23t23 9h1472q14 0 23-9t9-23z\"/></svg>"
 
 /***/ }),
 /* 269 */
 /***/ (function(module, exports) {
 
-module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1216 320q0 26-19 45t-45 19h-128v1024h128q26 0 45 19t19 45-19 45l-256 256q-19 19-45 19t-45-19l-256-256q-19-19-19-45t19-45 45-19h128v-1024h-128q-26 0-45-19t-19-45 19-45l256-256q19-19 45-19t45 19l256 256q19 19 19 45z\"/></svg>"
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1664 896q0 156-61 298t-164 245-245 164-298 61q-172 0-327-72.5t-264-204.5q-7-10-6.5-22.5t8.5-20.5l137-138q10-9 25-9 16 2 23 12 73 95 179 147t225 52q104 0 198.5-40.5t163.5-109.5 109.5-163.5 40.5-198.5-40.5-198.5-109.5-163.5-163.5-109.5-198.5-40.5q-98 0-188 35.5t-160 101.5l137 138q31 30 14 69-17 40-59 40h-448q-26 0-45-19t-19-45v-448q0-42 40-59 39-17 69 14l130 129q107-101 244.5-156.5t284.5-55.5q156 0 298 61t245 164 164 245 61 298z\"/></svg>"
 
 /***/ }),
 /* 270 */
+/***/ (function(module, exports) {
+
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M503 1271l-256 256q-10 9-23 9-12 0-23-9-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23zm169 41v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm-224-224q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm1264 128q0 120-85 203l-147 146q-83 83-203 83-121 0-204-85l-334-335q-21-21-42-56l239-18 273 274q27 27 68 27.5t68-26.5l147-146q28-28 28-67 0-40-28-68l-274-275 18-239q35 21 56 42l336 336q84 86 84 204zm-617-724l-239 18-273-274q-28-28-68-28-39 0-68 27l-147 146q-28 28-28 67 0 40 28 68l274 274-18 240q-35-21-56-42l-336-336q-84-86-84-204 0-120 85-203l147-146q83-83 203-83 121 0 204 85l334 335q21 21 42 56zm633 84q0 14-9 23t-23 9h-320q-14 0-23-9t-9-23 9-23 23-9h320q14 0 23 9t9 23zm-544-544v320q0 14-9 23t-23 9-23-9-9-23v-320q0-14 9-23t23-9 23 9 9 23zm407 151l-256 256q-11 9-23 9t-23-9q-9-10-9-23t9-23l256-256q10-9 23-9t23 9q9 10 9 23t-9 23z\"/></svg>"
+
+/***/ }),
+/* 271 */
+/***/ (function(module, exports) {
+
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1728 576v256q0 26-19 45t-45 19h-64q-26 0-45-19t-19-45v-256q0-106-75-181t-181-75-181 75-75 181v192h96q40 0 68 28t28 68v576q0 40-28 68t-68 28h-960q-40 0-68-28t-28-68v-576q0-40 28-68t68-28h672v-192q0-185 131.5-316.5t316.5-131.5 316.5 131.5 131.5 316.5z\"/></svg>"
+
+/***/ }),
+/* 272 */
+/***/ (function(module, exports) {
+
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1639 1056q0 5-1 7-64 268-268 434.5t-478 166.5q-146 0-282.5-55t-243.5-157l-129 129q-19 19-45 19t-45-19-19-45v-448q0-26 19-45t45-19h448q26 0 45 19t19 45-19 45l-137 137q71 66 161 102t187 36q134 0 250-65t186-179q11-17 53-117 8-23 30-23h192q13 0 22.5 9.5t9.5 22.5zm25-800v448q0 26-19 45t-45 19h-448q-26 0-45-19t-19-45 19-45l138-138q-148-137-349-137-134 0-250 65t-186 179q-11 17-53 117-8 23-30 23h-199q-13 0-22.5-9.5t-9.5-22.5v-7q65-268 270-434.5t480-166.5q146 0 284 55.5t245 156.5l130-129q19-19 45-19t45 19 19 45z\"/></svg>"
+
+/***/ }),
+/* 273 */
+/***/ (function(module, exports) {
+
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1344 1472q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm256 0q0-26-19-45t-45-19-45 19-19 45 19 45 45 19 45-19 19-45zm128-224v320q0 40-28 68t-68 28h-1472q-40 0-68-28t-28-68v-320q0-40 28-68t68-28h427q21 56 70.5 92t110.5 36h256q61 0 110.5-36t70.5-92h427q40 0 68 28t28 68zm-325-648q-17 40-59 40h-256v448q0 26-19 45t-45 19h-256q-26 0-45-19t-19-45v-448h-256q-42 0-59-40-17-39 14-69l448-448q18-19 45-19t45 19l448 448q31 30 14 69z\"/></svg>"
+
+/***/ }),
+/* 274 */
+/***/ (function(module, exports) {
+
+module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1216 320q0 26-19 45t-45 19h-128v1024h128q26 0 45 19t19 45-19 45l-256 256q-19 19-45 19t-45-19l-256-256q-19-19-19-45t19-45 45-19h128v-1024h-128q-26 0-45-19t-19-45 19-45l256-256q19-19 45-19t45 19l256 256q19 19 19 45z\"/></svg>"
+
+/***/ }),
+/* 275 */
 /***/ (function(module, exports) {
 
 module.exports = "<svg viewBox=\"0 0 1792 1792\"><path d=\"M1792 352v1088q0 42-39 59-13 5-25 5-27 0-45-19l-403-403v166q0 119-84.5 203.5t-203.5 84.5h-704q-119 0-203.5-84.5t-84.5-203.5v-704q0-119 84.5-203.5t203.5-84.5h704q119 0 203.5 84.5t84.5 203.5v165l403-402q18-19 45-19 12 0 25 5 39 17 39 59z\"/></svg>"

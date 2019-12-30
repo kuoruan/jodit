@@ -71,7 +71,8 @@ Config.prototype.controls.dialog = {
 	}
 } as IDictionary<IControlType>;
 
-type Content = string | HTMLElement | Array<string | HTMLElement>;
+type ContentItem = string | HTMLElement;
+type Content = ContentItem | ContentItem[] | Array<ContentItem | ContentItem[]>;
 
 /**
  * Module to generate dialog windows
@@ -85,6 +86,7 @@ export class Dialog extends View {
 	 */
 	// @ts-ignore
 	private resizer: HTMLDivElement;
+
 	// @ts-ignore
 	public toolbar: ToolbarCollection;
 
@@ -117,7 +119,16 @@ export class Dialog extends View {
 	) {
 		const elements_list: HTMLElement[] = [];
 
-		asArray(elements).forEach(elm => {
+		asArray<ContentItem | ContentItem[]>(elements).forEach((elm: ContentItem | ContentItem[]): any => {
+			if (Array.isArray(elm)) {
+				const div = this.create.div('jodit_dialog_column');
+
+				elements_list.push(div);
+				root.appendChild(div);
+
+				return this.setElements(div, elm);
+			}
+
 			const element: HTMLElement =
 				typeof elm === 'string' ? this.create.fromHTML(elm) : elm;
 
@@ -380,7 +391,7 @@ export class Dialog extends View {
 	 * dialog.open();
 	 * ```
 	 */
-	public setContent(content: Content) {
+	setContent(content: Content) {
 		this.setElements(this.dialogbox_content, content);
 	}
 
@@ -403,7 +414,7 @@ export class Dialog extends View {
 	 * dialog.open();
 	 * ```
 	 */
-	public setFooter(content: Content) {
+	setFooter(content: Content) {
 		this.setElements(this.dialogbox_footer, content);
 		this.dialog.classList.toggle('with_footer', !!content);
 	}
@@ -412,7 +423,7 @@ export class Dialog extends View {
 	 * Return current Z-index
 	 * @return {number}
 	 */
-	public getZIndex(): number {
+	getZIndex(): number {
 		return parseInt(this.container.style.zIndex || '0', 10);
 	}
 
@@ -421,7 +432,7 @@ export class Dialog extends View {
 	 *
 	 * @return {Dialog}
 	 */
-	public getMaxZIndexDialog() {
+	getMaxZIndexDialog() {
 		let maxzi: number = 0,
 			dlg: Dialog,
 			zIndex: number,
@@ -444,7 +455,7 @@ export class Dialog extends View {
 	/**
 	 * Sets the maximum z-index dialog box, displaying it on top of all the dialog boxes
 	 */
-	public setMaxZIndex() {
+	setMaxZIndex() {
 		let maxzi: number = 0,
 			zIndex: number = 0;
 
@@ -462,7 +473,7 @@ export class Dialog extends View {
 	 * @param {boolean} condition true - fullsize
 	 * @return {boolean} true - fullsize
 	 */
-	public maximization(condition?: boolean): boolean {
+	maximization(condition?: boolean): boolean {
 		if (typeof condition !== 'boolean') {
 			condition = !this.container.classList.contains(
 				'jodit_dialog_box-fullsize'
@@ -499,7 +510,7 @@ export class Dialog extends View {
 	 * @fires {@link event:beforeOpen} id returns 'false' then the window will not open
 	 * @fires {@link event:afterOpen}
 	 */
-	public open(
+	open(
 		content?: Content,
 		title?: Content,
 		destroyAfter?: boolean,
@@ -733,7 +744,7 @@ export class Dialog extends View {
 			);
 		}
 
-		Jodit.plugins.fullsize(self);
+		fullsize(self);
 	}
 
 	/**
@@ -771,5 +782,5 @@ export class Dialog extends View {
 	}
 }
 
-import { Jodit } from '../../Jodit';
-import { JoditToolbarCollection, ToolbarCollection } from '..';
+import { JoditToolbarCollection } from '../toolbar/joditToolbarCollection';
+import { fullsize } from '../../plugins';

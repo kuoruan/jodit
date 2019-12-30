@@ -85,7 +85,7 @@ Config.prototype.imageeditor = {
 };
 
 const jie = 'jodit_image_editor';
-const gi = ToolbarIcon.getIcon;
+const gi = ToolbarIcon.getIcon.bind(ToolbarIcon);
 
 /**
  * The module allows you toWYSIWYG edit the image: resize or cut any part of it
@@ -398,6 +398,7 @@ export class ImageEditor extends Component {
 				self.showCrop();
 				this.jodit.events.fire(self.cropHandler, 'updatesize');
 			})
+
 			.on(
 				this.jodit.ownerWindow,
 				`mouseup.${jie} ${self.jodit.id} keydown.${jie}` +
@@ -727,6 +728,7 @@ export class ImageEditor extends Component {
 			this.resize_box.appendChild(
 				this.jodit.create.element('i', { class: 'jodit_icon-loader' })
 			);
+
 			this.crop_box.appendChild(
 				this.jodit.create.element('i', { class: 'jodit_icon-loader' })
 			);

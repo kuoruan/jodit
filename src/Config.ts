@@ -23,7 +23,7 @@ import {
 	val
 } from './modules/helpers/';
 import { ToolbarIcon } from './modules/toolbar/icon';
-import { IDictionary, IJodit, IViewOptions } from './types';
+import { IExtraPlugin, IDictionary, IJodit, IViewOptions } from './types';
 import { IFileBrowserCallBackData } from './types/fileBrowser';
 import { Buttons, Controls, IControlType } from './types/toolbar';
 import { extend } from './modules/helpers/extend';
@@ -53,7 +53,7 @@ export class Config implements IViewOptions {
 
 	preset: string = 'custom';
 
-	presets: IDictionary<any> = {
+	presets: IDictionary = {
 		inline: {
 			inline: true,
 			toolbar: false,
@@ -559,6 +559,23 @@ export class Config implements IViewOptions {
 	disablePlugins: string[] | string = [];
 
 	/**
+	 * Init and download extra plugins
+	 * @example
+	 * ```typescript
+	 * var editor = new Jodit('.editor', {
+	 *    extraPlugins: ['emoji']
+	 * });
+	 * ```
+	 * It will try load %SCRIPT_PATH%/plugins/emoji/emoji.js and after load will try init it
+	 */
+	extraPlugins: Array<string | IExtraPlugin> = [];
+
+	/**
+	 * Base path for download extra plugins
+	 */
+	basePath?: string;
+
+	/**
 	 * This buttons list will be added to option.buttons
 	 */
 	extraButtons: Array<string | IControlType> = [];
@@ -801,8 +818,7 @@ export class Config implements IViewOptions {
 }
 
 export const OptionsDefault: any = function(this: any, options: any) {
-	const
-		def = Config.defaultOptions,
+	const def = Config.defaultOptions,
 		self: any = this;
 
 	self.plainOptions = options;
@@ -817,8 +833,7 @@ export const OptionsDefault: any = function(this: any, options: any) {
 				}
 			}
 
-			const
-				defValue = (def as any)[key],
+			const defValue = (def as any)[key],
 				isObject = typeof defValue === 'object' && defValue !== null;
 
 			if (
@@ -826,13 +841,7 @@ export const OptionsDefault: any = function(this: any, options: any) {
 				!['ownerWindow', 'ownerDocument'].includes(key) &&
 				!Array.isArray(defValue)
 			) {
-				self[key] = extend(
-					true,
-					{},
-					defValue,
-					(opt as any)[key]
-				);
-
+				self[key] = extend(true, {}, defValue, (opt as any)[key]);
 			} else {
 				self[key] = (opt as any)[key];
 			}
@@ -1067,12 +1076,13 @@ Config.prototype.controls = {
 	video: {
 		popup: (editor: IJodit, current, control, close) => {
 			const bylink = editor.create.fromHTML(
-	`<form class="jodit_form">
+					`<form class="jodit_form">
 					<div class="jodit jodit_form_group">
 						<input class="jodit_input" required name="code" placeholder="http://" type="url"/>
 						<button class="jodit_button" type="submit">${editor.i18n('Insert')}</button>
 					</div>
-				</form>`) as HTMLFormElement,
+				</form>`
+				) as HTMLFormElement,
 				bycode = editor.create.fromHTML(
 					`<form class="jodit_form">
 									<div class="jodit_form_group">

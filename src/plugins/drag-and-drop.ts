@@ -12,6 +12,7 @@ import { Dom } from '../modules/Dom';
 import { css, ctrlKey, dataBind } from '../modules/helpers';
 import { Plugin } from '../modules/Plugin';
 import { IPoint } from '../types/types';
+import { getDataTransfer } from './clipboard';
 
 /**
  * Process drag and drop image from FileBrowser and movev image inside the editor
@@ -182,16 +183,12 @@ export class DragAndDrop extends Plugin {
 		}
 	};
 
-	private getDataTransfer = (event: DragEvent): DataTransfer => {
-		return event.dataTransfer || new DataTransfer();
-	};
-
 	private getText = (event: DragEvent): string | null => {
-		const dt: DataTransfer = this.getDataTransfer(event);
-		return dt.getData(TEXT_HTML) || dt.getData(TEXT_PLAIN);
+		const dt = getDataTransfer(event);
+		return dt ? dt.getData(TEXT_HTML) || dt.getData(TEXT_PLAIN) : null;
 	};
 
-	public afterInit() {
+	afterInit() {
 		this.jodit.events
 			.on(window, 'dragover', this.onDrag)
 			.on(
@@ -203,7 +200,7 @@ export class DragAndDrop extends Plugin {
 			.on(window, 'dragend drop mouseup', this.onDragEnd);
 	}
 
-	public beforeDestruct() {
+	beforeDestruct() {
 		this.onDragEnd();
 	}
 }

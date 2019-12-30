@@ -1,6 +1,7 @@
 const path = require('path');
 
 const webpack = require('webpack');
+
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -31,7 +32,7 @@ module.exports = (env, argv) => {
 
 	console.warn('ES mode: ' + ES);
 
-	const filename = 'jodit' + ((ES === 'es5' || isTest) ? '' : '.' + ES) + (uglify ? '.min' : '');
+	const filename = (name) => name + ((ES === 'es5' || isTest) ? '' : '.' + ES) + (uglify ? '.min' : '');
 
 	const css_loaders = [
 		(debug || isTest) ? 'style-loader' : MiniCssExtractPlugin.loader,
@@ -47,9 +48,7 @@ module.exports = (env, argv) => {
 			loader: 'postcss-loader',
 			options: {
 				sourceMap: debug,
-				plugins: () => {
-					return [require('precss'), require('autoprefixer')];
-				}
+				plugins: () => [require('precss'), require('autoprefixer')]
 			}
 		},
 		{
@@ -68,9 +67,16 @@ module.exports = (env, argv) => {
 
 		devtool: debug ? 'inline-sourcemap' : false,
 
-		entry: debug
-			? ['webpack-hot-middleware/client', './src/index']
-			: './src/index',
+		entry: {
+			jodit: debug ? ['webpack-hot-middleware/client', './src/index'] : ['./src/index']
+		},
+
+		output:  {
+			path: path.join(__dirname, 'build'),
+			filename: filename('[name]') + '.js',
+			publicPath: '/build/',
+			libraryTarget: 'umd'
+		},
 
 		resolve: {
 			extensions: ['.ts', '.d.ts', '.js', '.json', '.less', '.svg']
@@ -78,6 +84,7 @@ module.exports = (env, argv) => {
 
 		optimization: {
 			minimize: !debug && uglify,
+
 			minimizer: [
 				new MinimizeJSPlugin({
 					parallel: true,
@@ -115,29 +122,25 @@ module.exports = (env, argv) => {
 			]
 		},
 
-		output: {
-			path: path.join(__dirname, 'build'),
-			filename: filename + '.js',
-			publicPath: '/build/',
-			libraryTarget: 'umd'
-		},
-
 		module: {
 			rules: [
 				{
 					test: /\.less$/,
-					use: css_loaders
+					use: css_loaders,
+					include: path.resolve('./src')
 				},
+
 				{
 					test: /\.(ts)$/,
 					use: [
 						{
-							loader: path.resolve('src/utils/lang-loader.js')
+							loader: path.resolve('./src/utils/lang-loader.js')
 						}
 					],
-					include: path.resolve('src/langs'),
-					exclude: path.resolve('src/langs/index.ts')
+					include: path.resolve('./src/langs'),
+					exclude: path.resolve('./src/langs/index.ts')
 				},
+
 				{
 					test: /\.ts$/,
 					loader: 'ts-loader',
@@ -147,15 +150,19 @@ module.exports = (env, argv) => {
 							target: ES
 						}
 					},
+					include: path.resolve('src/'),
 					exclude: [
-						/(node_modules|bower_components)/,
+						/(node_modules)/,
 						/langs\/[a-z]{2}\.ts/,
 						/langs\/[a-z]{2}_[a-z]{2}\.ts/,
 					]
 				},
+
 				{
 					test: /\.svg$/i,
-					use: 'raw-loader'
+					use: {
+						loader: path.resolve('src/utils/svg-loader.js')
+					}
 				}
 			]
 		},
@@ -189,7 +196,7 @@ module.exports = (env, argv) => {
 			case 'production':
 				config.plugins.push(
 					new MiniCssExtractPlugin({
-						filename: filename + '.css'
+						filename: filename('[name]') + '.css'
 					})
 				);
 

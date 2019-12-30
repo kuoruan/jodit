@@ -19,6 +19,7 @@ import {
 	normalizeKeyAliases,
 	splitArray
 } from './modules/helpers/';
+
 import { JoditArray } from './modules/helpers/JoditArray';
 import { JoditObject } from './modules/helpers/JoditObject';
 import { Observer } from './modules/observer/observer';
@@ -30,13 +31,14 @@ import {
 	CustomCommand,
 	ExecCommandCallback,
 	IDictionary,
-	IPlugin,
+	IPluginSystem,
 	markerInfo,
 	Modes
 } from './types';
 
 import { ViewWithToolbar } from './modules/view/viewWithToolbar';
 import { IJodit, IFileBrowser, IUploader } from './types/';
+import { PluginSystem } from './modules/PluginSystem';
 
 const SAFE_COUNT_CHANGE_CALL = 10;
 
@@ -98,7 +100,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	 * @param args
 	 */
 	static fireEach(events: string, ...args: any[]) {
-		Object.keys(Jodit.instances).forEach((key) => {
+		Object.keys(Jodit.instances).forEach(key => {
 			const editor: Jodit = Jodit.instances[key];
 
 			if (!editor.isDestructed && editor.events) {
@@ -118,7 +120,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	}
 
 	static defaultOptions: Config;
-	static plugins: any = {};
+	static plugins: IPluginSystem = new PluginSystem();
 	static modules: any = {};
 	static instances: IDictionary<Jodit> = {};
 	static lang: any = {};
@@ -201,8 +203,6 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	}
 
 	helper: any;
-
-	__plugins: IDictionary<IPlugin> = {};
 
 	mode: Modes = consts.MODE_WYSIWYG;
 
@@ -878,8 +878,8 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 		) {
 			throw new Error(
 				'Element "' +
-				element +
-				'" should be string or HTMLElement instance'
+					element +
+					'" should be string or HTMLElement instance'
 			);
 		}
 
@@ -1025,7 +1025,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			await this.events.fire('beforeInit', this);
 
 			try {
-				this.__initPlugines();
+				await Jodit.plugins.init(this);
 			} catch (e) {
 				console.error(e);
 			}
@@ -1064,28 +1064,31 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			return;
 		}
 
-		let toolbarContainer: HTMLElement = this.create.div('jodit_toolbar_container');
+		let toolbarContainer: HTMLElement = this.create.div(
+			'jodit_toolbar_container'
+		);
 		this.container.appendChild(toolbarContainer);
 
-		if (this.options.toolbar instanceof HTMLElement || typeof this.options.toolbar === 'string') {
+		if (
+			this.options.toolbar instanceof HTMLElement ||
+			typeof this.options.toolbar === 'string'
+		) {
 			toolbarContainer = this.resolveElement(this.options.toolbar);
 		}
 
 		this.applyOptionsToToolbarContainer(toolbarContainer);
 
 		this.toolbar.build(
-			splitArray(this.options.buttons).concat(
-				this.options.extraButtons
-			),
+			splitArray(this.options.buttons).concat(this.options.extraButtons),
 			toolbarContainer
 		);
 
 		const bs = this.options.toolbarButtonSize.toLowerCase();
 		toolbarContainer.classList.add(
 			'jodit_toolbar_size-' +
-			(['middle', 'large', 'small'].indexOf(bs) !== -1
-				? bs
-				: 'middle')
+				(['middle', 'large', 'small'].indexOf(bs) !== -1
+					? bs
+					: 'middle')
 		);
 	}
 
@@ -1103,19 +1106,6 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 	}
 
 	isInited: boolean = false;
-
-	private __initPlugines() {
-		const dp = this.options.disablePlugins;
-		const disable = Array.isArray(dp)
-			? dp.map(name => name.toLowerCase())
-			: dp.toLowerCase().split(/[\s,]+/);
-
-		Object.keys(Jodit.plugins).forEach((key: string) => {
-			if (disable.indexOf(key.toLowerCase()) === -1) {
-				this.__plugins[key] = new Jodit.plugins[key](this);
-			}
-		});
-	}
 
 	private async __initEditor(buffer: null | string) {
 		await this.__createEditor();
@@ -1136,9 +1126,7 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 		let mode: number = this.options.defaultMode;
 
 		if (this.options.saveModeInStorage) {
-			const localMode = this.storage.get(
-				'jodit_default_mode'
-			);
+			const localMode = this.storage.get('jodit_default_mode');
 
 			if (typeof localMode === 'string') {
 				mode = parseInt(localMode, 10);
@@ -1216,8 +1204,8 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 			.on('synchro', () => {
 				this.setEditorValue();
 			})
-			.on('focus', () => this.editorIsActive = true)
-			.on('blur', () => this.editorIsActive = false)
+			.on('focus', () => (this.editorIsActive = true))
+			.on('blur', () => (this.editorIsActive = false))
 			.on(
 				this.editor,
 				'selectionchange selectionstart keydown keyup keypress mousedown mouseup mousepress ' +
@@ -1304,7 +1292,6 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 					this.element.style.display = attr;
 					this.element.removeAttribute(this.__defaultStyleDisplayKey);
 				}
-
 			} else {
 				this.element.style.display = '';
 			}
@@ -1322,19 +1309,6 @@ export class Jodit extends ViewWithToolbar implements IJodit {
 		) {
 			this.element.removeAttribute('style');
 		}
-
-		Object.keys(this.__plugins).forEach((pluginName: string) => {
-			const plugin = this.__plugins[pluginName];
-			if (
-				plugin !== undefined &&
-				plugin.destruct !== undefined &&
-				typeof plugin.destruct === 'function'
-			) {
-				plugin.destruct();
-			}
-
-			delete this.__plugins[pluginName];
-		});
 
 		this.observer.destruct();
 		this.statusbar.destruct();

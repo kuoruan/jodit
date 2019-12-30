@@ -8,18 +8,23 @@
  */
 
 import { IViewBased } from './view';
+import { IJodit } from './jodit';
 
 export interface IDictionary<T = any> {
 	[key: string]: T;
 }
 
+export interface IInitable {
+	init(jodit: IViewBased): any;
+}
+
 export interface IDestructible {
-	isDestructed: boolean;
-	destruct(): any;
+	destruct(jodit?: IJodit): any;
 }
 
 interface IComponent<T extends IViewBased = IViewBased> extends IDestructible {
 	jodit: T;
+	isDestructed: boolean;
 }
 
 export type NodeCondition = (
@@ -125,13 +130,6 @@ export interface markerInfo {
 	collapsed: boolean;
 	startMarker: string;
 	endMarker?: string;
-}
-
-export interface IPlugin {
-	jodit: IViewBased;
-	destruct(): void;
-	afterInit(jodit?: IViewBased): void;
-	beforeDestruct(jodit?: IViewBased): void;
 }
 
 /**

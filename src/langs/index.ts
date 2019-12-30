@@ -12,24 +12,26 @@ import { IDictionary } from '../types';
 import ar from './ar';
 import cs_cz from './cs_cz';
 import de from './de';
+import en from './en';
 import es from './es';
 import fr from './fr';
 import he from './he';
 import hu from './hu';
 import id from './id';
 import it from './it';
+import ja from './ja';
 import nl from './nl';
+import pl from './pl';
 import pt_br from './pt_br';
 import ru from './ru';
 import tr from './tr';
 import zh_cn from './zh_cn';
 import zh_tw from './zh_tw';
-import en from './en';
 
 const exp: IDictionary<IDictionary<string>> = {
 	ar,
-	de,
 	cs_cz,
+	de,
 	en,
 	es,
 	fr,
@@ -37,7 +39,9 @@ const exp: IDictionary<IDictionary<string>> = {
 	hu,
 	id,
 	it,
+	ja,
 	nl,
+	pl,
 	pt_br,
 	ru,
 	tr,
